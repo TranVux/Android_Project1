@@ -1,4 +1,4 @@
-package Model;
+package com.example.assignment_pro1121_nhom3.views.model;
 
 import java.io.Serializable;
 
