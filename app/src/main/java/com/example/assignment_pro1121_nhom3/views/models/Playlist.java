@@ -1,19 +1,19 @@
-package com.example.assignment_pro1121_nhom3.views.model;
+package com.example.assignment_pro1121_nhom3.views.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class playlist implements Serializable {
+public class Playlist implements Serializable {
     String id;
     String name;
     ArrayList<String> musics;
     Long modyfiDate;
     Long createtionDate;
 
-    public playlist() {
+    public Playlist() {
     }
 
-    public playlist(String id, String name, ArrayList<String> musics, Long modyfiDate, Long createtionDate) {
+    public Playlist(String id, String name, ArrayList<String> musics, Long modyfiDate, Long createtionDate) {
         this.id = id;
         this.name = name;
         this.musics = musics;

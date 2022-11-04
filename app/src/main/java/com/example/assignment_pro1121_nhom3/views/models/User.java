@@ -1,9 +1,9 @@
-package com.example.assignment_pro1121_nhom3.views.model;
+package com.example.assignment_pro1121_nhom3.views.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class users implements Serializable {
+public class User implements Serializable {
     String id;
     String name;
     String email;
@@ -13,7 +13,7 @@ public class users implements Serializable {
     boolean isDelete;
     String bio;
 
-    public users(String id, String name, String email, String token, Long createtionDate, ArrayList<String> playlistsID, String bio) {
+    public User(String id, String name, String email, String token, Long createtionDate, ArrayList<String> playlistsID, String bio) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -23,7 +23,7 @@ public class users implements Serializable {
         this.bio = bio;
     }
 
-    public users(String id, String name, String email, String token, Long createtionDate, ArrayList<String> playlistsID, boolean isDelete, String bio) {
+    public User(String id, String name, String email, String token, Long createtionDate, ArrayList<String> playlistsID, boolean isDelete, String bio) {
         this.id = id;
         this.name = name;
         this.email = email;

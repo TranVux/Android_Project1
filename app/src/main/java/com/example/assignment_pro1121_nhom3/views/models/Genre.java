@@ -1,18 +1,18 @@
-package com.example.assignment_pro1121_nhom3.views.model;
+package com.example.assignment_pro1121_nhom3.views.models;
 
 import java.io.Serializable;
 
-public class genres implements Serializable {
+public class Genre implements Serializable {
     String id;
     String name;
     Long modyfiDate;
     Long createtionDate;
     String urlThumbnail;
 
-    public genres() {
+    public Genre() {
     }
 
-    public genres(String id, String name, Long modyfiDate, Long createtionDate, String urlThumbnail) {
+    public Genre(String id, String name, Long modyfiDate, Long createtionDate, String urlThumbnail) {
         this.id = id;
         this.name = name;
         this.modyfiDate = modyfiDate;
