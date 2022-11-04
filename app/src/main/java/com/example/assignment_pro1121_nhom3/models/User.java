@@ -1,34 +1,34 @@
-package com.example.assignment_pro1121_nhom3.views.models;
+package com.example.assignment_pro1121_nhom3.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class User implements Serializable {
-    String id;
-    String name;
-    String email;
-    String token;
-    Long createtionDate;
-    ArrayList<String> playlistsID;
-    boolean isDelete;
-    String bio;
+    private String id;
+    private String name;
+    private String email;
+    private String token;
+    private Long creationDate;
+    private ArrayList<String> playlistsID;
+    private boolean isDelete;
+    private String bio;
 
-    public User(String id, String name, String email, String token, Long createtionDate, ArrayList<String> playlistsID, String bio) {
+    public User(String id, String name, String email, String token, Long creationDate, ArrayList<String> playlistsID, String bio) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.token = token;
-        this.createtionDate = createtionDate;
+        this.creationDate = creationDate;
         this.playlistsID = playlistsID;
         this.bio = bio;
     }
 
-    public User(String id, String name, String email, String token, Long createtionDate, ArrayList<String> playlistsID, boolean isDelete, String bio) {
+    public User(String id, String name, String email, String token, Long creationDate, ArrayList<String> playlistsID, boolean isDelete, String bio) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.token = token;
-        this.createtionDate = createtionDate;
+        this.creationDate = creationDate;
         this.playlistsID = playlistsID;
         this.isDelete = isDelete;
         this.bio = bio;
@@ -66,12 +66,12 @@ public class User implements Serializable {
         this.token = token;
     }
 
-    public Long getCreatetionDate() {
-        return createtionDate;
+    public Long getCreationDate() {
+        return creationDate;
     }
 
-    public void setCreatetionDate(Long createtionDate) {
-        this.createtionDate = createtionDate;
+    public void setCreationDate(Long creationDate) {
+        this.creationDate = creationDate;
     }
 
     public ArrayList<String> getPlaylistsID() {
