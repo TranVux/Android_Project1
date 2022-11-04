@@ -1,6 +1,8 @@
 package Model;
 
-public class genres {
+import java.io.Serializable;
+
+public class genres implements Serializable {
     String id;
     String name;
     Long modyfiDate;

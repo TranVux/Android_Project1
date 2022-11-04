@@ -1,19 +1,32 @@
-package Model;
+package com.example.assignment_pro1121_nhom3.views.model;
 
-public class users {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class users implements Serializable {
     String id;
     String name;
     String email;
     String token;
     Long createtionDate;
-    String[] playlistsID;
-    Boolean isDelete;
+    ArrayList<String> playlistsID;
+    boolean isDelete;
     String bio;
 
     public users() {
     }
 
-    public users(String id, String name, String email, String token, Long createtionDate, String[] playlistsID, Boolean isDelete, String bio) {
+    public users(String id, String name, String email, String token, Long createtionDate, ArrayList<String> playlistsID, String bio) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.token = token;
+        this.createtionDate = createtionDate;
+        this.playlistsID = playlistsID;
+        this.bio = bio;
+    }
+
+    public users(String id, String name, String email, String token, Long createtionDate, ArrayList<String> playlistsID, boolean isDelete, String bio) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -64,19 +77,19 @@ public class users {
         this.createtionDate = createtionDate;
     }
 
-    public String[] getPlaylistsID() {
+    public ArrayList<String> getPlaylistsID() {
         return playlistsID;
     }
 
-    public void setPlaylistsID(String[] playlistsID) {
+    public void setPlaylistsID(ArrayList<String> playlistsID) {
         this.playlistsID = playlistsID;
     }
 
-    public Boolean getDelete() {
+    public boolean isDelete() {
         return isDelete;
     }
 
-    public void setDelete(Boolean delete) {
+    public void setDelete(boolean delete) {
         isDelete = delete;
     }
 

@@ -1,16 +1,19 @@
-package Model;
+package com.example.assignment_pro1121_nhom3.views.model;
 
-public class Playlist {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class playlist implements Serializable {
     String id;
     String name;
-    String[] musics;
+    ArrayList<String> musics;
     Long modyfiDate;
     Long createtionDate;
 
-    public Playlist() {
+    public playlist() {
     }
 
-    public Playlist(String id, String name, String[] musics, Long modyfiDate, Long createtionDate) {
+    public playlist(String id, String name, ArrayList<String> musics, Long modyfiDate, Long createtionDate) {
         this.id = id;
         this.name = name;
         this.musics = musics;
@@ -34,11 +37,11 @@ public class Playlist {
         this.name = name;
     }
 
-    public String[] getMusics() {
+    public ArrayList<String> getMusics() {
         return musics;
     }
 
-    public void setMusics(String[] musics) {
+    public void setMusics(ArrayList<String> musics) {
         this.musics = musics;
     }
 
