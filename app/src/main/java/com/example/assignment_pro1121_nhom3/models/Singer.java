@@ -1,6 +1,8 @@
 package com.example.assignment_pro1121_nhom3.models;
 
-public class Singer {
+import java.io.Serializable;
+
+public class Singer implements Serializable {
     private String id;
     private String name;
     private String avtUrl;

@@ -1,15 +1,17 @@
 package com.example.assignment_pro1121_nhom3.models;
 
-public class Music {
+import java.io.Serializable;
+
+public class Music implements Serializable {
     private String id;
     private String name;
     private String url;
     private String thumbnailUrl;
-    private long creationDate;
-    private long modifyDate;
+    private Long creationDate;
+    private Long modifyDate;
     private String singerName;
     private String singerId;
-    private long views;
+    private Long views;
     private String genresId;
 
     public Music(String id, String name, String url, String thumbnailUrl, long creationDate, long modifyDate, String singerName, String singerId, long views, String genresId) {
@@ -57,7 +59,7 @@ public class Music {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public long getCreationDate() {
+    public Long getCreationDate() {
         return creationDate;
     }
 
@@ -65,7 +67,7 @@ public class Music {
         this.creationDate = creationDate;
     }
 
-    public long getModifyDate() {
+    public Long getModifyDate() {
         return modifyDate;
     }
 
@@ -89,7 +91,7 @@ public class Music {
         this.singerId = singerId;
     }
 
-    public long getViews() {
+    public Long getViews() {
         return views;
     }
 
