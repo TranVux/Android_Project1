@@ -6,17 +6,17 @@ import java.util.ArrayList;
 public class Playlist implements Serializable {
     private String id;
     private String name;
-    private ArrayList<String> musics;
+    private ArrayList<String> musicsID;
     private Long modifyDate;
     private Long creationDate;
 
     public Playlist() {
     }
 
-    public Playlist(String id, String name, ArrayList<String> musics, Long modifyDate, Long creationDate) {
+    public Playlist(String id, String name, ArrayList<String> musicsID, Long modifyDate, Long creationDate) {
         this.id = id;
         this.name = name;
-        this.musics = musics;
+        this.musicsID = musicsID;
         this.modifyDate = modifyDate;
         this.creationDate = creationDate;
     }
@@ -38,11 +38,11 @@ public class Playlist implements Serializable {
     }
 
     public ArrayList<String> getMusics() {
-        return musics;
+        return musicsID;
     }
 
     public void setMusics(ArrayList<String> musics) {
-        this.musics = musics;
+        this.musicsID = musics;
     }
 
     public Long getModifyDate() {
