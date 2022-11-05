@@ -1,4 +1,4 @@
-package com.example.assignment_pro1121_nhom3.views.models;
+package com.example.assignment_pro1121_nhom3.models;
 
 public class Music {
     private String id;
