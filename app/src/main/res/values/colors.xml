@@ -7,4 +7,15 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+
+<!--    Màu riêng của dự án-->
+    <color name="white_0.75">#BFFFFFFF</color>
+    <color name="bg_btn">#17A3FC</color>
+    <color name="text_btn">#fff</color>
+    <color name="bg_edit_text">#4B4B4B</color>
+    <color name="bg_bottom_navigation">#050505</color>
+    <color name="status_bar">#292929</color>
+    <color name="bg_search_bar">#46474C</color>
+    <color name="edt_hint_color">#B0B0B0</color>
 </resources>
