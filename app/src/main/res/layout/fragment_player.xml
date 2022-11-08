@@ -5,9 +5,20 @@
     android:layout_height="match_parent"
     tools:context=".fragments.PlayerFragment">
 
-    <TextView
+    <ImageView
+        android:id="@+id/backgroundImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Player Music Fragment" />
+        android:scaleType="centerCrop"
+        android:src="@drawable/img" />
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/blurView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+
+    </eightbitlab.com.blurview.BlurView>
 
 </FrameLayout>

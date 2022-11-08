@@ -52,7 +52,7 @@ public class MusicRecentPublishAdapter extends RecyclerView.Adapter<MusicRecentP
         Music musicTemp = list.get(position);
         if (musicTemp == null) return;
         Glide.with(context).load(musicTemp.getThumbnailUrl())
-                .apply(new RequestOptions().override(108, 108))
+                .apply(new RequestOptions().override(105, 105))
                 .centerCrop()
                 .error(R.drawable.fallback_img).into(holder.thumbnail);
         holder.musicName.setText(CapitalizeWord.CapitalizeWords(musicTemp.getName()));

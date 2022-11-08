@@ -77,7 +77,6 @@
                 android:layout_below="@id/search_bar"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
                 tools:ignore="ScrollViewCount">
 
                 <LinearLayout
@@ -106,22 +105,21 @@
                     </androidx.cardview.widget.CardView>
 
                     <!--Layout các phần chức năng của app-->
-                    <LinearLayout
+                    <com.google.android.flexbox.FlexboxLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:orientation="horizontal"
+                        app:justifyContent="space_between"
+                        app:alignItems="center"
                         android:paddingTop="15dp">
 
                         <LinearLayout
                             android:id="@+id/btnBxh"
-                            android:layout_width="80dp"
+                            android:layout_width="74dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="15dp"
                             android:orientation="vertical">
 
                             <androidx.cardview.widget.CardView
-                                android:layout_width="80dp"
+                                android:layout_width="74dp"
                                 android:layout_height="45dp"
                                 android:elevation="5dp"
                                 app:cardBackgroundColor="@color/status_bar"
@@ -148,13 +146,12 @@
 
                         <LinearLayout
                             android:id="@+id/btnArtis"
-                            android:layout_width="80dp"
+                            android:layout_width="74dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="15dp"
                             android:orientation="vertical">
 
                             <androidx.cardview.widget.CardView
-                                android:layout_width="80dp"
+                                android:layout_width="74dp"
                                 android:layout_height="45dp"
                                 android:elevation="5dp"
                                 app:cardBackgroundColor="@color/status_bar"
@@ -181,13 +178,12 @@
 
                         <LinearLayout
                             android:id="@+id/btnPlaylist"
-                            android:layout_width="80dp"
+                            android:layout_width="74dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="15dp"
                             android:orientation="vertical">
 
                             <androidx.cardview.widget.CardView
-                                android:layout_width="80dp"
+                                android:layout_width="74dp"
                                 android:layout_height="45dp"
                                 android:elevation="5dp"
                                 app:cardBackgroundColor="@color/status_bar"
@@ -214,12 +210,12 @@
 
                         <LinearLayout
                             android:id="@+id/btnCategory"
-                            android:layout_width="80dp"
+                            android:layout_width="74dp"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
 
                             <androidx.cardview.widget.CardView
-                                android:layout_width="80dp"
+                                android:layout_width="74dp"
                                 android:layout_height="45dp"
                                 android:elevation="5dp"
                                 app:cardBackgroundColor="@color/status_bar"
@@ -243,7 +239,7 @@
                                 android:textColor="@color/function_text_color"
                                 android:textSize="13sp" />
                         </LinearLayout>
-                    </LinearLayout>
+                    </com.google.android.flexbox.FlexboxLayout>
                     <!--Kết thúc layout phần chức năng-->
 
                     <!--Layout danh sách bài hát mới phát hành-->
@@ -343,9 +339,13 @@
                             android:id="@+id/listPlayList"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
+
                     </LinearLayout>
                     <!--Kết thúc layout phần danh sách phát-->
 
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp" />
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </RelativeLayout>
