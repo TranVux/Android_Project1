@@ -258,16 +258,21 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(requireContext(), "Xem thêm bài hát mới thêm", Toast.LENGTH_SHORT).show();
                 break;
             }
-            case R.id.btnBxh:{
+            case R.id.btnBxh: {
                 Toast.makeText(requireContext(), "Tới Activity bảng xếp hạng", Toast.LENGTH_SHORT).show();
                 break;
             }
-            case R.id.btnArtis:{
+            case R.id.btnArtis: {
                 Toast.makeText(requireContext(), "Tới Activity nghệ sĩ", Toast.LENGTH_SHORT).show();
                 break;
             }
-            case R.id.btnPlaylist:{
-                Toast.makeText(requireContext(), "", Toast.LENGTH_SHORT).show();
+            case R.id.btnPlaylist: {
+                Toast.makeText(requireContext(), "Tới activity playlist", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case R.id.btnCategory: {
+                Toast.makeText(requireContext(), "Tới activity thể loại", Toast.LENGTH_SHORT).show();
+                break;
             }
             default:
                 break;
