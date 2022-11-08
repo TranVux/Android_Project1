@@ -1,5 +1,6 @@
 package com.example.assignment_pro1121_nhom3.fragments;
 
+import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -15,6 +16,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -24,6 +27,7 @@ import com.denzcoskun.imageslider.interfaces.ItemChangeListener;
 import com.denzcoskun.imageslider.models.SlideModel;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.MusicRecentPublishAdapter;
+import com.example.assignment_pro1121_nhom3.adapters.PlayListMusicAdapter;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
@@ -33,7 +37,7 @@ import java.util.ArrayList;
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderScriptBlur;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener {
     public static String TAG = HomeFragment.class.getSimpleName();
 
     // cái này là BlurView: để làm mờ ảnh
@@ -52,6 +56,14 @@ public class HomeFragment extends Fragment {
     ArrayList<Music> listRecentPublish;
     ArrayList<Playlist> listPlaylist;
     MusicRecentPublishAdapter musicRecentPublishAdapter;
+    PlayListMusicAdapter playListMusicAdapter;
+
+    // nút xem thêm
+    TextView labelMorePlaylist, labelMoreRecentPublishMusic;
+    ImageView icMorePlaylist, icMoreRecentPublishMusic;
+
+    //nút chuyển sang các màn hình khác (bxh, nghệ sĩ,...)
+    LinearLayout btnBxh, btnArtis, btnPlaylist, btnCatogory;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -107,6 +119,8 @@ public class HomeFragment extends Fragment {
         });
     }
 
+    // khởi tạo trạng thái đầu tiên, ánh xạ view,...
+    @SuppressLint("CutPasteId")
     public void init(View view) {
         blurViewSlide = view.findViewById(R.id.blurView);
         imageSlider = view.findViewById(R.id.slider);
@@ -115,6 +129,24 @@ public class HomeFragment extends Fragment {
         nestedScrollView.setSmoothScrollingEnabled(true);
         rclPlaylist = view.findViewById(R.id.listPlayList);
         rclRecentPublish = view.findViewById(R.id.listRecentPublish);
+        icMorePlaylist = view.findViewById(R.id.icMorePlayList);
+        icMoreRecentPublishMusic = view.findViewById(R.id.icMoreRecentPublish);
+        labelMorePlaylist = view.findViewById(R.id.labelMorePlayList);
+        labelMoreRecentPublishMusic = view.findViewById(R.id.labelMoreRecentPublish);
+        btnBxh = view.findViewById(R.id.btnBxh);
+        btnArtis = view.findViewById(R.id.btnArtis);
+        btnCatogory = view.findViewById(R.id.btnCategory);
+        btnPlaylist = view.findViewById(R.id.btnPlaylist);
+
+        //bắt sự kiện onClick cho view
+        icMorePlaylist.setOnClickListener(this);
+        labelMorePlaylist.setOnClickListener(this);
+        icMoreRecentPublishMusic.setOnClickListener(this);
+        labelMoreRecentPublishMusic.setOnClickListener(this);
+        btnPlaylist.setOnClickListener(this);
+        btnArtis.setOnClickListener(this);
+        btnCatogory.setOnClickListener(this);
+        btnBxh.setOnClickListener(this);
 
         // hủy bỏ trạng thái trượt của list
         rclRecentPublish.setNestedScrollingEnabled(false);
@@ -125,6 +157,7 @@ public class HomeFragment extends Fragment {
         GridLayoutManager managerRclPlayList = new GridLayoutManager(requireContext(), 3);
         rclRecentPublish.setLayoutManager(managerRclRecentPublish);
         rclPlaylist.setLayoutManager(managerRclPlayList);
+
         musicRecentPublishAdapter = new MusicRecentPublishAdapter(listRecentPublish, requireContext(), new ItemEvent.MusicItemEvent() {
             @Override
             public void onItemClick(Music music) {
@@ -136,9 +169,19 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(requireContext(), singerID, Toast.LENGTH_SHORT).show();
             }
         });
+
+        playListMusicAdapter = new PlayListMusicAdapter(listPlaylist, requireContext(), new ItemEvent.PlaylistItemEvent() {
+            @Override
+            public void onItemClick(Playlist playlist) {
+                Toast.makeText(requireContext(), playlist.getName(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
         rclRecentPublish.setAdapter(musicRecentPublishAdapter);
+        rclPlaylist.setAdapter(playListMusicAdapter);
         setDataForList();
         musicRecentPublishAdapter.setList(listRecentPublish);
+        playListMusicAdapter.setList(listPlaylist);
     }
 
     public void FakeDataSlide() {
@@ -153,6 +196,9 @@ public class HomeFragment extends Fragment {
 
     public void setDataForList() {
         listRecentPublish = new ArrayList<>();
+        listPlaylist = new ArrayList<>();
+
+        //thêm dữ liệu cho listRecentPublish
         listRecentPublish.add(new Music("2OfAAhxDFTf3TqlKu4AM", "Nơi này có anh",
                 "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Musics%2FNoi-Nay-Co-Anh-Masew-Bootleg-Son-Tung-M-TP-Masew.mp3?alt=media&token=aba5a5d8-9133-4568-81d1-18c5fbbb5d37",
                 "https://photo-resize-zmp3.zmdcdn.me/w600_r1x1_webp/covers/c/b/cb61528885ea3cdcd9bdb9dfbab067b1_1504988884.jpg",
@@ -169,6 +215,12 @@ public class HomeFragment extends Fragment {
                 "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Musics%2FNoi-Nay-Co-Anh-Masew-Bootleg-Son-Tung-M-TP-Masew.mp3?alt=media&token=aba5a5d8-9133-4568-81d1-18c5fbbb5d37",
                 "https://data.chiasenhac.com/data/cover/169/168211.jpg",
                 1667278226, 1667278226, "DALAB", "1CV6SRGg7uxj0W1bsBu8", 1011, "SSrKhRc2FHzGIyLxjU5w"));
+
+        //thêm dữ liệu cho listPlaylist
+        listPlaylist.add(new Playlist("OGYOj3aeIdT0LsxkPwi4", "US - UK songs", null, 1667278226L, 1667278226L, "https://avatar-ex-swe.nixcdn.com/singer/avatar/2017/11/18/7/a/1/0/1510943948217_600.jpg", "V"));
+        listPlaylist.add(new Playlist("OGYOj3aeIdT0LsxkPwi4", "Bảng xếp hạng tháng 10", null, 1667278226L, 1667278226L, "https://www.google.com/url?sa=i&url=https%3A%2F%2Fdvt.vn%2Fmono-nguyen-viet-hoang-la-ai-tieu-su-va-hanh-trinh-debut-tro-thanh-ca-si-a116552.html&psig=AOvVaw3oSEIIS7FVuRGM0RGxpKc7&ust=1667960131773000&source=images&cd=vfe&ved=0CA0QjRxqFwoTCKjS7-rBnfsCFQAAAAAdAAAAABAE", "V"));
+        listPlaylist.add(new Playlist("OGYOj3aeIdT0LsxkPwi4", "Ngủ", null, 1667278226L, 1667278226L, "https://truyenvn.vip/tin/wp-content/uploads/2020/09/thanh-guom-diet-quy-chuyen-tau-bat-tan-4.jpg", "Vũ"));
+
     }
 
     @Override
@@ -189,5 +241,36 @@ public class HomeFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    @Override
+    public void onClick(View view) {
+        // xử lý xử kiện onclick cho các view
+        switch (view.getId()) {
+            case R.id.labelMorePlayList:
+            case R.id.icMorePlayList: {
+                Toast.makeText(requireContext(), "Xem thêm danh sách phát", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case R.id.labelMoreRecentPublish:
+            case R.id.icMoreRecentPublish: {
+                Toast.makeText(requireContext(), "Xem thêm bài hát mới thêm", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case R.id.btnBxh:{
+                Toast.makeText(requireContext(), "Tới Activity bảng xếp hạng", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case R.id.btnArtis:{
+                Toast.makeText(requireContext(), "Tới Activity nghệ sĩ", Toast.LENGTH_SHORT).show();
+                break;
+            }
+            case R.id.btnPlaylist:{
+                Toast.makeText(requireContext(), "", Toast.LENGTH_SHORT).show();
+            }
+            default:
+                break;
+        }
     }
 }

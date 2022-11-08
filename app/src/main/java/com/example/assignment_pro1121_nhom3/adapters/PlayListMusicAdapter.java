@@ -53,7 +53,20 @@ public class PlayListMusicAdapter extends RecyclerView.Adapter<PlayListMusicAdap
     public void onBindViewHolder(@NonNull PlayListMusicAdapterViewHolder holder, int position) {
         Playlist playlistTemp = list.get(position);
         if (playlistTemp == null) return;
-        
+        holder.creatorName.setText(CapitalizeWord.CapitalizeWords(playlistTemp.getCreatorName()));
+        holder.playlistName.setText(CapitalizeWord.CapitalizeWords(playlistTemp.getName()));
+        Glide.with(context).load(playlistTemp.getUrlThumbnail())
+                .apply(new RequestOptions().override(96, 96))
+                .error(R.drawable.fallback_img)
+                .centerCrop()
+                .into(holder.thumbnail);
+
+        holder.itemPlaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemEvent.onItemClick(playlistTemp);
+            }
+        });
     }
 
     @Override

@@ -19,7 +19,7 @@
         android:id="@+id/blurView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#2A000000">
+        android:background="#85000000">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -114,6 +114,7 @@
                         android:paddingTop="15dp">
 
                         <LinearLayout
+                            android:id="@+id/btnBxh"
                             android:layout_width="80dp"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="15dp"
@@ -146,6 +147,7 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/btnArtis"
                             android:layout_width="80dp"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="15dp"
@@ -178,6 +180,7 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/btnPlaylist"
                             android:layout_width="80dp"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="15dp"
@@ -210,6 +213,7 @@
                         </LinearLayout>
 
                         <LinearLayout
+                            android:id="@+id/btnCategory"
                             android:layout_width="80dp"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
@@ -264,18 +268,19 @@
                                 android:textSize="23sp" />
 
                             <TextView
+                                android:id="@+id/labelMoreRecentPublish"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"
                                 android:layout_marginEnd="2dp"
-                                android:layout_toStartOf="@id/icMoreRecentPublic"
+                                android:layout_toStartOf="@id/icMoreRecentPublish"
                                 android:fontFamily="@font/roboto"
                                 android:text="Thêm"
                                 android:textColor="@color/function_text_color"
                                 android:textSize="14sp" />
 
                             <ImageView
-                                android:id="@+id/icMoreRecentPublic"
+                                android:id="@+id/icMoreRecentPublish"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
@@ -313,7 +318,7 @@
                                 android:textSize="23sp" />
 
                             <TextView
-                                android:id="@+id/titleMorePlayList"
+                                android:id="@+id/labelMorePlayList"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_centerVertical="true"

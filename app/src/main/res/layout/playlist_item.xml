@@ -24,8 +24,8 @@
 
             <ImageView
                 android:id="@+id/thumbnail"
-                android:layout_width="95dp"
-                android:layout_height="95dp"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
                 android:src="@drawable/img" />
         </androidx.cardview.widget.CardView>
 
@@ -37,6 +37,7 @@
             android:fontFamily="@font/roboto_medium"
             android:maxLines="2"
             android:text="Muộn Rồi Mà Sao Còn"
+            android:layout_marginTop="5dp"
             android:textColor="@color/function_text_color"
             android:textSize="11sp" />
 
