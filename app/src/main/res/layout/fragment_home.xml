@@ -1,14 +1,348 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/bg_activity"
     tools:context=".fragments.HomeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ImageView
+        android:id="@+id/imageForeground"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_gravity="center|top"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img" />
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/blurView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Anh em nào code màn hình trang chủ thì làm ở đây" />
+        android:background="#2A000000">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingHorizontal="15dp"
+            android:paddingTop="28dp">
+
+            <LinearLayout
+                android:id="@+id/search_bar"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignStart="@+id/buttonSetting"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginBottom="7dp"
+                android:layout_toStartOf="@id/buttonSetting"
+                android:background="@drawable/bg_search_bar"
+                android:gravity="center_vertical"
+                android:paddingStart="15dp"
+                tools:ignore="RtlSymmetry">
+
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:src="@drawable/ic_search" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/roboto"
+                    android:text="Muộn rồi mà sao còn"
+                    android:textColor="@color/edt_hint_color" />
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/buttonSetting"
+                android:layout_width="27dp"
+                android:layout_height="27dp"
+                android:layout_alignTop="@+id/search_bar"
+                android:layout_alignBottom="@+id/search_bar"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="6dp"
+                android:src="@drawable/ic_setting"
+                tools:ignore="ContentDescription" />
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nestedScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/search_bar"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                tools:ignore="ScrollViewCount">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="match_parent"
+                        android:layout_height="136dp"
+                        android:layout_marginTop="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <com.denzcoskun.imageslider.ImageSlider
+                                android:id="@+id/slider"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:iss_auto_cycle="true"
+                                app:iss_corner_radius="10"
+                                app:iss_delay="2500"
+                                app:iss_period="2500" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!--Layout các phần chức năng của app-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:paddingTop="15dp">
+
+                        <LinearLayout
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="15dp"
+                            android:orientation="vertical">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="80dp"
+                                android:layout_height="45dp"
+                                android:elevation="5dp"
+                                app:cardBackgroundColor="@color/status_bar"
+                                app:cardCornerRadius="9dp">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_analyst" />
+
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/roboto"
+                                android:text="BXH"
+                                android:textColor="@color/function_text_color"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="15dp"
+                            android:orientation="vertical">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="80dp"
+                                android:layout_height="45dp"
+                                android:elevation="5dp"
+                                app:cardBackgroundColor="@color/status_bar"
+                                app:cardCornerRadius="9dp">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_singer" />
+
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/roboto"
+                                android:text="Nghệ sĩ"
+                                android:textColor="@color/function_text_color"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="15dp"
+                            android:orientation="vertical">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="80dp"
+                                android:layout_height="45dp"
+                                android:elevation="5dp"
+                                app:cardBackgroundColor="@color/status_bar"
+                                app:cardCornerRadius="9dp">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_playlist" />
+
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/roboto"
+                                android:text="Danh sách"
+                                android:textColor="@color/function_text_color"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="80dp"
+                                android:layout_height="45dp"
+                                android:elevation="5dp"
+                                app:cardBackgroundColor="@color/status_bar"
+                                app:cardCornerRadius="9dp">
+
+                                <ImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_category" />
+
+                            </androidx.cardview.widget.CardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="10dp"
+                                android:fontFamily="@font/roboto"
+                                android:text="Thể loại"
+                                android:textColor="@color/function_text_color"
+                                android:textSize="13sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                    <!--Kết thúc layout phần chức năng-->
+
+                    <!--Layout danh sách bài hát mới phát hành-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentTop="true"
+                                android:fontFamily="@font/roboto_medium"
+                                android:text="Mới Phát Hành"
+                                android:textColor="@color/function_text_color"
+                                android:textSize="23sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="2dp"
+                                android:layout_toStartOf="@id/icMoreRecentPublic"
+                                android:fontFamily="@font/roboto"
+                                android:text="Thêm"
+                                android:textColor="@color/function_text_color"
+                                android:textSize="14sp" />
+
+                            <ImageView
+                                android:id="@+id/icMoreRecentPublic"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginBottom="10dp"
+                                android:src="@drawable/ic_more" />
+                        </RelativeLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/listRecentPublish"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+                    <!--Kết thúc layout phần bài hát mới phát hành-->
+
+                    <!--Layout danh sách phát-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_alignParentTop="true"
+                                android:fontFamily="@font/roboto_medium"
+                                android:text="Danh Sách Phát"
+                                android:textColor="@color/function_text_color"
+                                android:textSize="23sp" />
+
+                            <TextView
+                                android:id="@+id/titleMorePlayList"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="2dp"
+                                android:layout_toStartOf="@id/icMorePlayList"
+                                android:fontFamily="@font/roboto"
+                                android:text="Thêm"
+                                android:textColor="@color/function_text_color"
+                                android:textSize="14sp" />
+
+                            <ImageView
+                                android:id="@+id/icMorePlayList"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginBottom="10dp"
+                                android:src="@drawable/ic_more" />
+                        </RelativeLayout>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/listPlayList"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+                    <!--Kết thúc layout phần danh sách phát-->
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </RelativeLayout>
+    </eightbitlab.com.blurview.BlurView>
 </FrameLayout>

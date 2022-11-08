@@ -19,6 +19,7 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.fragments.HomeFragment;
 import com.example.assignment_pro1121_nhom3.fragments.PlayerFragment;
 import com.example.assignment_pro1121_nhom3.fragments.UserFragment;
+import com.example.assignment_pro1121_nhom3.models.User;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -27,6 +28,9 @@ import com.google.android.material.navigation.NavigationBarView;
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigation;
     int state = 1;
+    HomeFragment homeFragment;
+    UserFragment userFragment;
+    PlayerFragment playerFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
         // đổi màu của status bar
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         //
+        // khai báo các fragment
+        homeFragment = new HomeFragment();
+        userFragment = new UserFragment();
+        playerFragment = new PlayerFragment();
 
         setContentView(R.layout.activity_main);
         bottomNavigation = findViewById(R.id.bottom_navigation);
@@ -54,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 customRadio.setVisibility(View.GONE);
                 customButtonPlay.setVisibility(View.VISIBLE);
                 bottomNavigation.getMenu().getItem(1).setChecked(true);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, new PlayerFragment(), "PlayerFragment").commit();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, playerFragment, "PlayerFragment").commit();
             }
         });
 
@@ -82,13 +90,17 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.home: {
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, new HomeFragment(), "FragmentHome").commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, homeFragment, "FragmentHome").commit();
+                        break;
+                    }
+                    case R.id.player:{
+                        player.performClick();
                         break;
                     }
                     case R.id.user: {
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, new UserFragment(), "FragmentHome").commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, userFragment, "FragmentHome").commit();
                         break;
                     }
                 }
