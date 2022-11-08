@@ -9,16 +9,26 @@ public class Playlist implements Serializable {
     private ArrayList<String> musicsID;
     private Long modifyDate;
     private Long creationDate;
+    private String urlThumbnail;
 
     public Playlist() {
     }
 
-    public Playlist(String id, String name, ArrayList<String> musicsID, Long modifyDate, Long creationDate) {
+    public Playlist(String id, String name, ArrayList<String> musicsID, Long modifyDate, Long creationDate, String urlThumbnail) {
         this.id = id;
         this.name = name;
         this.musicsID = musicsID;
         this.modifyDate = modifyDate;
         this.creationDate = creationDate;
+        this.urlThumbnail = urlThumbnail;
+    }
+
+    public String getUrlThumbnail() {
+        return urlThumbnail;
+    }
+
+    public void setUrlThumbnail(String urlThumbnail) {
+        this.urlThumbnail = urlThumbnail;
     }
 
     public String getId() {
