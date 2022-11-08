@@ -10,7 +10,13 @@ public interface ItemEvent {
         void onSingerNameClick(String singerID);
     }
 
-    interface PlaylistItemEvent{
+    interface PlaylistItemEvent {
         void onItemClick(Playlist playlist);
+    }
+
+    interface MusicItemInPlayListEvent {
+        void onItemClick(Music music);
+
+        void onMoreClick(Music music);
     }
 }

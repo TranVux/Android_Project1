@@ -9,7 +9,7 @@
     <color name="white">#FFFFFFFF</color>
 
 
-<!--    Màu riêng của dự án-->
+    <!--    Màu riêng của dự án-->
     <color name="white_0.75">#BFFFFFFF</color>
     <color name="bg_btn">#17A3FC</color>
     <color name="text_btn">#fff</color>
@@ -21,4 +21,6 @@
     <color name="bg_activity">#212121</color>
     <color name="function_text_color">#E0E0E0</color>
     <color name="singer_text_color">#A6A6A6</color>
+    <color name="bg_bottom_sheet">#292929</color>
+    <color name="bg_btn_close_bottom_sheet">#323232</color>
 </resources>

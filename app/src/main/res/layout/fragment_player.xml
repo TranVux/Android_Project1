@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -15,10 +16,259 @@
     <eightbitlab.com.blurview.BlurView
         android:id="@+id/blurView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="#48111111">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
+            <RelativeLayout
+                android:id="@+id/layoutTopBar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingHorizontal="26dp"
+                android:paddingBottom="26dp"
+                android:paddingTop="30dp">
+
+                <TextView
+                    android:id="@+id/musicName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:fontFamily="@font/roboto_bold"
+                    android:text="Muộn rồi mà sao còn"
+                    android:textColor="@color/white"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/singerName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/musicName"
+                    android:layout_alignParentStart="true"
+                    android:fontFamily="@font/roboto"
+                    android:text="Sơn Tùng M-TP"
+                    android:textColor="#B0FFFFFF"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/btnSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_search" />
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/imageMusicThumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="360dp"
+                android:layout_below="@+id/layoutTopBar"
+                android:scaleType="centerCrop"
+                android:layout_marginTop="10dp"
+                android:src="@drawable/img" />
+
+            <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/mainContentLayout"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_below="@id/imageMusicThumbnail"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                app:flexDirection="column"
+                app:justifyContent="space_between">
+
+                <RelativeLayout
+                    android:id="@+id/nextMusicLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:paddingHorizontal="15dp">
+
+                    <TextView
+                        android:id="@+id/nextLabel"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentTop="true"
+                        android:fontFamily="@font/roboto_medium"
+                        android:text="Tiếp theo"
+                        android:textColor="#fff"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/moreLabel"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@+id/nextLabel"
+                        android:layout_alignBottom="@id/nextLabel"
+                        android:layout_toStartOf="@id/icMoreMusic"
+                        android:fontFamily="@font/roboto_medium"
+                        android:gravity="end|center_vertical"
+                        android:paddingEnd="5dp"
+                        android:text="Thêm"
+                        android:textColor="@color/function_text_color"
+                        android:textSize="10sp"
+                        tools:ignore="RtlSymmetry" />
+
+                    <ImageView
+                        android:id="@+id/icMoreMusic"
+                        android:layout_width="10dp"
+                        android:layout_height="10dp"
+                        android:layout_alignTop="@id/moreLabel"
+                        android:layout_alignBottom="@+id/moreLabel"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/ic_more" />
+
+                    <LinearLayout
+                        android:id="@+id/nextMusic"
+                        android:layout_width="match_parent"
+                        android:layout_height="80dp"
+                        android:layout_below="@id/nextLabel"
+                        android:layout_marginTop="6dp"
+                        android:background="@drawable/player_bg_next_music"
+                        android:padding="8dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
+
+                            <androidx.cardview.widget.CardView
+                                android:layout_width="63dp"
+                                android:layout_height="63dp"
+                                android:layout_gravity="center_vertical"
+                                app:cardCornerRadius="2dp">
+
+                                <ImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:src="@drawable/img" />
+                            </androidx.cardview.widget.CardView>
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:layout_marginStart="5dp"
+                                android:gravity="center_vertical"
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id="@+id/nextMusicName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:ellipsize="end"
+                                    android:fontFamily="@font/roboto_medium"
+                                    android:maxLines="1"
+                                    android:text="Muộn rồi mà sao còn"
+                                    android:textColor="#fff"
+                                    android:textSize="11sp" />
+
+                                <TextView
+                                    android:id="@+id/nextSingerName"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/roboto_medium"
+                                    android:text="Sơn Tùng M-TP"
+                                    android:textColor="#BFFFFFFF"
+                                    android:textSize="11sp" />
+
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:src="@drawable/ic_small_play" />
+
+                                    <TextView
+                                        android:id="@+id/labelMusicView"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginStart="5dp"
+                                        android:fontFamily="@font/roboto_medium"
+                                        android:text="1,2k"
+                                        android:textColor="#BFFFFFFF"
+                                        android:textSize="11sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <com.google.android.flexbox.FlexboxLayout
+                    android:id="@+id/playerControlLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="38dp"
+                    app:alignItems="center"
+                    app:justifyContent="space_between">
+
+                    <LinearLayout
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <ImageView
+                            android:id="@+id/btnPrevious"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_hear_white" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_medium"
+                            android:text="1,2k"
+                            android:textColor="#B0FFFFFF"
+                            android:textSize="11sp" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/btnSkipToPrev"
+                        android:layout_width="55dp"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_prev_player" />
+
+                    <ImageView
+                        android:id="@+id/btnSkipToNext"
+                        android:layout_width="55dp"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_next_player" />
+
+                    <ImageView
+                        android:id="@+id/btnAddToPlaylist"
+                        android:layout_width="55dp"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_playlist_player" />
+                </com.google.android.flexbox.FlexboxLayout>
+
+                <SeekBar
+                    android:id="@+id/timeLine"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:progress="30"
+                    android:progressTint="@color/white"
+                    android:thumbTint="@color/white" />
+
+            </com.google.android.flexbox.FlexboxLayout>
+
+        </RelativeLayout>
 
     </eightbitlab.com.blurview.BlurView>
 
-</FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -2,11 +2,17 @@ package com.example.assignment_pro1121_nhom3.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.transition.AutoTransition;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,16 +20,22 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.fragments.HomeFragment;
 import com.example.assignment_pro1121_nhom3.fragments.PlayerFragment;
 import com.example.assignment_pro1121_nhom3.fragments.UserFragment;
+import com.example.assignment_pro1121_nhom3.interfaces.EventInterface;
 import com.example.assignment_pro1121_nhom3.models.User;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationBarView;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigation;
@@ -32,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
     UserFragment userFragment;
     PlayerFragment playerFragment;
 
+    //
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,11 +53,13 @@ public class MainActivity extends AppCompatActivity {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         //
         // khai báo các fragment
+        setContentView(R.layout.activity_main);
+
         homeFragment = new HomeFragment();
         userFragment = new UserFragment();
         playerFragment = new PlayerFragment();
 
-        setContentView(R.layout.activity_main);
+        //bottom navigation
         bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setItemIconTintList(null);
         BottomNavigationMenuView bottomNavigationMenuView = (BottomNavigationMenuView) bottomNavigation.getChildAt(0);
@@ -63,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 customButtonPlay.setVisibility(View.VISIBLE);
                 bottomNavigation.getMenu().getItem(1).setChecked(true);
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, playerFragment, "PlayerFragment").commit();
+                bottomNavigation.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), android.R.color.transparent));
             }
         });
 
@@ -80,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // set layout mặc định cho fragment là màn hình home
-        getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, new HomeFragment(), "FragmentHome").commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, homeFragment, "FragmentHome").commit();
 
         bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -91,16 +108,19 @@ public class MainActivity extends AppCompatActivity {
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
                         getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, homeFragment, "FragmentHome").commit();
+                        bottomNavigation.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.bg_bottom_navigation));
                         break;
                     }
-                    case R.id.player:{
+                    case R.id.player: {
                         player.performClick();
+                        bottomNavigation.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), android.R.color.transparent));
                         break;
                     }
                     case R.id.user: {
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, userFragment, "FragmentHome").commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, userFragment, "FragmentUser").commit();
+                        bottomNavigation.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.bg_bottom_navigation));
                         break;
                     }
                 }
@@ -108,32 +128,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-//    public void fixBottomNavigation(){
-//        if (Build.VERSION.SDK_INT >= 30) {
-//            // Root ViewGroup of my activity
-//            val root = findViewById<ConstraintLayout>(R.id.root)
-//
-//                    ViewCompat.setOnApplyWindowInsetsListener(root) { view, windowInsets ->
-//
-//                    val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-//
-//                // Apply the insets as a margin to the view. Here the system is setting
-//                // only the bottom, left, and right dimensions, but apply whichever insets are
-//                // appropriate to your layout. You can also update the view padding
-//                // if that's more appropriate.
-//
-//                view.layoutParams =  (view.layoutParams as FrameLayout.LayoutParams).apply {
-//                    leftMargin = insets.left
-//                    bottomMargin = insets.bottom
-//                    rightMargin = insets.right
-//                }
-//
-//                // Return CONSUMED if you don't want want the window insets to keep being
-//                // passed down to descendant views.
-//                WindowInsetsCompat.CONSUMED
-//            }
-//
-//        }
-//    }
 }
