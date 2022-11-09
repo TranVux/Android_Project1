@@ -30,13 +30,11 @@
         <item name="android:textSize">11sp</item>
     </style>
     <!---->
-<!--tạo SplashScreen-->
-    <style name="Splash" parent="Theme.AppCompat.Light.NoActionBar">
+    <!--tạo SplashScreen-->
+    <style name="Splash" parent="Theme.Assignment_PRO1121_Nhom3">
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowActionBar">false</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@drawable/manhinhdau</item>
+        <item name="android:windowBackground">@drawable/splass_screem</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
-<!---->
+    <!---->
 </resources>

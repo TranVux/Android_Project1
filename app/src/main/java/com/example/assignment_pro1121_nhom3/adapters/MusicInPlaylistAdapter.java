@@ -79,9 +79,9 @@ public class MusicInPlaylistAdapter extends RecyclerView.Adapter<MusicInPlaylist
     }
 
     public static class MusicInPlaylistViewHolder extends RecyclerView.ViewHolder {
-        ImageView musicThumbnail, btnMoreOption;
+        ImageView musicThumbnail;
         TextView singerName, musicName, views;
-        LinearLayout itemMusic;
+        LinearLayout itemMusic, btnMoreOption;
 
         public MusicInPlaylistViewHolder(@NonNull View itemView) {
             super(itemView);

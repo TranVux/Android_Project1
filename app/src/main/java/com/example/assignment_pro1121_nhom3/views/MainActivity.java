@@ -67,12 +67,12 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 customButtonPlay.setVisibility(View.VISIBLE);
                 bottomNavigation.getMenu().getItem(1).setChecked(true);
                 getSupportFragmentManager().beginTransaction()
-                        .setCustomAnimations(
-                                R.anim.slide_enter_right_to_left,  // enter
-                                R.anim.slide_exit_right_to_left,  // exit
-                                R.anim.slide_enter_left_to_right,   // popEnter
-                                R.anim.slide_exit_left_to_right  // popExit
-                        )
+//                        .setCustomAnimations(
+//                                R.anim.slide_enter_right_to_left,  // enter
+//                                R.anim.slide_exit_right_to_left,  // exit
+//                                R.anim.slide_enter_left_to_right,   // popEnter
+//                                R.anim.slide_exit_left_to_right  // popExit
+//                        )
                         .replace(R.id.fragmentLayout, playerFragment, "PlayerFragment").commit();
             }
         });
@@ -102,12 +102,12 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
                         getSupportFragmentManager().beginTransaction()
-                                .setCustomAnimations(
-                                        R.anim.slide_enter_right_to_left,  // enter
-                                        R.anim.slide_exit_right_to_left,  // exit
-                                        R.anim.slide_enter_left_to_right,   // popEnter
-                                        R.anim.slide_exit_left_to_right  // popExit
-                                )
+//                                .setCustomAnimations(
+//                                        R.anim.slide_enter_right_to_left,  // enter
+//                                        R.anim.slide_exit_right_to_left,  // exit
+//                                        R.anim.slide_enter_left_to_right,   // popEnter
+//                                        R.anim.slide_exit_left_to_right  // popExit
+//                                )
                                 .replace(R.id.fragmentLayout, homeFragment, "FragmentHome").commit();
                         break;
                     }
@@ -119,12 +119,12 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
                         getSupportFragmentManager().beginTransaction()
-                                .setCustomAnimations(
-                                        R.anim.slide_enter_right_to_left,  // enter
-                                        R.anim.slide_exit_right_to_left,  // exit
-                                        R.anim.slide_enter_left_to_right,   // popEnter
-                                        R.anim.slide_exit_left_to_right  // popExit
-                                )
+//                                .setCustomAnimations(
+//                                        R.anim.slide_enter_right_to_left,  // enter
+//                                        R.anim.slide_exit_right_to_left,  // exit
+//                                        R.anim.slide_enter_left_to_right,   // popEnter
+//                                        R.anim.slide_exit_left_to_right  // popExit
+//                                )
                                 .replace(R.id.fragmentLayout, userFragment, "FragmentUser").commit();
                         break;
                     }
