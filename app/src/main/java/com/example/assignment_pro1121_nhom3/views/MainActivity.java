@@ -7,6 +7,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,15 +15,20 @@ import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
+import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.fragments.HomeFragment;
 import com.example.assignment_pro1121_nhom3.fragments.PlayerFragment;
 import com.example.assignment_pro1121_nhom3.fragments.UserFragment;
+import com.example.assignment_pro1121_nhom3.models.Music;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigation;
@@ -34,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
         // đổi màu của status bar
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         //
+        MusicDAO musicDAO = new MusicDAO();
+        ArrayList<Music> list = musicDAO.getAllData();
+        Toast.makeText(this, list.toString(), Toast.LENGTH_SHORT).show();
 
         setContentView(R.layout.activity_main);
         bottomNavigation = findViewById(R.id.bottom_navigation);
@@ -96,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
 
 //    public void fixBottomNavigation(){
 //        if (Build.VERSION.SDK_INT >= 30) {
