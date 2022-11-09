@@ -37,4 +37,9 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <!---->
+
+    <style name="ThemeSubActivity" parent="Theme.Assignment_PRO1121_Nhom3">
+        <item name="android:statusBarColor">@color/status_bar</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
 </resources>

@@ -1,6 +1,7 @@
 package com.example.assignment_pro1121_nhom3.fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -35,6 +36,7 @@ import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
+import com.example.assignment_pro1121_nhom3.views.SingerActivity;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -195,6 +197,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onSingerNameClick(String singerID) {
                 Toast.makeText(requireContext(), singerID, Toast.LENGTH_SHORT).show();
+                requireContext().startActivity(new Intent(requireContext(), SingerActivity.class));
             }
         });
 
