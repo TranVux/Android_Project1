@@ -30,9 +30,11 @@ import com.denzcoskun.imageslider.models.SlideModel;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.MusicRecentPublishAdapter;
 import com.example.assignment_pro1121_nhom3.adapters.PlayListMusicAdapter;
+import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
+import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -70,6 +72,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     //nút chuyển sang các màn hình khác (bxh, nghệ sĩ,...)
     LinearLayout btnBxh, btnArtis, btnPlaylist, btnCatogory;
+
+    //xử lý đổi màu bottom navigation
+    HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
+
+    public HomeFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
+        this.handleChangeColorBottomNavigation = handleChangeColorBottomNavigation;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -253,6 +262,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         imageSlider.startSliding(2500);
+        handleChangeColorBottomNavigation.toColor();
         Log.d(TAG, "onResume: ");
     }
 
@@ -260,6 +270,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onDestroy() {
         super.onDestroy();
         Log.d(TAG, "onDestroy: ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
     }
 
     @SuppressLint("NonConstantResourceId")

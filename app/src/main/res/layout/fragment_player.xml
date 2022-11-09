@@ -64,13 +64,14 @@
 
             </RelativeLayout>
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageMusicThumbnail"
-                android:layout_width="match_parent"
-                android:layout_height="360dp"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
                 android:layout_below="@+id/layoutTopBar"
+                android:layout_centerHorizontal="true"
                 android:scaleType="centerCrop"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:src="@drawable/img" />
 
             <com.google.android.flexbox.FlexboxLayout
@@ -79,6 +80,7 @@
                 android:layout_height="200dp"
                 android:layout_below="@id/imageMusicThumbnail"
                 android:layout_alignParentStart="true"
+                android:layout_marginTop="50dp"
                 android:layout_alignParentEnd="true"
                 app:flexDirection="column"
                 app:justifyContent="space_between">

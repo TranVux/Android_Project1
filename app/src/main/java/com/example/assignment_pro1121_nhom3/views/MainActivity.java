@@ -2,23 +2,16 @@ package com.example.assignment_pro1121_nhom3.views;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.navigation.Navigation;
 
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.TransitionDrawable;
-import android.os.Build;
 import android.os.Bundle;
-import android.transition.AutoTransition;
-import android.transition.TransitionManager;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowInsets;
-import android.view.WindowInsetsController;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -26,18 +19,13 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.fragments.HomeFragment;
 import com.example.assignment_pro1121_nhom3.fragments.PlayerFragment;
 import com.example.assignment_pro1121_nhom3.fragments.UserFragment;
-import com.example.assignment_pro1121_nhom3.interfaces.EventInterface;
-import com.example.assignment_pro1121_nhom3.models.User;
+import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.navigation.NavigationBarView;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements HandleChangeColorBottomNavigation {
     BottomNavigationView bottomNavigation;
     int state = 1;
     HomeFragment homeFragment;
@@ -53,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         //
         // khai báo các fragment
+        homeFragment = new HomeFragment(this);
+        userFragment = new UserFragment(this);
+        playerFragment = new PlayerFragment(this);
         setContentView(R.layout.activity_main);
 
-        homeFragment = new HomeFragment();
-        userFragment = new UserFragment();
-        playerFragment = new PlayerFragment();
 
         //bottom navigation
         bottomNavigation = findViewById(R.id.bottom_navigation);
@@ -78,8 +66,14 @@ public class MainActivity extends AppCompatActivity {
                 customRadio.setVisibility(View.GONE);
                 customButtonPlay.setVisibility(View.VISIBLE);
                 bottomNavigation.getMenu().getItem(1).setChecked(true);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, playerFragment, "PlayerFragment").commit();
-                bottomNavigation.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), android.R.color.transparent));
+                getSupportFragmentManager().beginTransaction()
+                        .setCustomAnimations(
+                                R.anim.slide_enter_right_to_left,  // enter
+                                R.anim.slide_exit_right_to_left,  // exit
+                                R.anim.slide_enter_left_to_right,   // popEnter
+                                R.anim.slide_exit_left_to_right  // popExit
+                        )
+                        .replace(R.id.fragmentLayout, playerFragment, "PlayerFragment").commit();
             }
         });
 
@@ -107,25 +101,46 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.home: {
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, homeFragment, "FragmentHome").commit();
-                        bottomNavigation.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.bg_bottom_navigation));
+                        getSupportFragmentManager().beginTransaction()
+                                .setCustomAnimations(
+                                        R.anim.slide_enter_right_to_left,  // enter
+                                        R.anim.slide_exit_right_to_left,  // exit
+                                        R.anim.slide_enter_left_to_right,   // popEnter
+                                        R.anim.slide_exit_left_to_right  // popExit
+                                )
+                                .replace(R.id.fragmentLayout, homeFragment, "FragmentHome").commit();
                         break;
                     }
                     case R.id.player: {
                         player.performClick();
-                        bottomNavigation.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), android.R.color.transparent));
                         break;
                     }
                     case R.id.user: {
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, userFragment, "FragmentUser").commit();
-                        bottomNavigation.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.bg_bottom_navigation));
+                        getSupportFragmentManager().beginTransaction()
+                                .setCustomAnimations(
+                                        R.anim.slide_enter_right_to_left,  // enter
+                                        R.anim.slide_exit_right_to_left,  // exit
+                                        R.anim.slide_enter_left_to_right,   // popEnter
+                                        R.anim.slide_exit_left_to_right  // popExit
+                                )
+                                .replace(R.id.fragmentLayout, userFragment, "FragmentUser").commit();
                         break;
                     }
                 }
                 return false;
             }
         });
+    }
+
+    @Override
+    public void toTransparent() {
+        bottomNavigation.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), android.R.color.transparent));
+    }
+
+    @Override
+    public void toColor() {
+        bottomNavigation.setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.bg_bottom_navigation));
     }
 }

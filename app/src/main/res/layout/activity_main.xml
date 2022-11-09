@@ -14,6 +14,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true">
 
+
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fragmentLayout"
             android:layout_width="match_parent"

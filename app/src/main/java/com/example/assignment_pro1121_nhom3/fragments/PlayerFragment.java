@@ -18,8 +18,10 @@ import android.widget.TextView;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.interfaces.EventInterface;
+import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
+import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -37,6 +39,13 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     //Nút thêm dùng để mở lên danh sách bài hát tiếp theo
     TextView labelMoreListMusic;
     ImageView icMoreListMusic;
+
+    //xử lý đổi màu bottom navigation
+    HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
+
+    public PlayerFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
+        this.handleChangeColorBottomNavigation = handleChangeColorBottomNavigation;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,12 +112,19 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: ");
+        handleChangeColorBottomNavigation.toTransparent();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop: ");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
     }
 
     public void handleShowBottomSheet() {

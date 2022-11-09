@@ -10,9 +10,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.assignment_pro1121_nhom3.R;
+import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
+import com.example.assignment_pro1121_nhom3.views.MainActivity;
 
 public class UserFragment extends Fragment {
     public static String TAG = UserFragment.class.getSimpleName();
+
+    //xử lý đổi màu bottom navigation
+    HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
+
+    public UserFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
+        this.handleChangeColorBottomNavigation = handleChangeColorBottomNavigation;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +45,13 @@ public class UserFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: ");
+        handleChangeColorBottomNavigation.toColor();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
     }
 
     @Override
