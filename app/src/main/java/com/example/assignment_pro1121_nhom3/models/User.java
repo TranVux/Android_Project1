@@ -13,6 +13,9 @@ public class User implements Serializable {
     private boolean isDelete;
     private String bio;
 
+    public User() {
+    }
+
     public User(String id, String name, String email, String token, Long creationDate, ArrayList<String> playlistsID, String bio) {
         this.id = id;
         this.name = name;
