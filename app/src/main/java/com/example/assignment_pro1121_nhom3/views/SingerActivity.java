@@ -46,7 +46,7 @@ public class SingerActivity extends AppCompatActivity {
         viewPager.setAdapter(viewPagerForSingerAdapter);
 
         tabLayout.setupWithViewPager(viewPager);
-
+        tabLayout.setSmoothScrollingEnabled(true);
         //custom layout cho tabLayout
         TabLayout.Tab tab1 = tabLayout.getTabAt(0);
         TabLayout.Tab tab2 = tabLayout.getTabAt(1);
