@@ -40,10 +40,6 @@ public class MainActivity extends AppCompatActivity {
         // đổi màu của status bar
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         //
-        MusicDAO musicDAO = new MusicDAO();
-        ArrayList<Music> list = musicDAO.getAllData();
-        Toast.makeText(this, list.toString(), Toast.LENGTH_SHORT).show();
-
         setContentView(R.layout.activity_main);
         bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setItemIconTintList(null);
