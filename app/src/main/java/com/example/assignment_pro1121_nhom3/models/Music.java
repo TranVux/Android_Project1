@@ -8,22 +8,19 @@ public class Music implements Serializable {
     private String url;
     private String thumbnailUrl;
     private Long creationDate;
-    private Long updateDate;
+    private Long modifyDate;
     private String singerName;
     private String singerId;
     private Long views;
     private String genresId;
 
-    public Music() {
-    }
-
-    public Music(String id, String name, String url, String thumbnailUrl, long creationDate, long updateDate, String singerName, String singerId, long views, String genresId) {
+    public Music(String id, String name, String url, String thumbnailUrl, long creationDate, long modifyDate, String singerName, String singerId, long views, String genresId) {
         this.id = id;
         this.name = name;
         this.url = url;
         this.thumbnailUrl = thumbnailUrl;
         this.creationDate = creationDate;
-        this.updateDate = updateDate;
+        this.modifyDate = modifyDate;
         this.singerName = singerName;
         this.singerId = singerId;
         this.views = views;
@@ -70,12 +67,12 @@ public class Music implements Serializable {
         this.creationDate = creationDate;
     }
 
-    public Long getUpdateDate() {
-        return updateDate;
+    public Long getModifyDate() {
+        return modifyDate;
     }
 
-    public void setUpdateDate(long updateDate) {
-        this.updateDate = updateDate;
+    public void setModifyDate(long modifyDate) {
+        this.modifyDate = modifyDate;
     }
 
     public String getSingerName() {
