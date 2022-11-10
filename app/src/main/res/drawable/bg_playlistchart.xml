@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <corners
+        android:topLeftRadius="20dp"
+        android:topRightRadius="20dp"
+        >
+    </corners>
+    <gradient
+        android:gradientRadius="20dp"
+        android:startColor="@color/edt_hint_color"
+        android:endColor="@color/edt_hint_color">
+    </gradient>
+</shape>
