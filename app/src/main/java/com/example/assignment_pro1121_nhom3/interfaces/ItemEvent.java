@@ -2,6 +2,7 @@ package com.example.assignment_pro1121_nhom3.interfaces;
 
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
+import com.example.assignment_pro1121_nhom3.models.Singer;
 
 public interface ItemEvent {
     interface MusicItemEvent {
@@ -18,5 +19,9 @@ public interface ItemEvent {
         void onItemClick(Music music);
 
         void onMoreClick(Music music);
+    }
+
+    interface SingerItemEvent {
+        void onItemClick(Singer singer);
     }
 }

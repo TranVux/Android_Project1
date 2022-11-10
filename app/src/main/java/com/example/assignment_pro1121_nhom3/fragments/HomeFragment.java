@@ -9,11 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.provider.ContactsContract;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,7 +32,7 @@ import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNa
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
-import com.example.assignment_pro1121_nhom3.views.MainActivity;
+import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
 import com.example.assignment_pro1121_nhom3.views.SingerActivity;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
@@ -197,7 +194,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onSingerNameClick(String singerID) {
                 Toast.makeText(requireContext(), singerID, Toast.LENGTH_SHORT).show();
-                requireContext().startActivity(new Intent(requireContext(), SingerActivity.class));
+                requireContext().startActivity(new Intent(requireContext(), DetailSingerActivity.class));
             }
         });
 
@@ -301,7 +298,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             }
             case R.id.btnArtis: {
-                Toast.makeText(requireContext(), "Tới Activity nghệ sĩ", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(requireContext(), "Tới Activity nghệ sĩ", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(requireContext(), SingerActivity.class));
                 break;
             }
             case R.id.btnPlaylist: {

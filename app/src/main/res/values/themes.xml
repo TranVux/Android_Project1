@@ -37,9 +37,16 @@
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
     <!---->
-
+    <!--style của những màn hình ko có bottom navigation-->
     <style name="ThemeSubActivity" parent="Theme.Assignment_PRO1121_Nhom3">
         <item name="android:statusBarColor">@color/status_bar</item>
         <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!--    style của tab layout-->
+    <style name="TabLayoutStyle" parent="Base.Widget.Design.TabLayout">
+        <item name="android:textSize">25sp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="fontFamily">@font/roboto_medium</item>
     </style>
 </resources>
