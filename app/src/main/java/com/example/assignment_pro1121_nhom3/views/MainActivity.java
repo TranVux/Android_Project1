@@ -20,6 +20,7 @@ import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.fragments.HomeFragment;
 import com.example.assignment_pro1121_nhom3.fragments.PlayerFragment;
 import com.example.assignment_pro1121_nhom3.fragments.UserFragment;
+import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -135,32 +136,13 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         });
     }
 
-    // public void fixBottomNavigation(){
-    // if (Build.VERSION.SDK_INT >= 30) {
-    // // Root ViewGroup of my activity
-    // val root = findViewById<ConstraintLayout>(R.id.root)
-    //
-    // ViewCompat.setOnApplyWindowInsetsListener(root) { view, windowInsets ->
-    //
-    // val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-    //
-    // // Apply the insets as a margin to the view. Here the system is setting
-    // // only the bottom, left, and right dimensions, but apply whichever insets
-    // are
-    // // appropriate to your layout. You can also update the view padding
-    // // if that's more appropriate.
-    //
-    // view.layoutParams = (view.layoutParams as FrameLayout.LayoutParams).apply {
-    // leftMargin = insets.left
-    // bottomMargin = insets.bottom
-    // rightMargin = insets.right
-    // }
-    //
-    // // Return CONSUMED if you don't want want the window insets to keep being
-    // // passed down to descendant views.
-    // WindowInsetsCompat.CONSUMED
-    // }
-    //
-    // }
-    // }
+    @Override
+    public void toTransparent() {
+
+    }
+
+    @Override
+    public void toColor() {
+
+    }
 }
