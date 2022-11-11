@@ -7,6 +7,22 @@
     android:background="@color/bg_activity"
     tools:context=".fragments.HomeFragment">
 
+    <LinearLayout
+        android:id="@+id/progressBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#32000000"
+        android:elevation="10dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:indeterminateDrawable="@drawable/style_progress_bar" />
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/imageForeground"
         android:layout_width="match_parent"
@@ -108,9 +124,9 @@
                     <com.google.android.flexbox.FlexboxLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:justifyContent="space_between"
+                        android:paddingTop="15dp"
                         app:alignItems="center"
-                        android:paddingTop="15dp">
+                        app:justifyContent="space_between">
 
                         <LinearLayout
                             android:id="@+id/btnBxh"

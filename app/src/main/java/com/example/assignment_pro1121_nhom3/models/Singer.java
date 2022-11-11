@@ -8,6 +8,9 @@ public class Singer implements Serializable {
     private String avtUrl;
     private String desc;
 
+    public Singer() {
+    }
+
     public Singer(String id, String name, String avtUrl, String desc) {
         this.id = id;
         this.name = name;

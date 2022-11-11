@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,10 +30,14 @@ import com.denzcoskun.imageslider.models.SlideModel;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.MusicRecentPublishAdapter;
 import com.example.assignment_pro1121_nhom3.adapters.PlayListMusicAdapter;
+import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
+import com.example.assignment_pro1121_nhom3.dao.PlaylistDAO;
 import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
+import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
+import com.example.assignment_pro1121_nhom3.utils.GridSpacingItemDecoration;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
 import com.example.assignment_pro1121_nhom3.views.SingerActivity;
 import com.google.android.flexbox.FlexDirection;
@@ -60,8 +66,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     //RecyclerView của danh sách phát và mới phát hành
     RecyclerView rclPlaylist, rclRecentPublish;
-    ArrayList<Music> listRecentPublish;
-    ArrayList<Playlist> listPlaylist;
+    ArrayList<Music> listRecentPublish = new ArrayList<>();
+    ArrayList<Playlist> listPlaylist = new ArrayList<>();
     MusicRecentPublishAdapter musicRecentPublishAdapter;
     PlayListMusicAdapter playListMusicAdapter;
 
@@ -74,6 +80,16 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     //xử lý đổi màu bottom navigation
     HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
+
+    //DAO lấy dữ liệu music
+    MusicDAO musicDAO;
+
+    //DAO lấy dữ liệu của playlist
+    PlaylistDAO playlistDAO;
+
+    //xử lý progressbar
+    LinearLayout progressBarLayout;
+    ProgressBar progressBar;
 
     public HomeFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
         this.handleChangeColorBottomNavigation = handleChangeColorBottomNavigation;
@@ -96,6 +112,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         //thiết lập cơ bản, ánh xạ view cho fragment
+        musicDAO = new MusicDAO();
+        playlistDAO = new PlaylistDAO();
         init(view);
 
         // làm mờ background fragment
@@ -156,6 +174,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         btnArtis = view.findViewById(R.id.btnArtis);
         btnCatogory = view.findViewById(R.id.btnCategory);
         btnPlaylist = view.findViewById(R.id.btnPlaylist);
+        progressBar = view.findViewById(R.id.progressBar);
+        progressBarLayout = view.findViewById(R.id.progressBarLayout);
 
         //bắt sự kiện onClick cho view
         icMorePlaylist.setOnClickListener(this);
@@ -182,6 +202,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         managerRclPlayList.setJustifyContent(JustifyContent.SPACE_BETWEEN);
         managerRclPlayList.setFlexWrap(FlexWrap.WRAP);
 
+//        GridLayoutManager gridLayoutManagerRclRecentPublish = new GridLayoutManager(requireContext(), 3);
+//        GridLayoutManager gridLayoutManagerRclPlayList = new GridLayoutManager(requireContext(), 3);
+
         rclRecentPublish.setLayoutManager(managerRclRecentPublish);
         rclPlaylist.setLayoutManager(managerRclPlayList);
 
@@ -207,9 +230,50 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         rclRecentPublish.setAdapter(musicRecentPublishAdapter);
         rclPlaylist.setAdapter(playListMusicAdapter);
-        setDataForList();
-        musicRecentPublishAdapter.setList(listRecentPublish);
-        playListMusicAdapter.setList(listPlaylist);
+//        setDataForList();
+        musicDAO.getInitMusicItem(new IOnProgressBarStatusListener() {
+            @Override
+            public void beforeGetData() {
+            }
+
+            @Override
+            public void afterGetData() {
+                if (listPlaylist.size() != 0 && listRecentPublish.size() != 0) {
+                    progressBarLayout.setVisibility(View.GONE);
+                }
+            }
+        }, 3, new MusicDAO.GetInitDataMusic() {
+            @Override
+            public void onGetInitData(ArrayList<Music> list) {
+                listRecentPublish = list;
+                musicRecentPublishAdapter.setList(listRecentPublish);
+            }
+        });
+
+        playlistDAO.getInitDataList(new IOnProgressBarStatusListener() {
+            @Override
+            public void beforeGetData() {
+            }
+
+            @Override
+            public void afterGetData() {
+                if (listPlaylist.size() != 0 && listRecentPublish.size() != 0) {
+                    progressBarLayout.setVisibility(View.GONE);
+                }
+            }
+        }, new PlaylistDAO.GetInitMusicPlayList() {
+            @Override
+            public void onSuccessGetInitPlayList(ArrayList<Playlist> list) {
+                listPlaylist = list;
+                playListMusicAdapter.setList(listPlaylist);
+            }
+
+            @Override
+            public void onFailureGetInitPlayList(Exception e) {
+                e.printStackTrace();
+            }
+        }, 3);
+
     }
 
     public void FakeDataSlide() {
@@ -223,26 +287,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     public void setDataForList() {
-        listRecentPublish = new ArrayList<>();
+//        listRecentPublish = new ArrayList<>();
         listPlaylist = new ArrayList<>();
-
-        //thêm dữ liệu cho listRecentPublish
-        listRecentPublish.add(new Music("2OfAAhxDFTf3TqlKu4AM", "Nơi này có anh",
-                "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Musics%2FNoi-Nay-Co-Anh-Masew-Bootleg-Son-Tung-M-TP-Masew.mp3?alt=media&token=aba5a5d8-9133-4568-81d1-18c5fbbb5d37",
-                "https://photo-resize-zmp3.zmdcdn.me/w600_r1x1_webp/covers/c/b/cb61528885ea3cdcd9bdb9dfbab067b1_1504988884.jpg",
-                1667278226, 1667278226, "Sơn tùng M-TP", "1CV6SRGg7uxj0W1bsBu8", 1011, "SSrKhRc2FHzGIyLxjU5w"));
-        listRecentPublish.add(new Music("2OfAAhxDFTf3TqlKu4AM", "Nơi này có anh",
-                "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Musics%2FNoi-Nay-Co-Anh-Masew-Bootleg-Son-Tung-M-TP-Masew.mp3?alt=media&token=aba5a5d8-9133-4568-81d1-18c5fbbb5d37",
-                "https://data.chiasenhac.com/data/cover/124/123404.jpg",
-                1667278226, 1667278226, "Binz", "1CV6SRGg7uxj0W1bsBu8", 10, "SSrKhRc2FHzGIyLxjU5w"));
-        listRecentPublish.add(new Music("2OfAAhxDFTf3TqlKu4AM", "Big City Boi",
-                "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Musics%2FNoi-Nay-Co-Anh-Masew-Bootleg-Son-Tung-M-TP-Masew.mp3?alt=media&token=aba5a5d8-9133-4568-81d1-18c5fbbb5d37",
-                "https://data.chiasenhac.com/data/cover/118/117188.jpg",
-                1667278226, 1667278226, "MIN", "1CV6SRGg7uxj0W1bsBu8", 101, "SSrKhRc2FHzGIyLxjU5w"));
-        listRecentPublish.add(new Music("2OfAAhxDFTf3TqlKu4AM", "Chạy khỏi thế giới này",
-                "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Musics%2FNoi-Nay-Co-Anh-Masew-Bootleg-Son-Tung-M-TP-Masew.mp3?alt=media&token=aba5a5d8-9133-4568-81d1-18c5fbbb5d37",
-                "https://data.chiasenhac.com/data/cover/169/168211.jpg",
-                1667278226, 1667278226, "DALAB", "1CV6SRGg7uxj0W1bsBu8", 1011, "SSrKhRc2FHzGIyLxjU5w"));
 
         //thêm dữ liệu cho listPlaylist
         listPlaylist.add(new Playlist("OGYOj3aeIdT0LsxkPwi4", "US - UK songs", null, 1667278226L, 1667278226L, "https://avatar-ex-swe.nixcdn.com/singer/avatar/2017/11/18/7/a/1/0/1510943948217_600.jpg", "V"));
