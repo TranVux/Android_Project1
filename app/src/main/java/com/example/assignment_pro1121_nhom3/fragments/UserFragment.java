@@ -2,6 +2,8 @@ package com.example.assignment_pro1121_nhom3.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -16,7 +18,7 @@ import com.example.assignment_pro1121_nhom3.views.MainActivity;
 public class UserFragment extends Fragment {
     public static String TAG = UserFragment.class.getSimpleName();
 
-    //xử lý đổi màu bottom navigation
+    // xử lý đổi màu bottom navigation
     HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
 
     public UserFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
@@ -26,12 +28,11 @@ public class UserFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_user, container, false);
     }
 
@@ -58,5 +59,10 @@ public class UserFragment extends Fragment {
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop: ");
+    }
+
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
     }
 }
