@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,9 +23,11 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
 
     private Context context;
     private List<Music> list;
+    public ItemChartEvent itemChartEvent;
 
-    public ChartPlaylistAdapter(Context context) {
+    public ChartPlaylistAdapter(Context context, ItemChartEvent itemChartEvent) {
         this.context = context;
+        this.itemChartEvent = itemChartEvent;
     }
 
     public void setData(List<Music> list) {
@@ -35,14 +38,14 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
     @NonNull
     @Override
     public ChartplaylistViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.charts_item,parent,false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.charts_item, parent, false);
         return new ChartplaylistViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ChartplaylistViewHolder holder, int position) {
         Music music = list.get(position);
-        if (music == null){
+        if (music == null) {
             return;
         }
         Glide.with(context).load(list.get(position).getImg()).into(holder.imgSong);
@@ -51,21 +54,27 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
         holder.tvSong.setText(music.getName());
         holder.tvSinger.setText(music.getSingerName());
         holder.tvView.setText(music.getViews().toString());
-
+        holder.chartMusicItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                itemChartEvent.onItemClick(music);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
-        if (list != null){
-            return  list.size();
+        if (list != null) {
+            return list.size();
         }
         return 0;
     }
 
-    public class ChartplaylistViewHolder extends RecyclerView.ViewHolder{
+    public static class ChartplaylistViewHolder extends RecyclerView.ViewHolder {
 
-        private ImageView imgSong;
-        private TextView tvSong,tvSinger,tvView,tvNumber;
+        ImageView imgSong;
+        TextView tvSong, tvSinger, tvView, tvNumber;
+        LinearLayout chartMusicItem;
 
         public ChartplaylistViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -74,6 +83,11 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
             tvSong = itemView.findViewById(R.id.tvSong);
             tvSinger = itemView.findViewById(R.id.tvSinger);
             tvView = itemView.findViewById(R.id.tvView);
+            chartMusicItem = itemView.findViewById(R.id.itemChart);
         }
+    }
+
+    public interface ItemChartEvent {
+        void onItemClick(Music music);
     }
 }
