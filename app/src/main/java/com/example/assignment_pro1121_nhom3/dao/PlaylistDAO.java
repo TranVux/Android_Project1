@@ -26,7 +26,7 @@ public class PlaylistDAO {
     private static final String TAG = PlaylistDAO.class.getName();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public ArrayList<Playlist> getAllDataPlaylist(ReadAllDataPlaylistListener readAllDataPlaylistListener){
+    public void getAllDataPlaylist(ReadAllDataPlaylistListener readAllDataPlaylistListener) {
         ArrayList<Playlist> list = new ArrayList<>();
         db.collection("playlists")
                 .get()
@@ -39,24 +39,57 @@ public class PlaylistDAO {
                                 Map<String, Object> map = document.getData();
                                 String id = document.getId();
                                 String name = (String) map.get("name");
-                                ArrayList<String> musicsID = (ArrayList<String>) map.getOrDefault("musics",null);
-                                Long modifyDate = (Long) map.getOrDefault("modifyDate",0L);
+                                ArrayList<String> musicsID = (ArrayList<String>) map.getOrDefault("musics", null);
+                                Long modifyDate = (Long) map.getOrDefault("modifyDate", 0L);
                                 Long creationDate = (Long) map.get("creationDate");
                                 String urlThumbnail = (String) map.get("urlThumbnail");
-                                Playlist playlist = new Playlist(id,name,musicsID,modifyDate,creationDate,urlThumbnail);
+                                String creatorName = (String) map.get("creatorName");
+                                Playlist playlist = new Playlist(id, name, musicsID, modifyDate, creationDate, urlThumbnail, creatorName);
                                 list.add(playlist);
                             }
-                            Log.d("finish getting documents",list.size()+"");
+                            Log.d("finish getting documents", list.size() + "");
                             readAllDataPlaylistListener.onReadAllDataPlaylistCallback(list);
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
-        return list;
     }
 
-    public void getPlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id, ReadItemPlaylist readItemPlaylist){
+    public void getInitDataList(IOnProgressBarStatusListener iOnProgressBarStatusListener, GetInitMusicPlayList getInitMusicPlayList, int limit) {
+        ArrayList<Playlist> list = new ArrayList<>();
+        iOnProgressBarStatusListener.beforeGetData();
+        db.collection("playlists")
+                .limit(limit)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                Map<String, Object> map = document.getData();
+                                String id = document.getId();
+                                String name = (String) map.get("name");
+                                ArrayList<String> musicsID = (ArrayList<String>) map.getOrDefault("musics", null);
+                                Long modifyDate = (Long) map.getOrDefault("modifyDate", 0L);
+                                Long creationDate = (Long) map.get("creationDate");
+                                String urlThumbnail = (String) map.get("urlThumbnail");
+                                String creatorName = (String) map.get("creatorName");
+                                Playlist playlist = new Playlist(id, name, musicsID, modifyDate, creationDate, urlThumbnail, creatorName);
+                                list.add(playlist);
+                            }
+                            Log.d("finish getting documents", list.size() + "");
+                            getInitMusicPlayList.onSuccessGetInitPlayList(list);
+                            iOnProgressBarStatusListener.afterGetData();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
+    public void getPlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id, ReadItemPlaylist readItemPlaylist) {
         iOnProgressBarStatusListener.beforeGetData();
         Playlist playlist = new Playlist();
         DocumentReference docRef = db.collection("playlists").document(id);
@@ -70,16 +103,18 @@ public class PlaylistDAO {
                         Map<String, Object> map = document.getData();
                         if (map != null) {
                             String name = (String) map.get("name");
-                            ArrayList<String> musicsID = (ArrayList<String>) map.getOrDefault("musics",null);
-                            Long modifyDate = (Long) map.getOrDefault("modifyDate",0L);
-                            Long creationDate = (Long) map.getOrDefault("creationDate",0L);
+                            ArrayList<String> musicsID = (ArrayList<String>) map.getOrDefault("musics", null);
+                            Long modifyDate = (Long) map.getOrDefault("modifyDate", 0L);
+                            Long creationDate = (Long) map.getOrDefault("creationDate", 0L);
                             String urlThumbnail = (String) map.get("urlThumbnail");
+                            String creatorName = (String) map.get("creatorName");
                             playlist.setId(id);
                             playlist.setCreationDate(creationDate);
                             playlist.setModifyDate(modifyDate);
                             playlist.setName(name);
                             playlist.setUrlThumbnail(urlThumbnail);
                             playlist.setMusics(musicsID);
+                            playlist.setCreatorName(creatorName);
                             iOnProgressBarStatusListener.afterGetData();
                             readItemPlaylist.onReadItemPlaylistCallback(playlist);
                         }
@@ -94,14 +129,16 @@ public class PlaylistDAO {
         });
     }
 
-    public void addPlaylist(Playlist playlist, AddPlaylistListener addPlaylistListener){
-        if(playlist != null){
+    public void addPlaylist(Playlist playlist, AddPlaylistListener addPlaylistListener) {
+        if (playlist != null) {
             Map<String, Object> data = new HashMap<>();
             data.put("name", playlist.getName());
             data.put("creationDate", playlist.getCreationDate());
             data.put("modifyDate", playlist.getModifyDate());
             data.put("musics", playlist.getMusics());
             data.put("urlThumbnail", playlist.getUrlThumbnail());
+            data.put("creatorName", playlist.getCreatorName());
+            data.put("isPublic", false);
 
             db.collection("playlists")
                     .add(data)
@@ -122,7 +159,7 @@ public class PlaylistDAO {
         }
     }
 
-    public void deletePlaylist(String id, DeletePlaylistListener deletePlaylistListener){
+    public void deletePlaylist(String id, DeletePlaylistListener deletePlaylistListener) {
         db.collection("playlists").document(id)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -141,7 +178,7 @@ public class PlaylistDAO {
                 });
     }
 
-    public void addItemMusicInPlaylist(String idPlaylist, String idMusicToAdd,AddItemMusicInPlaylistListener addItemMusicInPlaylistListener){
+    public void addItemMusicInPlaylist(String idPlaylist, String idMusicToAdd, AddItemMusicInPlaylistListener addItemMusicInPlaylistListener) {
         DocumentReference documentReference = db.collection("playlists").document(idPlaylist);
         documentReference.update("musics", FieldValue.arrayUnion(idMusicToAdd))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -157,7 +194,8 @@ public class PlaylistDAO {
                     }
                 });
     }
-    public void deleteItemMusicInPlaylist(String idPlaylist,String idMusicToRemove, DeleteItemMusicInPlaylistListener deleteItemMusicInPlaylistListener){
+
+    public void deleteItemMusicInPlaylist(String idPlaylist, String idMusicToRemove, DeleteItemMusicInPlaylistListener deleteItemMusicInPlaylistListener) {
         DocumentReference documentReference = db.collection("playlists").document(idPlaylist);
         documentReference.update("musics", FieldValue.arrayRemove(idMusicToRemove))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -174,7 +212,7 @@ public class PlaylistDAO {
                 });
     }
 
-    public void renamePlaylist(String id,String newName,RenamePlaylistListener renamePlaylistListener){
+    public void renamePlaylist(String id, String newName, RenamePlaylistListener renamePlaylistListener) {
         DocumentReference documentReference = db.collection("playlists").document(id);
         documentReference
                 .update("name", newName)
@@ -194,35 +232,48 @@ public class PlaylistDAO {
                 });
     }
 
-    public interface AddItemMusicInPlaylistListener{
+    public interface AddItemMusicInPlaylistListener {
         void onAddItemMusicInPlaylistSuccessCallback();
+
         void onAddItemMusicInPlaylistFailureCallback(Exception e);
     }
 
-    public interface DeleteItemMusicInPlaylistListener{
+    public interface GetInitMusicPlayList {
+        void onSuccessGetInitPlayList(ArrayList<Playlist> list);
+
+        void onFailureGetInitPlayList(Exception e);
+    }
+
+    public interface DeleteItemMusicInPlaylistListener {
         void onDeleteItemMusicInPlaylistSuccessCallback();
+
         void onDeleteItemMusicInPlaylistFailureCallback(Exception e);
     }
 
-    public interface RenamePlaylistListener{
+    public interface RenamePlaylistListener {
         void onRenamePlaylistSuccessCallback();
+
         void onRenamePlaylistFailureCallback(Exception e);
 
     }
-    public interface DeletePlaylistListener{
+
+    public interface DeletePlaylistListener {
         void onDeletePlaylistSuccessCallback();
+
         void onDeletePlaylistFailureCallback(Exception e);
     }
 
     public interface AddPlaylistListener {
         void onAddPlaylistSuccessCallback(DocumentReference documentReference);
+
         void onAddPlaylistFailureCallback(Exception e);
     }
 
-    public interface ReadAllDataPlaylistListener{
+    public interface ReadAllDataPlaylistListener {
         void onReadAllDataPlaylistCallback(ArrayList<Playlist> list);
     }
-    public interface ReadItemPlaylist{
+
+    public interface ReadItemPlaylist {
         void onReadItemPlaylistCallback(Playlist playlist);
     }
 }

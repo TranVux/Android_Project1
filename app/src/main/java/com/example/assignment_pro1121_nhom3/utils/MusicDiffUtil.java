@@ -43,7 +43,7 @@ public class MusicDiffUtil extends DiffUtil.Callback {
                 Objects.equals(oldList.get(oldItemPosition).getSingerName(), newList.get(newItemPosition).getSingerName()) &&
                 Objects.equals(oldList.get(oldItemPosition).getThumbnailUrl(), newList.get(newItemPosition).getThumbnailUrl()) &&
                 Objects.equals(oldList.get(oldItemPosition).getUrl(), newList.get(newItemPosition).getUrl()) &&
-                Objects.equals(oldList.get(oldItemPosition).getModifyDate(), newList.get(newItemPosition).getModifyDate()) &&
+                Objects.equals(oldList.get(oldItemPosition).getUpdateDate(), newList.get(newItemPosition).getUpdateDate()) &&
                 Objects.equals(oldList.get(oldItemPosition).getViews(), newList.get(newItemPosition).getViews());
     }
 }

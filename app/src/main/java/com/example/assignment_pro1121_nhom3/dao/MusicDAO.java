@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.Query.Direction;
+
 import androidx.annotation.NonNull;
 
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
@@ -15,14 +16,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
 import java.util.Map;
 
 public class MusicDAO {
     private static final String TAG = MusicDAO.class.getName();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     //lấy toàn bộ bài hát
-    public ArrayList<Music> getAllDataMusic(ReadAllDataMusic readAllDataMusic){
+    public void getAllDataMusic(ReadAllDataMusic readAllDataMusic) {
         ArrayList<Music> list = new ArrayList<>();
         db.collection("musics")
                 .get()
@@ -38,36 +41,81 @@ public class MusicDAO {
                                 String url = (String) map.get("url");
                                 String thumbnailUrl = (String) map.get("thumbnailUrl");
                                 Long creationDate = (Long) map.get("creationDate");
-                                if(creationDate == null){
+                                if (creationDate == null) {
                                     creationDate = 0L;
                                 }
                                 Long updateDate = (Long) map.get("modifyDate");
-                                if(updateDate == null){
+                                if (updateDate == null) {
                                     updateDate = 0L;
                                 }
                                 String singerName = (String) map.get("singerName");
                                 String singerId = (String) map.get("singerID");
                                 Long views = (Long) map.get("views");
-                                if(views == null){
+                                if (views == null) {
                                     views = 0L;
                                 }
                                 String genresId = (String) map.get("genresID");
-                                Music music = new Music(id,name,url,thumbnailUrl,creationDate,updateDate,singerName,singerId,views,genresId);
+                                Music music = new Music(id, name, url, thumbnailUrl, creationDate, updateDate, singerName, singerId, views, genresId);
                                 list.add(music);
                             }
-                            Log.d("finish getting documents",list.size()+"");
+                            Log.d("finish getting documents", list.size() + "");
                             readAllDataMusic.onReadAllDataMusicCallback(list);
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
-        return list;
     }
-    //lấy  1 bài hát
-    public void getMusic(IOnProgressBarStatusListener iOnProgressBarStatusListener,String id, ReadItemMusic readItemMusic){
+
+    public void getInitMusicItem(IOnProgressBarStatusListener iOnProgressBarStatusListener, int limitCount, GetInitDataMusic getInitDataMusic) {
+        ArrayList<Music> list = new ArrayList<>();
         iOnProgressBarStatusListener.beforeGetData();
-        Music music = new Music() ;
+        db.collection("musics")
+                .limit(limitCount)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                Map<String, Object> map = document.getData();
+                                String id = document.getId();
+                                String name = (String) map.get("name");
+                                String url = (String) map.get("url");
+                                String thumbnailUrl = (String) map.get("thumbnailUrl");
+                                Long creationDate = (Long) map.get("creationDate");
+                                if (creationDate == null) {
+                                    creationDate = 0L;
+                                }
+                                Long updateDate = (Long) map.get("modifyDate");
+                                if (updateDate == null) {
+                                    updateDate = 0L;
+                                }
+                                String singerName = (String) map.get("singerName");
+                                String singerId = (String) map.get("singerID");
+                                Long views = (Long) map.get("views");
+                                if (views == null) {
+                                    views = 0L;
+                                }
+                                String genresId = (String) map.get("genresID");
+                                Music music = new Music(id, name, url, thumbnailUrl, creationDate, updateDate, singerName, singerId, views, genresId);
+                                list.add(music);
+                            }
+                            Log.d("finish getting documents", list.size() + "");
+                            getInitDataMusic.onGetInitData(list);
+                            iOnProgressBarStatusListener.afterGetData();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
+    //lấy  1 bài hát
+    public void getMusic(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id, ReadItemMusic readItemMusic) {
+        iOnProgressBarStatusListener.beforeGetData();
+        Music music = new Music();
         DocumentReference docRef = db.collection("musics").document(id);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -83,17 +131,17 @@ public class MusicDAO {
                             String url = (String) map.get("url");
                             String thumbnailUrl = (String) map.get("thumbnailUrl");
                             Long creationDate = (Long) map.get("creationDate");
-                            if(creationDate == null){
+                            if (creationDate == null) {
                                 creationDate = 0L;
                             }
                             Long updateDate = (Long) map.get("updateDate");
-                            if(updateDate == null){
+                            if (updateDate == null) {
                                 updateDate = 0L;
                             }
                             String singerName = (String) map.get("singerName");
                             String singerId = (String) map.get("singerID");
                             Long views = (Long) map.get("views");
-                            if(views == null){
+                            if (views == null) {
                                 views = 0L;
                             }
                             String genresId = (String) map.get("genresID");
@@ -121,36 +169,36 @@ public class MusicDAO {
         });
     }
 
-    public ArrayList<Music> getTopMusic10(GetTop10Listener getTop10Listener){
+    public void getTopMusic10(GetTop10Listener getTop10Listener) {
         ArrayList<Music> list = new ArrayList<>();
         CollectionReference collectionReference = db.collection("musics");
-        collectionReference.orderBy("views",Direction.DESCENDING).limit(10).get()
+        collectionReference.orderBy("views", Direction.DESCENDING).limit(10).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if(task.isSuccessful()){
-                            for(QueryDocumentSnapshot document : task.getResult()){
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
                                 Map<String, Object> map = document.getData();
                                 String id = document.getId();
                                 String name = (String) map.get("name");
                                 String url = (String) map.get("url");
                                 String thumbnailUrl = (String) map.get("thumbnailUrl");
                                 Long creationDate = (Long) map.get("creationDate");
-                                if(creationDate == null){
+                                if (creationDate == null) {
                                     creationDate = 0L;
                                 }
                                 Long updateDate = (Long) map.get("modifyDate");
-                                if(updateDate == null){
+                                if (updateDate == null) {
                                     updateDate = 0L;
                                 }
                                 String singerName = (String) map.get("singerName");
                                 String singerId = (String) map.get("singerID");
                                 Long views = (Long) map.get("views");
-                                if(views == null){
+                                if (views == null) {
                                     views = 0L;
                                 }
                                 String genresId = (String) map.get("genresID");
-                                Music music = new Music(id,name,url,thumbnailUrl,creationDate,updateDate,singerName,singerId,views,genresId);
+                                Music music = new Music(id, name, url, thumbnailUrl, creationDate, updateDate, singerName, singerId, views, genresId);
                                 list.add(music);
                             }
                             getTop10Listener.onGetTop10Callback(list);
@@ -159,17 +207,21 @@ public class MusicDAO {
                         }
                     }
                 });
-        return list;
     }
 
-    public interface GetTop10Listener{
+    public interface GetTop10Listener {
         void onGetTop10Callback(ArrayList<Music> list);
     }
 
-    public interface ReadAllDataMusic{
+    public interface ReadAllDataMusic {
         void onReadAllDataMusicCallback(ArrayList<Music> list);
     }
-    public interface ReadItemMusic{
+
+    public interface ReadItemMusic {
         void onReadItemMusicCallback(Music music);
+    }
+
+    public interface GetInitDataMusic {
+        void onGetInitData(ArrayList<Music> list);
     }
 }
