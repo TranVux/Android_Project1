@@ -35,7 +35,7 @@ public class Charts extends AppCompatActivity {
     }
     private List<Music> getListMusic(){
         List<Music> list = new ArrayList<>();
-        list.add(new Music("1",R.drawable.img,"CCYLD","MT-P", 1200L));
+        list.add(new Music("1",R.drawable.img,"Có chắc yêu là đây","Sơn Tùng MT-P", 1200L));
         list.add(new Music("2",R.drawable.img,"CCYLD","MT-P", 1200L));
         list.add(new Music("3",R.drawable.img,"CCYLD","MT-P", 1200L));
         list.add(new Music("4",R.drawable.img,"CCYLD","MT-P", 1200L));

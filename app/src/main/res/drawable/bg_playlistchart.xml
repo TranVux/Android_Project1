@@ -6,8 +6,7 @@
         >
     </corners>
     <gradient
-        android:gradientRadius="20dp"
-        android:startColor="@color/edt_hint_color"
-        android:endColor="@color/edt_hint_color">
+        android:startColor="#4DE5E5E5"
+        android:endColor="#4DE5E5E5">
     </gradient>
 </shape>
