@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -195,17 +196,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         FlexboxLayoutManager managerRclRecentPublish = new FlexboxLayoutManager(requireContext());
         managerRclRecentPublish.setFlexDirection(FlexDirection.ROW);
         managerRclRecentPublish.setJustifyContent(JustifyContent.SPACE_BETWEEN);
-        managerRclRecentPublish.setFlexWrap(FlexWrap.WRAP);
+//        managerRclRecentPublish.setFlexWrap(FlexWrap.WRAP);
 
         FlexboxLayoutManager managerRclPlayList = new FlexboxLayoutManager(requireContext());
         managerRclPlayList.setFlexDirection(FlexDirection.ROW);
         managerRclPlayList.setJustifyContent(JustifyContent.SPACE_BETWEEN);
         managerRclPlayList.setFlexWrap(FlexWrap.WRAP);
 
+        LinearLayoutManager rclLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+
 //        GridLayoutManager gridLayoutManagerRclRecentPublish = new GridLayoutManager(requireContext(), 3);
 //        GridLayoutManager gridLayoutManagerRclPlayList = new GridLayoutManager(requireContext(), 3);
 
-        rclRecentPublish.setLayoutManager(managerRclRecentPublish);
+        rclRecentPublish.setLayoutManager(rclLayoutManager);
         rclPlaylist.setLayoutManager(managerRclPlayList);
 
         musicRecentPublishAdapter = new MusicRecentPublishAdapter(listRecentPublish, requireContext(), new ItemEvent.MusicItemEvent() {
@@ -242,7 +245,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     progressBarLayout.setVisibility(View.GONE);
                 }
             }
-        }, 3, new MusicDAO.GetInitDataMusic() {
+        }, 15, new MusicDAO.GetInitDataMusic() {
             @Override
             public void onGetInitData(ArrayList<Music> list) {
                 listRecentPublish = list;

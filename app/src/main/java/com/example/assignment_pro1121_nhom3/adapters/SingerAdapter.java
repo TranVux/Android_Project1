@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,45 +23,66 @@ import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class SingerAdapter extends RecyclerView.Adapter<SingerAdapter.SingerViewHolder> {
-    private ArrayList<Singer> listSinger;
+public class SingerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private ArrayList<Singer> listSinger = new ArrayList<>();
     private Context context;
     private ItemEvent.SingerItemEvent singerItemEvent;
+    public int ITEM_TYPE = 1;
+    public int LOADING_TYPE = 2;
+    boolean isLoadingAdd;
 
-    public SingerAdapter(ArrayList<Singer> listSinger, Context context, ItemEvent.SingerItemEvent singerItemEvent) {
-        this.listSinger = listSinger;
+    public SingerAdapter(Context context, ItemEvent.SingerItemEvent singerItemEvent) {
         this.context = context;
         this.singerItemEvent = singerItemEvent;
     }
 
     @SuppressLint("NotifyDataSetChanged")
     public void setListSinger(ArrayList<Singer> listSinger) {
-        this.listSinger = listSinger;
-        notifyDataSetChanged();
+        int initRange = this.listSinger.size();
+        this.listSinger.addAll(listSinger);
+        notifyItemRangeChanged(initRange, listSinger.size());
+    }
+
+
+    @Override
+    public int getItemViewType(int position) {
+        if (listSinger != null && position == listSinger.size() - 1 && isLoadingAdd) {
+            return LOADING_TYPE;
+        }
+        return ITEM_TYPE;
     }
 
     @NonNull
     @Override
-    public SingerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.layout_singer, parent, false);
-        return new SingerViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == ITEM_TYPE) {
+            View view = LayoutInflater.from(context).inflate(R.layout.layout_singer, parent, false);
+            return new SingerViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(context).inflate(R.layout.layout_loading_item, parent, false);
+            return new LoadingViewHolder(view);
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SingerViewHolder holder, int position) {
-        Singer tempSinger = listSinger.get(position);
-        if (tempSinger == null) return;
-        holder.singerName.setText(CapitalizeWord.CapitalizeWords(tempSinger.getName()));
-        Glide.with(context)
-                .load(tempSinger.getAvtUrl()).apply(new RequestOptions().override(60, 60))
-                .centerCrop()
-                .into(holder.singerImage);
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                singerItemEvent.onItemClick(tempSinger);
-            }
-        });
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (holder.getItemViewType() == ITEM_TYPE) {
+            SingerViewHolder viewHolder = (SingerViewHolder) holder;
+            Singer tempSinger = listSinger.get(position);
+            if (tempSinger == null) return;
+            viewHolder.singerName.setText(CapitalizeWord.CapitalizeWords(tempSinger.getName()));
+            Glide.with(context)
+                    .load(tempSinger.getAvtUrl()).apply(new RequestOptions().override(60, 60))
+                    .centerCrop()
+                    .error(R.drawable.fallback_img)
+                    .into(viewHolder.singerImage);
+            viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    singerItemEvent.onItemClick(tempSinger);
+                }
+            });
+        }
     }
 
     @Override
@@ -80,6 +102,32 @@ public class SingerAdapter extends RecyclerView.Adapter<SingerAdapter.SingerView
             singerImage = itemView.findViewById(R.id.singerImg);
             singerName = itemView.findViewById(R.id.singerName);
             singerItem = itemView.findViewById(R.id.itemSinger);
+        }
+    }
+
+    public static class LoadingViewHolder extends RecyclerView.ViewHolder {
+        ProgressBar progressBar;
+
+        public LoadingViewHolder(@NonNull View itemView) {
+            super(itemView);
+            progressBar = itemView.findViewById(R.id.progressBar);
+        }
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    public void addFooterLoading() {
+        isLoadingAdd = true;
+        listSinger.add(new Singer("", "", "", ""));
+        notifyDataSetChanged();
+    }
+
+    public void removeFooterLoading() {
+        isLoadingAdd = false;
+        int positionLastItem = listSinger.size() - 1;
+        Singer singer = listSinger.get(positionLastItem);
+        if (singer != null) {
+            listSinger.remove(positionLastItem);
+            notifyItemRemoved(positionLastItem);
         }
     }
 }

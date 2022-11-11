@@ -1,13 +1,16 @@
 package com.example.assignment_pro1121_nhom3.views;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.navigation.Navigation;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -33,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     HomeFragment homeFragment;
     UserFragment userFragment;
     PlayerFragment playerFragment;
+    boolean agreeBack = false;
+    private boolean doubleBackToExitPressedOnce = false;
 
     //
 
@@ -147,5 +152,30 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     public void toColor() {
         bottomNavigation
                 .setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.bg_bottom_navigation));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    @Override
+    public void onBackPressed() {
+        if (agreeBack) {
+            super.onBackPressed();
+            return;
+        }
+        agreeBack = true;
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Back thêm lần nữa để thoát", Toast.LENGTH_SHORT).show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 }

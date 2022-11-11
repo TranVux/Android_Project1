@@ -2,6 +2,9 @@ package com.example.assignment_pro1121_nhom3.utils;
 
 public class CapitalizeWord {
     public static String CapitalizeWords(String originalString) {
+        if (originalString.isEmpty()) {
+            return "";
+        }
         StringBuilder result = new StringBuilder();
         String[] words = originalString.trim().split("\\s+");
         for (int i = 0; i < words.length; i++) {
