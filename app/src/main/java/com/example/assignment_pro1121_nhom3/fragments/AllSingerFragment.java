@@ -19,10 +19,12 @@ import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.SingerAdapter;
+import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.dao.SingerDAO;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.interfaces.PaginationScrollListener;
+import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Singer;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
 import com.google.firebase.firestore.Query;

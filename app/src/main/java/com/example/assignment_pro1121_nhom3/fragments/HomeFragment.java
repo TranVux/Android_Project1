@@ -234,7 +234,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         rclRecentPublish.setAdapter(musicRecentPublishAdapter);
         rclPlaylist.setAdapter(playListMusicAdapter);
 //        setDataForList();
-        musicDAO.getInitMusicItem(new IOnProgressBarStatusListener() {
+        musicDAO.getMusicItemWithLimit(new IOnProgressBarStatusListener() {
             @Override
             public void beforeGetData() {
             }
@@ -245,9 +245,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     progressBarLayout.setVisibility(View.GONE);
                 }
             }
-        }, 15, new MusicDAO.GetInitDataMusic() {
+        }, 15, new MusicDAO.GetDataMusicWithLimit() {
             @Override
-            public void onGetInitData(ArrayList<Music> list) {
+            public void onGetLimitData(ArrayList<Music> list) {
                 listRecentPublish = list;
                 musicRecentPublishAdapter.setList(listRecentPublish);
             }

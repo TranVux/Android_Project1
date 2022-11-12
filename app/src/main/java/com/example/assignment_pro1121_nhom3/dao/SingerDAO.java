@@ -1,5 +1,10 @@
 package com.example.assignment_pro1121_nhom3.dao;
 
+import static java.util.Comparator.comparing;
+import static java.util.Comparator.comparingInt;
+import static java.util.stream.Collectors.collectingAndThen;
+import static java.util.stream.Collectors.toCollection;
+
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -9,6 +14,7 @@ import androidx.annotation.NonNull;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Singer;
+import com.example.assignment_pro1121_nhom3.utils.RemoveDuplicateArrayItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,7 +32,13 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class SingerDAO {
     private static final String TAG = SingerDAO.class.getName();
@@ -153,13 +165,44 @@ public class SingerDAO {
 
     }
 
-    public void GetTopSinger(GetTopSinger getTopSinger) {
-        ArrayList<Singer> topSinger = new ArrayList<>();
+    public void getTopSinger(GetTopSinger getTopSinger, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
+        // viết tạm @@
+        ArrayList<Singer> listSinger = new ArrayList<>();
         MusicDAO musicDAO = new MusicDAO();
-        musicDAO.getTopMusic10(new MusicDAO.GetTop10Listener() {
+        // danh sách ID đã lấy dữ liệu
+        ArrayList<String> hadFetch = new ArrayList<>();
+        iOnProgressBarStatusListener.beforeGetData();
+        musicDAO.getMusicDecreaseByView(new MusicDAO.GetMusicDecreaseByView() {
             @Override
-            public void onGetTop10Callback(ArrayList<Music> list) {
+            public void onGetSuccess(ArrayList<Music> list) {
+                for (int i = 0; i < list.size(); i++) {
+                    int positionTemp = i;
+                    String singerID = list.get(positionTemp).getSingerId();
+                    if (!hadFetch.contains(singerID)) {
+                        Log.d(TAG, "onGetSuccess: " + list.get(positionTemp).getViews() + " SingerName: " + list.get(positionTemp).getSingerName());
+                        hadFetch.add(singerID);
+                        getSinger(new IOnProgressBarStatusListener() {
+                            @Override
+                            public void beforeGetData() {
 
+                            }
+
+                            @Override
+                            public void afterGetData() {
+
+                            }
+                        }, list.get(positionTemp).getSingerId(), new ReadItemSinger() {
+                            @Override
+                            public void onReadItemSingerCallback(Singer singer) {
+                                listSinger.add(singer);
+                                if (listSinger.size() == 10) {
+                                    getTopSinger.onGetTopSingersSuccess(listSinger);
+                                    iOnProgressBarStatusListener.afterGetData();
+                                }
+                            }
+                        });
+                    }
+                }
             }
         });
     }

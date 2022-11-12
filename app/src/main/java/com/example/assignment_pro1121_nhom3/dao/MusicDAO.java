@@ -2,7 +2,11 @@ package com.example.assignment_pro1121_nhom3.dao;
 
 import android.util.Log;
 
+import com.google.firebase.firestore.AggregateQuery;
+import com.google.firebase.firestore.AggregateQuerySnapshot;
+import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.Query.Direction;
 
 import androidx.annotation.NonNull;
@@ -18,6 +22,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
 
 public class MusicDAO {
@@ -67,7 +72,7 @@ public class MusicDAO {
                 });
     }
 
-    public void getInitMusicItem(IOnProgressBarStatusListener iOnProgressBarStatusListener, int limitCount, GetInitDataMusic getInitDataMusic) {
+    public void getMusicItemWithLimit(IOnProgressBarStatusListener iOnProgressBarStatusListener, int limitCount, GetDataMusicWithLimit getDataMusicWithLimit) {
         ArrayList<Music> list = new ArrayList<>();
         iOnProgressBarStatusListener.beforeGetData();
         db.collection("musics")
@@ -103,7 +108,7 @@ public class MusicDAO {
                                 list.add(music);
                             }
                             Log.d("finish getting documents", list.size() + "");
-                            getInitDataMusic.onGetInitData(list);
+                            getDataMusicWithLimit.onGetLimitData(list);
                             iOnProgressBarStatusListener.afterGetData();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -111,6 +116,7 @@ public class MusicDAO {
                     }
                 });
     }
+
 
     //lấy  1 bài hát
     public void getMusic(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id, ReadItemMusic readItemMusic) {
@@ -169,6 +175,98 @@ public class MusicDAO {
         });
     }
 
+    public void getMusicDecreaseByView(GetMusicDecreaseByView getMusicDecreaseByView) {
+        getMusicItemWithLimit(new IOnProgressBarStatusListener() {
+            @Override
+            public void beforeGetData() {
+
+            }
+
+            @Override
+            public void afterGetData() {
+
+            }
+        }, 150, new GetDataMusicWithLimit() {
+            @Override
+            public void onGetLimitData(ArrayList<Music> list) {
+                list.sort(Comparator.comparing(Music::getViews).reversed());
+                getMusicDecreaseByView.onGetSuccess(list);
+            }
+        });
+    }
+
+    public void getCountDocumentMusic(GetCountDocument getCountDocument) {
+        CollectionReference collection = db.collection("musics");
+        AggregateQuery countQuery = collection.count();
+        countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                AggregateQuerySnapshot snapshot = task.getResult();
+                getCountDocument.onGetCountSuccess(snapshot.getCount());
+            } else {
+                Log.d(TAG, "Count failed: ", task.getException());
+            }
+        });
+    }
+
+    public void getMusicBySingerId(Query query, String singerID, GetSingerByID getSingerByID, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
+        ArrayList<Music> list = new ArrayList<>();
+        Query dataQuery;
+        if (query == null) {
+            dataQuery = db.collection("musics").whereEqualTo("singerID", singerID).limit(5);
+        } else {
+            dataQuery = query;
+        }
+
+        dataQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful() && task.getResult().size() > 0) {
+                    iOnProgressBarStatusListener.beforeGetData();
+                    DocumentSnapshot lastVisible = task.getResult().getDocuments().get(task.getResult().size() - 1);
+                    Query next = db.collection("musics")
+                            .whereEqualTo("singerID", singerID)
+                            .startAfter(lastVisible)
+                            .limit(5);
+                    getSingerByID.getNextQuery(next);
+
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Log.d(TAG, document.getId() + " => " + document.getData());
+                        Map<String, Object> map = document.getData();
+                        String id = document.getId();
+                        String name = (String) map.get("name");
+                        String url = (String) map.get("url");
+                        String thumbnailUrl = (String) map.get("thumbnailUrl");
+                        Long creationDate = (Long) map.get("creationDate");
+                        if (creationDate == null) {
+                            creationDate = 0L;
+                        }
+                        Long updateDate = (Long) map.get("modifyDate");
+                        if (updateDate == null) {
+                            updateDate = 0L;
+                        }
+                        String singerName = (String) map.get("singerName");
+                        String singerId = (String) map.get("singerID");
+                        Long views = (Long) map.get("views");
+                        if (views == null) {
+                            views = 0L;
+                        }
+                        String genresId = (String) map.get("genresID");
+                        Music music = new Music(id, name, url, thumbnailUrl, creationDate, updateDate, singerName, singerId, views, genresId);
+                        list.add(music);
+                    }
+                    Log.d("finish getting documents", list.size() + "");
+                    // gửi list kết quả ra bên ngoài
+                    getSingerByID.onGetSuccess(list);
+                    // xử lý progress bar
+                    iOnProgressBarStatusListener.afterGetData();
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                    iOnProgressBarStatusListener.afterGetData();
+                }
+            }
+        });
+    }
+
     public void getTopMusic10(GetTop10Listener getTop10Listener) {
         ArrayList<Music> list = new ArrayList<>();
         CollectionReference collectionReference = db.collection("musics");
@@ -209,6 +307,20 @@ public class MusicDAO {
                 });
     }
 
+    public interface GetCountDocument {
+        void onGetCountSuccess(long count);
+    }
+
+    public interface GetSingerByID {
+        void onGetSuccess(ArrayList<Music> list);
+
+        void getNextQuery(Query query);
+    }
+
+    public interface GetMusicDecreaseByView {
+        void onGetSuccess(ArrayList<Music> list);
+    }
+
     public interface GetTop10Listener {
         void onGetTop10Callback(ArrayList<Music> list);
     }
@@ -221,7 +333,7 @@ public class MusicDAO {
         void onReadItemMusicCallback(Music music);
     }
 
-    public interface GetInitDataMusic {
-        void onGetInitData(ArrayList<Music> list);
+    public interface GetDataMusicWithLimit {
+        void onGetLimitData(ArrayList<Music> list);
     }
 }

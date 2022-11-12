@@ -1,6 +1,5 @@
 package com.example.assignment_pro1121_nhom3.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 
 import java.util.ArrayList;
 
@@ -31,10 +31,17 @@ public class MusicInPlaylistAdapter extends RecyclerView.Adapter<MusicInPlaylist
         this.itemInPlayListEvent = itemInPlayListEvent;
     }
 
-    @SuppressLint("NotifyDataSetChanged")
     public void setListMusic(ArrayList<Music> listMusic) {
-        this.listMusic = listMusic;
-        notifyDataSetChanged();
+        int initPosition;
+        if (this.listMusic != null) {
+            initPosition = this.listMusic.size() - 1;
+        } else {
+            initPosition = 0;
+            this.listMusic = new ArrayList<>();
+        }
+
+        this.listMusic.addAll(listMusic);
+        notifyItemChanged(initPosition, listMusic.size());
     }
 
     @NonNull
@@ -48,9 +55,9 @@ public class MusicInPlaylistAdapter extends RecyclerView.Adapter<MusicInPlaylist
     public void onBindViewHolder(@NonNull MusicInPlaylistViewHolder holder, int position) {
         Music tempMusic = listMusic.get(position);
         if (tempMusic == null) return;
-        holder.singerName.setText(tempMusic.getSingerName());
+        holder.singerName.setText(CapitalizeWord.CapitalizeWords(tempMusic.getSingerName()));
         holder.views.setText(String.valueOf(tempMusic.getViews()));
-        holder.musicName.setText(tempMusic.getName());
+        holder.musicName.setText(CapitalizeWord.CapitalizeWords(tempMusic.getName()));
         Glide.with(context).load(tempMusic.getThumbnailUrl())
                 .apply(new RequestOptions().override(63, 63))
                 .error(R.drawable.fallback_img)
