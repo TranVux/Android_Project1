@@ -25,7 +25,8 @@ public class MusicDAO {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     //lấy toàn bộ bài hát
-    public void getAllDataMusic(ReadAllDataMusic readAllDataMusic) {
+    public void getAllDataMusic(IOnProgressBarStatusListener iOnProgressBarStatusListener,ReadAllDataMusic readAllDataMusic) {
+        iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Music> list = new ArrayList<>();
         db.collection("musics")
                 .get()
@@ -59,6 +60,7 @@ public class MusicDAO {
                                 list.add(music);
                             }
                             Log.d("finish getting documents", list.size() + "");
+                            iOnProgressBarStatusListener.afterGetData();
                             readAllDataMusic.onReadAllDataMusicCallback(list);
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -169,7 +171,8 @@ public class MusicDAO {
         });
     }
 
-    public void getTopMusic10(GetTop10Listener getTop10Listener) {
+    public void getTopMusic10(IOnProgressBarStatusListener iOnProgressBarStatusListener, GetTop10Listener getTop10Listener) {
+        iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Music> list = new ArrayList<>();
         CollectionReference collectionReference = db.collection("musics");
         collectionReference.orderBy("views", Direction.DESCENDING).limit(10).get()
@@ -202,6 +205,7 @@ public class MusicDAO {
                                 list.add(music);
                             }
                             getTop10Listener.onGetTop10Callback(list);
+                            iOnProgressBarStatusListener.afterGetData();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }

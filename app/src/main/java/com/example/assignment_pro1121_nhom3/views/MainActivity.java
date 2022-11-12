@@ -26,6 +26,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 public class MainActivity extends AppCompatActivity implements HandleChangeColorBottomNavigation {
     BottomNavigationView bottomNavigation;
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     HomeFragment homeFragment;
     UserFragment userFragment;
     PlayerFragment playerFragment;
-
+    FirebaseFirestore db;
     //
 
     @Override
@@ -41,7 +43,12 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         super.onCreate(savedInstanceState);
         // đổi màu của status bar
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        //
+        // cài đặt để firebase có thể lấy data trong cache
+        db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
         // khai báo các fragment
         homeFragment = new HomeFragment(this);
         userFragment = new UserFragment(this);

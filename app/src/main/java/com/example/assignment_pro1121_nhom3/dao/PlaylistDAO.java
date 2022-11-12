@@ -26,7 +26,8 @@ public class PlaylistDAO {
     private static final String TAG = PlaylistDAO.class.getName();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public void getAllDataPlaylist(ReadAllDataPlaylistListener readAllDataPlaylistListener) {
+    public void getAllDataPlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener,ReadAllDataPlaylistListener readAllDataPlaylistListener) {
+        iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Playlist> list = new ArrayList<>();
         db.collection("playlists")
                 .get()
@@ -49,6 +50,7 @@ public class PlaylistDAO {
                             }
                             Log.d("finish getting documents", list.size() + "");
                             readAllDataPlaylistListener.onReadAllDataPlaylistCallback(list);
+                            iOnProgressBarStatusListener.afterGetData();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -129,8 +131,9 @@ public class PlaylistDAO {
         });
     }
 
-    public void addPlaylist(Playlist playlist, AddPlaylistListener addPlaylistListener) {
+    public void addPlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener,Playlist playlist, AddPlaylistListener addPlaylistListener) {
         if (playlist != null) {
+            iOnProgressBarStatusListener.beforeGetData();
             Map<String, Object> data = new HashMap<>();
             data.put("name", playlist.getName());
             data.put("creationDate", playlist.getCreationDate());
@@ -156,10 +159,12 @@ public class PlaylistDAO {
                             addPlaylistListener.onAddPlaylistFailureCallback(e);
                         }
                     });
+            iOnProgressBarStatusListener.afterGetData();
         }
     }
 
-    public void deletePlaylist(String id, DeletePlaylistListener deletePlaylistListener) {
+    public void deletePlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener,String id, DeletePlaylistListener deletePlaylistListener) {
+        iOnProgressBarStatusListener.beforeGetData();
         db.collection("playlists").document(id)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -176,9 +181,11 @@ public class PlaylistDAO {
                         deletePlaylistListener.onDeletePlaylistFailureCallback(e);
                     }
                 });
+        iOnProgressBarStatusListener.afterGetData();
     }
 
-    public void addItemMusicInPlaylist(String idPlaylist, String idMusicToAdd, AddItemMusicInPlaylistListener addItemMusicInPlaylistListener) {
+    public void addItemMusicInPlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener,String idPlaylist, String idMusicToAdd, AddItemMusicInPlaylistListener addItemMusicInPlaylistListener) {
+        iOnProgressBarStatusListener.beforeGetData();
         DocumentReference documentReference = db.collection("playlists").document(idPlaylist);
         documentReference.update("musics", FieldValue.arrayUnion(idMusicToAdd))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -193,9 +200,11 @@ public class PlaylistDAO {
                         addItemMusicInPlaylistListener.onAddItemMusicInPlaylistFailureCallback(e);
                     }
                 });
+        iOnProgressBarStatusListener.afterGetData();
     }
 
-    public void deleteItemMusicInPlaylist(String idPlaylist, String idMusicToRemove, DeleteItemMusicInPlaylistListener deleteItemMusicInPlaylistListener) {
+    public void deleteItemMusicInPlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener,String idPlaylist, String idMusicToRemove, DeleteItemMusicInPlaylistListener deleteItemMusicInPlaylistListener) {
+        iOnProgressBarStatusListener.beforeGetData();
         DocumentReference documentReference = db.collection("playlists").document(idPlaylist);
         documentReference.update("musics", FieldValue.arrayRemove(idMusicToRemove))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -210,6 +219,7 @@ public class PlaylistDAO {
                         deleteItemMusicInPlaylistListener.onDeleteItemMusicInPlaylistFailureCallback(e);
                     }
                 });
+        iOnProgressBarStatusListener.afterGetData();
     }
 
     public void renamePlaylist(String id, String newName, RenamePlaylistListener renamePlaylistListener) {
