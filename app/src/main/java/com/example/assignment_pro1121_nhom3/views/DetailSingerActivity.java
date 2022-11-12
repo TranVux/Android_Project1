@@ -39,7 +39,7 @@ public class DetailSingerActivity extends AppCompatActivity {
 
     public static final String TAG = DetailSingerActivity.class.getSimpleName();
 
-    private TextView singerNameTopBar, singerNameMain, info, btnLoadMore;
+    private TextView singerNameTopBar, singerNameMain, info, btnLoadMore, amountOfSong;
     private ProgressBar progressBar;
     private LinearLayout playAll;
     private ImageView singerBg;
@@ -66,6 +66,7 @@ public class DetailSingerActivity extends AppCompatActivity {
         info = findViewById(R.id.info);
         rclMusicSuggest = findViewById(R.id.listMusicOfSinger);
         btnLoadMore = findViewById(R.id.btnLoadMore);
+        amountOfSong = findViewById(R.id.amountOfSong);
         progressBar = findViewById(R.id.progressBar);
         //
         ImageView btnBack = findViewById(R.id.btnBack);
@@ -98,18 +99,14 @@ public class DetailSingerActivity extends AppCompatActivity {
                     maxOfData = count;
                     Log.d(TAG, "onGetCountSuccess: " + count);
                     if (maxOfData % limitOfQuery != 0) {
-                        if (maxOfData % limitOfQuery >= 5) {
-                            amountOfQuery = (int) Math.round(Math.ceil(maxOfData % limitOfQuery)) + 1;
-                        } else {
-                            amountOfQuery = (int) Math.round(Math.ceil(maxOfData % limitOfQuery));
-                        }
+                        amountOfQuery = (int) Math.round(Math.ceil(maxOfData / limitOfQuery)) + 1;
                     } else {
                         amountOfQuery = (int) (maxOfData / limitOfQuery);
                     }
-                    Log.d(TAG, "onGetCountSuccess: " + amountOfQuery);
+                    Log.d(TAG, "onGetCountSuccess: " + " count: " + count + " limitQuery: " + limitOfQuery + " amount of query: " + amountOfQuery);
                     getData(receiverSinger.getId());
                 }
-            });
+            }, receiverSinger.getId());
 
             String finalTempDesc = tempDesc;
             info.setOnClickListener(new View.OnClickListener() {
@@ -176,6 +173,7 @@ public class DetailSingerActivity extends AppCompatActivity {
             public void onGetSuccess(ArrayList<Music> list) {
                 Log.d(TAG, "onGetSuccess: " + list.size());
                 musicInPlaylistAdapter.setListMusic(list);
+                amountOfSong.setText(list.size() + " bài");
                 currentQuery++;
             }
 

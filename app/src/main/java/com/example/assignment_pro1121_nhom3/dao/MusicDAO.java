@@ -1,7 +1,10 @@
 package com.example.assignment_pro1121_nhom3.dao;
 
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.AggregateQuery;
 import com.google.firebase.firestore.AggregateQuerySnapshot;
 import com.google.firebase.firestore.AggregateSource;
@@ -195,17 +198,20 @@ public class MusicDAO {
         });
     }
 
-    public void getCountDocumentMusic(GetCountDocument getCountDocument) {
-        CollectionReference collection = db.collection("musics");
-        AggregateQuery countQuery = collection.count();
-        countQuery.get(AggregateSource.SERVER).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                AggregateQuerySnapshot snapshot = task.getResult();
-                getCountDocument.onGetCountSuccess(snapshot.getCount());
-            } else {
-                Log.d(TAG, "Count failed: ", task.getException());
-            }
-        });
+    public void getCountDocumentMusic(GetCountDocument getCountDocument, String singerID) {
+       db.collection("musics").whereEqualTo("singerID", singerID)
+               .get()
+               .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                   @Override
+                   public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                       getCountDocument.onGetCountSuccess(task.getResult().size());
+                   }
+               }).addOnFailureListener(new OnFailureListener() {
+                   @Override
+                   public void onFailure(@NonNull Exception e) {
+                       e.printStackTrace();
+                   }
+               });
     }
 
     public void getMusicBySingerId(Query query, String singerID, GetSingerByID getSingerByID, IOnProgressBarStatusListener iOnProgressBarStatusListener) {

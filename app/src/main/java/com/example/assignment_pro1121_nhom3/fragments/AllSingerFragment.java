@@ -108,9 +108,9 @@ public class AllSingerFragment extends Fragment {
             public void onGetCountSuccess(long count) {
                 countOfData = count;
                 if (countOfData % limitQuery != 0) {
-                    amountOfQuery = (int) Math.round(Math.ceil(countOfData % limitQuery)) + 1;
+                    amountOfQuery = (int) Math.round(Math.ceil(countOfData / limitQuery)) + 1;
                 } else {
-                    amountOfQuery = (int) Math.round(Math.ceil(countOfData % limitQuery));
+                    amountOfQuery = (int) Math.round(Math.ceil(countOfData / limitQuery));
                 }
                 Log.d(TAG, "onGetCountSuccess: " + amountOfQuery + " of: " + count);
                 getData();

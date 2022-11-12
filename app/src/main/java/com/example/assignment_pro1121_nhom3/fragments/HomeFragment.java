@@ -196,19 +196,19 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         FlexboxLayoutManager managerRclRecentPublish = new FlexboxLayoutManager(requireContext());
         managerRclRecentPublish.setFlexDirection(FlexDirection.ROW);
         managerRclRecentPublish.setJustifyContent(JustifyContent.SPACE_BETWEEN);
-//        managerRclRecentPublish.setFlexWrap(FlexWrap.WRAP);
+        managerRclRecentPublish.setFlexWrap(FlexWrap.WRAP);
 
         FlexboxLayoutManager managerRclPlayList = new FlexboxLayoutManager(requireContext());
         managerRclPlayList.setFlexDirection(FlexDirection.ROW);
         managerRclPlayList.setJustifyContent(JustifyContent.SPACE_BETWEEN);
         managerRclPlayList.setFlexWrap(FlexWrap.WRAP);
 
-        LinearLayoutManager rclLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+//        LinearLayoutManager rclLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
 
 //        GridLayoutManager gridLayoutManagerRclRecentPublish = new GridLayoutManager(requireContext(), 3);
 //        GridLayoutManager gridLayoutManagerRclPlayList = new GridLayoutManager(requireContext(), 3);
 
-        rclRecentPublish.setLayoutManager(rclLayoutManager);
+        rclRecentPublish.setLayoutManager(managerRclRecentPublish);
         rclPlaylist.setLayoutManager(managerRclPlayList);
 
         musicRecentPublishAdapter = new MusicRecentPublishAdapter(listRecentPublish, requireContext(), new ItemEvent.MusicItemEvent() {
@@ -245,7 +245,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     progressBarLayout.setVisibility(View.GONE);
                 }
             }
-        }, 15, new MusicDAO.GetDataMusicWithLimit() {
+        }, 3, new MusicDAO.GetDataMusicWithLimit() {
             @Override
             public void onGetLimitData(ArrayList<Music> list) {
                 listRecentPublish = list;
