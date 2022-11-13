@@ -39,6 +39,7 @@ import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.utils.GridSpacingItemDecoration;
+import com.example.assignment_pro1121_nhom3.views.ChartActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
 import com.example.assignment_pro1121_nhom3.views.SingerActivity;
 import com.google.android.flexbox.FlexDirection;
@@ -343,7 +344,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             }
             case R.id.btnBxh: {
-                Toast.makeText(requireContext(), "Tới Activity bảng xếp hạng", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(requireContext(), "Tới Activity bảng xếp hạng", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(requireContext(), ChartActivity.class));
                 break;
             }
             case R.id.btnArtis: {
