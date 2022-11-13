@@ -23,4 +23,5 @@
     <color name="singer_text_color">#A6A6A6</color>
     <color name="bg_bottom_sheet">#292929</color>
     <color name="bg_btn_close_bottom_sheet">#323232</color>
+    <color name="text_color_item_charts">#25B9ED</color>
 </resources>

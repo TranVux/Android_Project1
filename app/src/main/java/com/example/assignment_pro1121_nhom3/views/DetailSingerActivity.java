@@ -26,6 +26,7 @@ import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListe
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Singer;
+import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.firestore.Query;
 
@@ -79,8 +80,8 @@ public class DetailSingerActivity extends AppCompatActivity {
 
         Singer receiverSinger = (Singer) getIntent().getSerializableExtra("singer");
         if (receiverSinger != null) {
-            singerNameMain.setText(receiverSinger.getName());
-            singerNameTopBar.setText(receiverSinger.getName());
+            singerNameMain.setText(CapitalizeWord.CapitalizeWords(receiverSinger.getName()));
+            singerNameTopBar.setText(CapitalizeWord.CapitalizeWords(receiverSinger.getName()));
             Glide.with(getApplicationContext())
                     .load(receiverSinger.getAvtUrl())
                     .centerCrop()

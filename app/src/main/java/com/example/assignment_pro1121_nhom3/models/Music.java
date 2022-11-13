@@ -13,24 +13,6 @@ public class Music implements Serializable {
     private String singerId;
     private Long views;
     private String genresId;
-    // mẫu cho Chart
-    int img;
-
-    public Music(String id,int img, String name,String singerName ,Long views ) {
-        this.id = id;
-        this.name = name;
-        this.singerName = singerName;
-        this.views = views;
-        this.img = img;
-    }
-
-    public int getImg() {
-        return img;
-    }
-
-    public void setImg(int img) {
-        this.img = img;
-    }
 
     public Music() {
     }

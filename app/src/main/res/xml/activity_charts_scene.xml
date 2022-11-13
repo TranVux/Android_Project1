@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="1000">
+       <KeyFrameSet>
+           <KeyAttribute
+               motion:motionTarget="@+id/btnSearchSecond"
+               motion:framePosition="80"
+               android:alpha="0" />
+           <KeyAttribute
+               motion:motionTarget="@+id/btnSearchSecond"
+               motion:framePosition="100"
+               android:alpha="1" />
+           <KeyAttribute
+               motion:motionTarget="@+id/topBarLayout"
+               motion:framePosition="0"
+               android:alpha="1" />
+           <KeyAttribute
+               motion:motionTarget="@+id/topBarLayout"
+               motion:framePosition="80"
+               android:alpha="0" />
+           <KeyAttribute
+               motion:motionTarget="@+id/chart"
+               motion:framePosition="80"
+               android:alpha="0.5" />
+           <KeyAttribute
+               motion:motionTarget="@+id/chart"
+               motion:framePosition="100"
+               android:alpha="0" />
+       </KeyFrameSet>
+        <OnSwipe />
+        <OnSwipe motion:touchAnchorId="@+id/topBarLayout" />
+        <OnSwipe
+            motion:touchAnchorId="@+id/scollView"
+            motion:touchAnchorSide="bottom" />
+        <OnSwipe
+            motion:touchAnchorId="@+id/recyclerview"
+            motion:touchAnchorSide="bottom" />
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/btnSearchSecond"
+            android:elevation="10dp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginEnd="15dp"
+            motion:layout_constraintTop_toBottomOf="@+id/topBarLayout"
+            android:visibility="invisible" />
+        <Constraint
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/chart"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/scollView"
+            android:layout_marginTop="10dp" />
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            motion:layout_constraintRight_toRightOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="-40dp"
+            android:id="@+id/topBarLayout"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp" />
+        <Constraint
+            android:id="@+id/btnSearchSecond"
+            android:elevation="10dp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_marginEnd="15dp"
+            motion:layout_constraintTop_toBottomOf="@+id/topBarLayout"
+            android:visibility="visible"
+            android:layout_marginTop="20dp" />
+        <Constraint
+            android:elevation="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/topBarLayout"
+            android:layout_marginStart="15dp"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/labelBxh"
+            android:layout_marginTop="20dp" />
+        <Constraint
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/chart"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/scollView"
+            android:layout_marginTop="0dp" />
+        <Constraint
+            android:id="@+id/chart"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            motion:layout_constraintTop_toBottomOf="@id/btnSearchSecond"
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp" />
+        <Constraint
+            android:id="@+id/recyclerview"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/chart"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="0dp" />
+        <Constraint
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toBottomOf="@id/chart"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="0dp"
+            android:id="@+id/recyclerview" />
+    </ConstraintSet>
+</MotionScene>
