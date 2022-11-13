@@ -32,7 +32,7 @@
                 android:textSize="18dp" />
 
             <TextView
-                android:id="@+id/button"
+                android:id="@+id/newplaylist"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/bg_edit_text"
