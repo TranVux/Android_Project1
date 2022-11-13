@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="1000">
+        <OnSwipe motion:touchAnchorId="@+id/linearLayout" />
+        <KeyFrameSet >
+            <KeyAttribute
+                motion:motionTarget="@+id/imageView"
+                motion:framePosition="70"
+                android:alpha="0" />
+            <KeyAttribute
+                motion:motionTarget="@+id/circleImageView"
+                motion:framePosition="70"
+                android:alpha="0" />
+            <KeyAttribute
+                motion:motionTarget="@+id/textView"
+                motion:framePosition="70"
+                android:alpha="0" />
+        </KeyFrameSet>
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/txtPlaylist"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="10dp"
+            android:visibility="visible"
+            android:alpha="1"
+            motion:transitionEasing="accelerate"
+            motion:pathMotionArc="startVertical"
+            motion:layout_constraintHorizontal_bias="0.5" />
+        <Constraint
+            android:id="@+id/imageView"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_marginStart="44dp"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="72dp"
+            android:visibility="visible"
+            motion:transitionEasing="accelerate"
+            motion:pathMotionArc="startVertical"
+            android:alpha="0" />
+        <Constraint
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="280dp"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="152dp"
+            android:visibility="visible"
+            motion:pathMotionArc="startVertical"
+            motion:transitionEasing="accelerate"
+            android:alpha="0" />
+        <Constraint
+            android:id="@+id/circleImageView"
+            motion:layout_constraintStart_toEndOf="@+id/imageView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="32dp"
+            motion:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="140dp"
+            android:visibility="visible"
+            motion:transitionEasing="accelerate"
+            motion:pathMotionArc="startVertical"
+            android:alpha="0" />
+        <Constraint
+            android:id="@+id/linearLayout"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintTop_toBottomOf="@+id/constraintLayout4"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:transitionEasing="accelerate"
+            motion:pathMotionArc="startVertical" />
+        <Constraint
+            android:id="@+id/constraintLayout4"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent" />
+        <Constraint
+            android:id="@+id/constraintLayout4"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent" />
+    </ConstraintSet>
+</MotionScene>
