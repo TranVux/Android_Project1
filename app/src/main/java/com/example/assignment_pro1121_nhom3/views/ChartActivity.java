@@ -5,9 +5,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.ChartPlaylistAdapter;
@@ -17,7 +14,7 @@ import com.example.assignment_pro1121_nhom3.models.Music;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Charts extends AppCompatActivity {
+public class ChartActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ChartPlaylistAdapter adapter;
