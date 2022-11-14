@@ -90,7 +90,6 @@
         android:layout_below="@id/labelBxh"
         android:layout_alignParentBottom="true"
         android:layout_marginTop="5dp"
-        android:layout_marginBottom="55dp"
         android:fillViewport="true"
         android:paddingBottom="5dp">
 
@@ -103,6 +102,8 @@
                 android:id="@+id/chart"
                 android:layout_width="match_parent"
                 android:layout_height="135dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
                 android:layout_marginHorizontal="15dp"
                 android:background="@color/bg_btn"
                 android:orientation="vertical" />
