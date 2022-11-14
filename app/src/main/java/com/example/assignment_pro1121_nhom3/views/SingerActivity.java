@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.ViewPagerForSingerAdapter;
+import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.transition.MaterialElevationScale;
 

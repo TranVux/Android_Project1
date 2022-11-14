@@ -1,5 +1,7 @@
 package com.example.assignment_pro1121_nhom3.fragments;
 
+import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+
 import android.annotation.SuppressLint;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -7,25 +9,34 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
+import android.transition.AutoTransition;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.interfaces.EventInterface;
 import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
 import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
+import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderScriptBlur;
@@ -36,21 +47,36 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     // BlurView sẽ làm mở những đối tượng ở ngoài phạm vi của nó
     BlurView backgroundFragment;
 
+    //layout chính
+    CoordinatorLayout parentLayout;
+
     //Nút thêm dùng để mở lên danh sách bài hát tiếp theo
-    TextView labelMoreListMusic;
-    ImageView icMoreListMusic;
+    TextView labelMoreListMusic, musicName, singerName, singerNameNext, musicNameNext, labelViewNextMusic;
+    ImageView icMoreListMusic, imageMusicThumbnail, backgroundImage, btnNext, btnPrev, btnAddToPlayList, imageThumbnailNextMusic;
+    SeekBar timeLine;
 
-    //xử lý đổi màu bottom navigation
-    HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
+    //playlist hiện tại
+    ArrayList<Music> playListMusic;
 
-    public PlayerFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
-        this.handleChangeColorBottomNavigation = handleChangeColorBottomNavigation;
+    // music player hiện tại
+    MusicPlayer musicPlayer = MainActivity.musicPlayer;
+
+    //Tối lưu Glide
+    String oldImage = "";
+
+    public static PlayerFragment newInstance(ArrayList<Music> playListMusic) {
+        PlayerFragment playerFragment = new PlayerFragment();
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("playlist", playListMusic);
+
+        playerFragment.setArguments(bundle);
+        return playerFragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Bundle data = getArguments();
     }
 
     @Override
@@ -67,6 +93,12 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         init(view);
         //
 
+        //Player hiện tại
+
+        setContentInit(musicPlayer.getCurrentSong());
+        oldImage = musicPlayer.getCurrentSong().getThumbnailUrl();
+        setContentForNextMusic(musicPlayer.getNextSong());
+
         // bắt sự kiện click cho view
         setEventClick();
         //
@@ -75,18 +107,47 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         blurBackgroundFragment();
     }
 
+    private void setContentInit(Music music) {
+        TransitionManager.beginDelayedTransition(parentLayout, new AutoTransition());
+        Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(backgroundImage.getDrawable()).into(backgroundImage);
+        Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(imageMusicThumbnail.getDrawable()).into(imageMusicThumbnail);
+        musicName.setText(CapitalizeWord.CapitalizeWords(music.getName()));
+        singerName.setText(CapitalizeWord.CapitalizeWords(music.getSingerName()));
+    }
+
+    public void setContentForNextMusic(Music nextMusic) {
+        TransitionManager.beginDelayedTransition(parentLayout, new AutoTransition());
+        Glide.with(requireContext()).load(nextMusic.getThumbnailUrl()).placeholder(imageMusicThumbnail.getDrawable()).into(imageThumbnailNextMusic);
+        musicNameNext.setText(CapitalizeWord.CapitalizeWords(nextMusic.getName()));
+        singerNameNext.setText(CapitalizeWord.CapitalizeWords(nextMusic.getSingerName()));
+        labelViewNextMusic.setText(String.valueOf(nextMusic.getViews()));
+    }
+    
     private void init(View view) {
+        parentLayout = view.findViewById(R.id.playerLayout);
+        backgroundImage = view.findViewById(R.id.backgroundImage);
         backgroundFragment = view.findViewById(R.id.blurView);
         labelMoreListMusic = view.findViewById(R.id.moreLabel);
+        musicName = view.findViewById(R.id.musicName);
+        singerName = view.findViewById(R.id.singerName);
+        imageMusicThumbnail = view.findViewById(R.id.imageMusicThumbnail);
+        timeLine = view.findViewById(R.id.timeLine);
         icMoreListMusic = view.findViewById(R.id.icMoreMusic);
-//        playerBottomSheet = view.findViewById(R.id.player_bottom_sheet);
-//
-//        bottomSheetBehavior = BottomSheetBehavior.from(playerBottomSheet);
+        btnAddToPlayList = view.findViewById(R.id.btnAddToPlaylist);
+        btnNext = view.findViewById(R.id.btnSkipToNext);
+        btnPrev = view.findViewById(R.id.btnSkipToPrev);
+        singerNameNext = view.findViewById(R.id.nextSingerName);
+        musicNameNext = view.findViewById(R.id.nextMusicName);
+        labelViewNextMusic = view.findViewById(R.id.labelNextMusicView);
+        imageThumbnailNextMusic = view.findViewById(R.id.imageThumbnailNextMusic);
     }
 
     public void setEventClick() {
         labelMoreListMusic.setOnClickListener(this);
         icMoreListMusic.setOnClickListener(this);
+        btnPrev.setOnClickListener(this);
+        btnNext.setOnClickListener(this);
+        btnAddToPlayList.setOnClickListener(this);
     }
 
     private void blurBackgroundFragment() {
@@ -112,7 +173,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "onResume: ");
-        handleChangeColorBottomNavigation.toTransparent();
+        ((MainActivity) requireActivity()).toTransparent();
     }
 
     @Override
@@ -130,7 +191,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public void handleShowBottomSheet() {
         //thêm dữ liệu cho listPlaylist
 
-        MyBottomSheetDialog bottomSheetDialog = MyBottomSheetDialog.newInstance(FakeDataBottomSheet());
+        MyBottomSheetDialog bottomSheetDialog = MyBottomSheetDialog.newInstance(musicPlayer.getPlayListMusic());
         bottomSheetDialog.show(getParentFragmentManager(), "MyBottomSheet");
     }
 
@@ -143,31 +204,27 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
                 handleShowBottomSheet();
                 break;
             }
+            case R.id.btnAddToPlaylist: {
+                Log.d(TAG, "onClick: Add current song into playlist");
+                break;
+            }
+            case R.id.btnSkipToNext: {
+                Log.d(TAG, "onClick: Next");
+                musicPlayer.nextSong(musicPlayer.getCurrentIndexSong());
+                setContentInit(musicPlayer.getCurrentSong());
+                setContentForNextMusic(musicPlayer.getNextSong());
+                break;
+            }
+            case R.id.btnSkipToPrev: {
+                Log.d(TAG, "onClick: Prev");
+                musicPlayer.previousSong(musicPlayer.getCurrentIndexSong());
+                setContentInit(musicPlayer.getCurrentSong());
+                setContentForNextMusic(musicPlayer.getNextSong());
+                break;
+            }
             default: {
                 break;
             }
         }
-    }
-
-    public ArrayList<Music> FakeDataBottomSheet() {
-        ArrayList<Music> listRecentPublish = new ArrayList<>();
-        //thêm dữ liệu cho listRecentPublish
-        listRecentPublish.add(new Music("2OfAAhxDFTf3TqlKu4AM", "Nơi này có anh",
-                "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Musics%2FNoi-Nay-Co-Anh-Masew-Bootleg-Son-Tung-M-TP-Masew.mp3?alt=media&token=aba5a5d8-9133-4568-81d1-18c5fbbb5d37",
-                "https://photo-resize-zmp3.zmdcdn.me/w600_r1x1_webp/covers/c/b/cb61528885ea3cdcd9bdb9dfbab067b1_1504988884.jpg",
-                1667278226, 1667278226, "Sơn tùng M-TP", "1CV6SRGg7uxj0W1bsBu8", 1011, "SSrKhRc2FHzGIyLxjU5w"));
-        listRecentPublish.add(new Music("2OfAAhxDFTf3TqlKu4AM", "Nơi này có anh",
-                "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Musics%2FNoi-Nay-Co-Anh-Masew-Bootleg-Son-Tung-M-TP-Masew.mp3?alt=media&token=aba5a5d8-9133-4568-81d1-18c5fbbb5d37",
-                "https://data.chiasenhac.com/data/cover/124/123404.jpg",
-                1667278226, 1667278226, "Binz", "1CV6SRGg7uxj0W1bsBu8", 10, "SSrKhRc2FHzGIyLxjU5w"));
-        listRecentPublish.add(new Music("2OfAAhxDFTf3TqlKu4AM", "Big City Boi",
-                "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Musics%2FNoi-Nay-Co-Anh-Masew-Bootleg-Son-Tung-M-TP-Masew.mp3?alt=media&token=aba5a5d8-9133-4568-81d1-18c5fbbb5d37",
-                "https://data.chiasenhac.com/data/cover/118/117188.jpg",
-                1667278226, 1667278226, "MIN", "1CV6SRGg7uxj0W1bsBu8", 101, "SSrKhRc2FHzGIyLxjU5w"));
-        listRecentPublish.add(new Music("2OfAAhxDFTf3TqlKu4AM", "Chạy khỏi thế giới này",
-                "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Musics%2FNoi-Nay-Co-Anh-Masew-Bootleg-Son-Tung-M-TP-Masew.mp3?alt=media&token=aba5a5d8-9133-4568-81d1-18c5fbbb5d37",
-                "https://data.chiasenhac.com/data/cover/169/168211.jpg",
-                1667278226, 1667278226, "DALAB", "1CV6SRGg7uxj0W1bsBu8", 1011, "SSrKhRc2FHzGIyLxjU5w"));
-        return listRecentPublish;
     }
 }
