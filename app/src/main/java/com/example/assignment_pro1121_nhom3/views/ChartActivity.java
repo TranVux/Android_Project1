@@ -5,7 +5,12 @@ import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Shader;
 import android.os.Bundle;
+import android.text.TextPaint;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
@@ -32,7 +37,22 @@ public class ChartActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerview);
 //        recyclerView.setNestedScrollingEnabled(false);
 //        recyclerView.getLayoutParams().height = (ITEM_HEIGHT + MARGIN_ITEM) * getListMusic().size();
-        recyclerView.setHasFixedSize(false);
+
+        //text view has color gradient
+        TextView textView = findViewById(R.id.labelBxh);
+        textView.setText("#BXH".toUpperCase());
+
+        TextPaint paint = textView.getPaint();
+        float width = paint.measureText("#BXH");
+
+        Shader textShader = new LinearGradient(0, 0, width, textView.getTextSize(),
+                new int[]{
+                        Color.parseColor("#13DCFE"),
+                        Color.parseColor("#716BFE"),
+                }, null, Shader.TileMode.CLAMP);
+        textView.getPaint().setShader(textShader);
+        //
+
         adapter = new ChartPlaylistAdapter(this, new ChartPlaylistAdapter.ItemChartEvent() {
             @Override
             public void onItemClick(Music music) {

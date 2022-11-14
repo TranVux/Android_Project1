@@ -69,6 +69,7 @@
         android:elevation="10dp"
         android:fontFamily="@font/roboto_medium"
         android:text="@string/text_bxh"
+        android:textColor="#13DCFE"
         android:textSize="23sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topBarLayout" />
@@ -104,6 +105,6 @@
         android:paddingTop="5dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/chart" />
+        app:layout_constraintTop_toBottomOf="@id/chart"/>
 
 </androidx.constraintlayout.motion.widget.MotionLayout>
