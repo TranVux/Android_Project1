@@ -35,7 +35,6 @@ public class ChartActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_charts);
         recyclerView = findViewById(R.id.recyclerview);
-        recyclerView.setNestedScrollingEnabled(false);
 
         //text view has color gradient
         TextView textView = findViewById(R.id.labelBxh);
@@ -64,6 +63,7 @@ public class ChartActivity extends AppCompatActivity {
                 bottomSheet.show(getSupportFragmentManager(), "TAG");
             }
         });
+        recyclerView.setNestedScrollingEnabled(false);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter.setData(getListMusic());
