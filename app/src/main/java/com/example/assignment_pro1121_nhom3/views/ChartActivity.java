@@ -35,8 +35,7 @@ public class ChartActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_charts);
         recyclerView = findViewById(R.id.recyclerview);
-//        recyclerView.setNestedScrollingEnabled(false);
-//        recyclerView.getLayoutParams().height = (ITEM_HEIGHT + MARGIN_ITEM) * getListMusic().size();
+        recyclerView.setNestedScrollingEnabled(false);
 
         //text view has color gradient
         TextView textView = findViewById(R.id.labelBxh);
