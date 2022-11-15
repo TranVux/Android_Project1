@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#292929"
+    android:padding="10dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/jean2"
+                android:layout_marginStart="20dp"/>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Muộn Rồi Mà Sao Còn"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sơn Tùng M-TP"
+                    android:textColor="#D9D9D9"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <RelativeLayout
+                    android:padding="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:layout_marginTop="2dp"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_play_gray" />
+
+                    <TextView
+                        android:layout_marginLeft="30dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#D9D9D9"
+                        android:textSize="16dp"
+                        android:text="1,2k"/>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <ImageView
+                android:layout_marginLeft="20dp"
+                android:layout_width="30dp"
+                android:layout_height="20dp"
+                android:layout_marginVertical="20dp"
+                android:src="@drawable/ic_dot" />
+        </LinearLayout>
+</LinearLayout>
