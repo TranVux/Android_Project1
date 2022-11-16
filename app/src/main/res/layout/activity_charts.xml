@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_chart"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/topBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginHorizontal="15dp"
+        android:layout_marginTop="34dp">
+
+        <LinearLayout
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_alignStart="@+id/buttonSetting"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="7dp"
+            android:layout_toStartOf="@id/buttonSetting"
+            android:background="@drawable/bg_search_bar"
+            android:gravity="center_vertical"
+            android:paddingStart="15dp"
+            tools:ignore="RtlSymmetry">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:src="@drawable/ic_search" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:fontFamily="@font/roboto"
+                android:text="Muộn rồi mà sao còn"
+                android:textColor="@color/edt_hint_color" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/buttonSetting"
+            android:layout_width="27dp"
+            android:layout_height="27dp"
+            android:layout_alignTop="@+id/search_bar"
+            android:layout_alignBottom="@+id/search_bar"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="6dp"
+            android:src="@drawable/ic_setting"
+            tools:ignore="ContentDescription" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/labelBxh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/topBarLayout"
+        android:layout_marginStart="15dp"
+        android:elevation="10dp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/text_bxh"
+        android:textColor="#13DCFE"
+        android:textSize="23sp" />
+
+    <!--    <ImageView-->
+    <!--        android:id="@+id/btnSearchSecond"-->
+    <!--        android:layout_width="27dp"-->
+    <!--        android:layout_height="27dp"-->
+    <!--        android:layout_marginEnd="15dp"-->
+    <!--        android:elevation="10dp"-->
+    <!--        android:src="@drawable/ic_search"-->
+    <!--        app:layout_constraintEnd_toEndOf="parent"-->
+    <!--        app:layout_constraintTop_toBottomOf="@+id/topBarLayout"-->
+    <!--        tools:ignore="ContentDescription" />-->
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/labelBxh"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="55dp"
+        android:fillViewport="true"
+        android:paddingBottom="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/chart"
+                android:layout_width="match_parent"
+                android:layout_height="135dp"
+                android:layout_marginHorizontal="15dp"
+                android:background="@color/bg_btn"
+                android:orientation="vertical" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/bg_playlistchart"
+                android:focusableInTouchMode="false"
+                android:paddingHorizontal="15dp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>

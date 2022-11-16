@@ -10,17 +10,27 @@ public class Playlist implements Serializable {
     private Long modifyDate;
     private Long creationDate;
     private String urlThumbnail;
+    private String creatorName;
 
     public Playlist() {
     }
 
-    public Playlist(String id, String name, ArrayList<String> musicsID, Long modifyDate, Long creationDate, String urlThumbnail) {
+    public Playlist(String id, String name, ArrayList<String> musicsID, Long modifyDate, Long creationDate, String urlThumbnail, String creatorName) {
         this.id = id;
         this.name = name;
         this.musicsID = musicsID;
         this.modifyDate = modifyDate;
         this.creationDate = creationDate;
         this.urlThumbnail = urlThumbnail;
+        this.creatorName = creatorName;
+    }
+
+    public String getCreatorName() {
+        return creatorName;
+    }
+
+    public void setCreatorName(String creatorName) {
+        this.creatorName = creatorName;
     }
 
     public String getUrlThumbnail() {
