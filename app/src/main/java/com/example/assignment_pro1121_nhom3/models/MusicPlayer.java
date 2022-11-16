@@ -14,6 +14,7 @@ public class MusicPlayer implements Serializable {
     public static final String MUSIC_PLAYER_EVENT = "MUSIC_PLAYER_EVENT";
 
     //state của player
+    public static final String MUSIC_PLAYER_STATE_CREATED = "MUSIC_PLAYER_STATE_CREATED";
     public static final String MUSIC_PLAYER_STATE_IDLE = "MUSIC_PLAYER_STATE_IDLE";
     public static final String MUSIC_PLAYER_STATE_PLAYING = "MUSIC_PLAYER_STATE_PLAYING";
     public static final String MUSIC_PLAYER_STATE_DESTROYED = "MUSIC_PLAYER_STATE_DESTROYED";
@@ -25,6 +26,8 @@ public class MusicPlayer implements Serializable {
     public static final int MUSIC_PLAYER_ACTION_PAUSE = 444;
     public static final int MUSIC_PLAYER_ACTION_RESUME = 555;
     public static final int MUSIC_PLAYER_ACTION_DESTROY = 666;
+    public static final int MUSIC_PLAYER_ACTION_COMPLETE = 777;
+    public static final int MUSIC_PLAYER_ACTION_RESET_SONG = 888;
 
     private static MusicPlayer musicPlayer;
     private ArrayList<Music> playListMusic;
@@ -32,10 +35,11 @@ public class MusicPlayer implements Serializable {
     private int currentPositionSong;
     private int durationCurrentSong;
     private String playerState;
+    private MusicPlayerCallback musicPlayerCallback;
 
-
-    public static MusicPlayer getInstance(ArrayList<Music> playListMusic) {
-        if (musicPlayer == null) return new MusicPlayer(playListMusic);
+    public static MusicPlayer getInstance(ArrayList<Music> playListMusic, MusicPlayerCallback musicPlayerCallback) {
+        if (musicPlayer == null)
+            return new MusicPlayer(playListMusic, musicPlayerCallback);
         return musicPlayer;
     }
 
@@ -48,13 +52,14 @@ public class MusicPlayer implements Serializable {
         initState();
     }
 
-    private MusicPlayer(ArrayList<Music> playListMusic) {
+    private MusicPlayer(ArrayList<Music> playListMusic, MusicPlayerCallback musicPlayerCallback) {
         this.playListMusic = playListMusic;
+        this.musicPlayerCallback = musicPlayerCallback;
         initState();
     }
 
     private void initState() {
-        playerState = MUSIC_PLAYER_STATE_IDLE;
+        playerState = MUSIC_PLAYER_STATE_CREATED;
         currentSong = null;
         currentPositionSong = 0;
         durationCurrentSong = 0;
@@ -76,6 +81,7 @@ public class MusicPlayer implements Serializable {
         switch (playerState) {
             case MUSIC_PLAYER_STATE_IDLE:
             case MUSIC_PLAYER_STATE_PLAYING:
+            case MUSIC_PLAYER_STATE_CREATED:
             case MUSIC_PLAYER_STATE_DESTROYED: {
                 this.playerState = playerState;
                 break;
@@ -86,7 +92,7 @@ public class MusicPlayer implements Serializable {
     }
 
     public void start() {
-        if (playListMusic != null) {
+        if (playListMusic != null && playListMusic.size() > 0) {
             currentSong = playListMusic.get(0);
         }
     }
@@ -98,6 +104,18 @@ public class MusicPlayer implements Serializable {
     public int getCurrentIndexSong() {
         if (currentSong != null) return playListMusic.indexOf(currentSong);
         return 0;
+    }
+
+    public void setInitState(boolean isPlay, boolean isStart, boolean isDestroy, boolean isCreated) {
+        if (isPlay && isStart) {
+            this.playerState = MUSIC_PLAYER_STATE_PLAYING;
+        } else if (isStart) {
+            this.playerState = MUSIC_PLAYER_STATE_IDLE;
+        } else if (isCreated) {
+            this.playerState = MUSIC_PLAYER_STATE_CREATED;
+        } else {
+            this.playerState = MUSIC_PLAYER_STATE_DESTROYED;
+        }
     }
 
     public Music getCurrentSong() {
@@ -113,6 +131,14 @@ public class MusicPlayer implements Serializable {
             return playListMusic.get(0);
         }
         return playListMusic.get(getCurrentIndexSong() + 1);
+    }
+
+    public Music getPreviousSong() {
+        if (getCurrentIndexSong() == 0) {
+            return playListMusic.get(getSizeOfPlayList() - 1);
+        } else {
+            return playListMusic.get(getCurrentIndexSong() - 1);
+        }
     }
 
     public int getCurrentPositionSong() {
@@ -145,6 +171,7 @@ public class MusicPlayer implements Serializable {
             nextMusic = playListMusic.get(currentIndex + 1);
         }
         this.currentSong = nextMusic;
+        musicPlayerCallback.onResume();
         Log.d(TAG, "current song is: " + currentSong.getName());
         return nextMusic;
     }
@@ -159,6 +186,7 @@ public class MusicPlayer implements Serializable {
             previousMusic = playListMusic.get(currentIndex - 1);
         }
         this.currentSong = previousMusic;
+        musicPlayerCallback.onResume();
         Log.d(TAG, "current song is: " + currentSong.getName());
         return previousMusic;
     }
@@ -171,12 +199,14 @@ public class MusicPlayer implements Serializable {
     public int resumeSong() {
         if (Objects.equals(playerState, MUSIC_PLAYER_STATE_DESTROYED)) return 0;
         playerState = MUSIC_PLAYER_STATE_PLAYING;
+        musicPlayerCallback.onResume();
         return currentPositionSong;
     }
 
     public void pauseSong(int currentPositionSong) {
         if (Objects.equals(playerState, MUSIC_PLAYER_STATE_DESTROYED)) return;
         playerState = MUSIC_PLAYER_STATE_IDLE;
+        musicPlayerCallback.onPause();
         this.currentPositionSong = currentPositionSong;
     }
 
@@ -186,9 +216,9 @@ public class MusicPlayer implements Serializable {
     }
 
     public interface MusicPlayerCallback {
-//        void playSong(Music music);
-//
-//        void resumeSong(int currentPositionSong, Music currentSong);
+        void onPause();
+
+        void onResume();
 
         void updateSeekBar(int currentPositionSong);
     }

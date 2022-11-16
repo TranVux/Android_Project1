@@ -7,10 +7,13 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.annotation.SuppressLint;
+import android.app.Fragment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,20 +22,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
-import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.fragments.HomeFragment;
 import com.example.assignment_pro1121_nhom3.fragments.PlayerFragment;
 import com.example.assignment_pro1121_nhom3.fragments.UserFragment;
 import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
-import com.example.assignment_pro1121_nhom3.services.EventMusicPlayerService;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -42,19 +45,33 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
 import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements HandleChangeColorBottomNavigation {
+    public static final String TAG = MainActivity.class.getSimpleName();
     BottomNavigationView bottomNavigation;
-    int state = 0;
+    ImageView imageThumbnailCurrentMusic;
+
+    //Trạng thái của nút play 0 là pause 1 là start/resume
+    int stateButtonPlay = 0;
+
+
+    PlayerFragment playerFragment;
     HomeFragment homeFragment;
     UserFragment userFragment;
     boolean agreeBack = false;
     private boolean doubleBackToExitPressedOnce = false;
     ArrayList<Music> listTop10Music = new ArrayList<>();
+    boolean isPlaying = false, isStart = false, isDestroy = false, isCreated = false;
+    public static boolean isPause = true;
+
+    ImageView btnPlay;
 
     //Music player
-    public static MusicPlayer musicPlayer = MusicPlayer.getInstance(null);
+    public static MusicPlayer musicPlayer;
     //
+
+    SharedPreferences sharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,23 +86,62 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
 //        playerFragment = new PlayerFragment(this);
         setContentView(R.layout.activity_main);
 
+
+        //Lưu trạng thái có đang chơi nhạc hay không
+        sharedPreferences = getSharedPreferences("music_player", MODE_PRIVATE);
+        isPlaying = sharedPreferences.getBoolean(KEY_STATE_IS_PLAYING, false);
+        isStart = sharedPreferences.getBoolean(KEY_STATE_IS_START, false);
+        isCreated = sharedPreferences.getBoolean(KEY_STATE_IS_CREATED, true);
+        isDestroy = sharedPreferences.getBoolean(KEY_STATE_IS_DESTROYED, false);
+
+        if (getIntent().getExtras() != null) {
+            listTop10Music = (ArrayList<Music>) getIntent().getSerializableExtra("fetchData");
+        }
+
+        //cài đặt music player
+        musicPlayer = MusicPlayer.getInstance(listTop10Music, new MusicPlayerCallback() {
+            @Override
+            public void onPause() {
+                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+                assert playerFragment != null;
+                playerFragment.handleRotateImageThumbnail();
+            }
+
+            @Override
+            public void onResume() {
+                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+                assert playerFragment != null;
+                playerFragment.handleRotateImageThumbnail();
+            }
+
+            @Override
+            public void updateSeekBar(int currentPositionSong) {
+
+            }
+        });
+
         //
+
         // bottom navigation
         bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setItemIconTintList(null);
         BottomNavigationMenuView bottomNavigationMenuView = (BottomNavigationMenuView) bottomNavigation.getChildAt(0);
         BottomNavigationItemView itemView = (BottomNavigationItemView) bottomNavigationMenuView.getChildAt(1);
+
         View customRadio = LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.custom_item_bottom_navigation_player, bottomNavigationMenuView, false);
+        imageThumbnailCurrentMusic = customRadio.findViewById(R.id.imageThumbnailCurrentMusic);
+
         View customButtonPlay = LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.custom_item_bottom_navigation_button_play, bottomNavigationMenuView, false);
+
         itemView.addView(customRadio);
         itemView.addView(customButtonPlay);
-        customButtonPlay.setVisibility(View.GONE);
-        ImageView player = customRadio.findViewById(R.id.player);
-        ImageView btnPlay = customButtonPlay.findViewById(R.id.btnPlay);
+        customButtonPlay.setVisibility(View.VISIBLE);
+        customRadio.setVisibility(View.GONE);
+        btnPlay = customButtonPlay.findViewById(R.id.btnPlay);
 
-        player.setOnClickListener(new View.OnClickListener() {
+        imageThumbnailCurrentMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 customRadio.setVisibility(View.GONE);
@@ -99,18 +155,21 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (state == 1) {
-                    btnPlay.setImageResource(R.drawable.ic_pause);
-                    state = 0;
-                } else {
+                if (stateButtonPlay == 1) {
                     btnPlay.setImageResource(R.drawable.ic_play);
-                    state = 1;
+                    stopMusicPlayer();
+                    stateButtonPlay = 0;
+                } else {
+                    btnPlay.setImageResource(R.drawable.ic_pause);
+                    playMusicPlayer();
+                    stateButtonPlay = 1;
                 }
             }
         });
 
         // set layout mặc định cho fragment là màn hình home
-        getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, homeFragment, "FragmentHome").commit();
+        bottomNavigation.getMenu().getItem(1).setChecked(true);
+        getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, PlayerFragment.newInstance(listTop10Music), "PlayerFragment").commit();
 
         bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -125,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                         break;
                     }
                     case R.id.player: {
-                        player.performClick();
+                        imageThumbnailCurrentMusic.performClick();
                         break;
                     }
                     case R.id.user: {
@@ -140,29 +199,21 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
             }
         });
 
-
-        // lấy dữ liệu mẫu
-        MusicDAO musicDAO = new MusicDAO();
-        musicDAO.getTopMusic10(new MusicDAO.GetTop10Listener() {
-            @Override
-            public void onGetTop10Callback(ArrayList<Music> list) {
-                listTop10Music = list;
-                musicPlayer.setPlayList(listTop10Music);
-                musicPlayer.start();
-                Log.d(TAG, "onGetTop10Callback: has data " + musicPlayer.getCurrentSong().getName());
-//                startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_START);
-            }
-        });
-
+        // xử lý player state
+        musicPlayer.setInitState(isPlaying, isStart, isDestroy, isCreated);
+        musicPlayer.start();
+        handleStateMusicPlayer(musicPlayer);
+        Log.d(TAG, "onCreate: save state: " + isCreated + " " + isPlaying + " " + isStart + " " + isDestroy);
+        Log.d(TAG, "playMusicPlayer: " + musicPlayer.getStateMusicPlayer());
         //
+
+        // handle thumbnail của player
+        Glide.with(MainActivity.this)
+                .load(musicPlayer.getCurrentSong().getThumbnailUrl())
+                .apply(new RequestOptions().override(45, 45))
+                .into(imageThumbnailCurrentMusic);
     }
 
-    public void startServiceMusic(Music music, int action) {
-        Intent serviceMusic = new Intent(MainActivity.this, MusicPlayerService.class);
-        serviceMusic.putExtra("action", action);
-        serviceMusic.putExtra(KEY_MUSIC, music);
-        startService(serviceMusic);
-    }
 
     @Override
     public void toTransparent() {
@@ -214,26 +265,158 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         int action = intent.getIntExtra("action", -1);
         int currentPositionDuration = intent.getIntExtra(KEY_CURRENT_MUSIC_POSITION, 0);
         switch (action) {
+            case MUSIC_PLAYER_ACTION_START: {
+                try {
+                    musicPlayer.resumeSong();
+                    musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                handleStateMusicPlayer(musicPlayer);
+                break;
+            }
             case MUSIC_PLAYER_ACTION_PAUSE: {
-                musicPlayer.setCurrentPositionSong(currentPositionDuration);
+                musicPlayer.pauseSong(currentPositionDuration);
                 try {
                     musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_IDLE);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                handleStateMusicPlayer(musicPlayer);
                 break;
             }
             case MUSIC_PLAYER_ACTION_RESUME: {
+                musicPlayer.resumeSong();
                 try {
                     musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                handleStateMusicPlayer(musicPlayer);
+                break;
+            }
+            case MUSIC_PLAYER_ACTION_NEXT: {
+                try {
+                    musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                musicPlayer.nextSong(musicPlayer.getCurrentIndexSong());
+                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+                assert playerFragment != null;
+                playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
+                playerFragment.setContentInit(musicPlayer.getCurrentSong());
+                handleChangeMusic();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESET_SONG);
+                    }
+                }, 500);
+                handleStateMusicPlayer(musicPlayer);
+                break;
+            }
+            case MUSIC_PLAYER_ACTION_PREVIOUS: {
+                try {
+                    musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                musicPlayer.previousSong(musicPlayer.getCurrentIndexSong());
+                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+                assert playerFragment != null;
+                playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
+                playerFragment.setContentInit(musicPlayer.getCurrentSong());
+                handleChangeMusic();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESET_SONG);
+                    }
+                }, 500);
+                handleStateMusicPlayer(musicPlayer);
+                break;
+            }
+            case MUSIC_PLAYER_ACTION_COMPLETE: {
+                musicPlayer.nextSong(musicPlayer.getCurrentIndexSong());
+                autoNextMusic();
                 break;
             }
             default:
                 break;
         }
+        Log.d(TAG, "playMusicPlayer: " + musicPlayer.getStateMusicPlayer());
+    }
+
+    public void playMusicPlayer() {
+        if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_IDLE)) {
+            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESUME);
+        } else {
+            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_START);
+        }
+    }
+
+    public void stopMusicPlayer() {
+        if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_PLAYING)) {
+            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_PAUSE);
+        }
+    }
+
+    public void handleStateMusicPlayer(MusicPlayer musicPlayer) {
+        @SuppressLint("CommitPrefEdits")
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        switch (musicPlayer.getStateMusicPlayer()) {
+            case MUSIC_PLAYER_STATE_IDLE: {
+                stateButtonPlay = 0;
+                btnPlay.setImageResource(R.drawable.ic_play);
+                editor.putBoolean(KEY_STATE_IS_IDLE, true);
+                editor.putBoolean(KEY_STATE_IS_PLAYING, false);
+                break;
+            }
+            case MUSIC_PLAYER_STATE_PLAYING: {
+                stateButtonPlay = 1;
+                btnPlay.setImageResource(R.drawable.ic_pause);
+                editor.putBoolean(KEY_STATE_IS_IDLE, false);
+                editor.putBoolean(KEY_STATE_IS_PLAYING, true);
+                editor.putBoolean(KEY_STATE_IS_START, true);
+                break;
+            }
+            case MUSIC_PLAYER_STATE_DESTROYED: {
+                editor.putBoolean(KEY_STATE_IS_CREATED, false);
+                editor.putBoolean(KEY_STATE_IS_DESTROYED, true);
+                editor.putBoolean(KEY_STATE_IS_START, false);
+                break;
+            }
+            case MUSIC_PLAYER_STATE_CREATED: {
+                editor.putBoolean(KEY_STATE_IS_CREATED, true);
+                editor.putBoolean(KEY_STATE_IS_DESTROYED, false);
+                break;
+            }
+        }
+        editor.apply();
+    }
+
+    public void autoNextMusic() {
+        Intent nextIntent = new Intent(MainActivity.this, MusicPlayerService.class);
+        nextIntent.putExtra("action", MUSIC_PLAYER_ACTION_NEXT);
+        nextIntent.putExtra(Constants.KEY_MUSIC, musicPlayer.getCurrentSong());
+        Log.d(TAG, "nextMusic: " + musicPlayer.getCurrentSong().getName());
+        startService(nextIntent);
+    }
+
+    public void handleChangeMusic() {
+        Glide.with(MainActivity.this)
+                .load(musicPlayer.getCurrentSong().getThumbnailUrl())
+                .apply(new RequestOptions().override(45, 45))
+                .into(imageThumbnailCurrentMusic);
+    }
+
+
+    public void startServiceMusic(Music music, int action) {
+        Intent serviceMusic = new Intent(MainActivity.this, MusicPlayerService.class);
+        serviceMusic.putExtra("action", action);
+        serviceMusic.putExtra(KEY_MUSIC, music);
+        startService(serviceMusic);
     }
 
     @Override
@@ -247,5 +430,17 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     protected void onStop() {
         super.onStop();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mediaPlayerServiceBroadcast);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(KEY_STATE_IS_PLAYING, false);
+        editor.putBoolean(KEY_STATE_IS_START, false);
+        editor.putBoolean(KEY_STATE_IS_DESTROYED, true);
+        editor.putBoolean(KEY_STATE_IS_IDLE, false);
+        editor.putBoolean(KEY_STATE_IS_CREATED, true);
+        editor.apply();
     }
 }

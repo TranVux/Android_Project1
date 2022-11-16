@@ -33,6 +33,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
 
 import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
@@ -44,7 +45,7 @@ import java.util.Timer;
 
 import kotlin.jvm.internal.LocalVariableReference;
 
-public class MusicPlayerService extends Service {
+public class MusicPlayerService extends Service implements MediaPlayer.OnCompletionListener {
     private Music currentSong;
     private MediaPlayer mediaPlayer;
     private Timer timer;
@@ -62,6 +63,7 @@ public class MusicPlayerService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        installMediaPlayer();
     }
 
     @Override
@@ -79,6 +81,11 @@ public class MusicPlayerService extends Service {
                 if (!isPlaying) {
                     initService(intent);
                 }
+                break;
+            }
+            case MUSIC_PLAYER_ACTION_RESET_SONG: {
+                Music music = (Music) intent.getSerializableExtra(KEY_MUSIC);
+                resetSong(music);
                 break;
             }
             case MUSIC_PLAYER_ACTION_NEXT: {
@@ -107,6 +114,18 @@ public class MusicPlayerService extends Service {
         }
     }
 
+    private void resetSong(Music music) {
+        if (!mediaPlayer.isPlaying()) {
+            mediaPlayer.stop();
+        }
+        mediaPlayer.release();
+        mediaPlayer = new MediaPlayer();
+        currentSong = music;
+        setMusicUrl(currentSong.getUrl());
+        sendNotification();
+        mediaPlayer.start();
+    }
+
     private void destroyPlayer() {
         onDestroy();
         sendIntentToActivity(MUSIC_PLAYER_ACTION_DESTROY);
@@ -132,6 +151,9 @@ public class MusicPlayerService extends Service {
 
     private void previousSong() {
         if (mediaPlayer != null) {
+            if (!mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+            }
             sendIntentToActivity(MUSIC_PLAYER_ACTION_PREVIOUS);
         }
     }
@@ -139,6 +161,9 @@ public class MusicPlayerService extends Service {
     private void nextSong() {
         Log.d(TAG, "nextSong: ");
         if (mediaPlayer != null) {
+            if (!mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+            }
             sendIntentToActivity(MUSIC_PLAYER_ACTION_NEXT);
         }
     }
@@ -159,8 +184,9 @@ public class MusicPlayerService extends Service {
             return;
         }
         currentSong = songReceiver;
-        installMediaPlayer();
+        setMusicUrl(currentSong.getUrl());
         sendNotification();
+        sendIntentToActivity(MUSIC_PLAYER_ACTION_START);
     }
 
     public void installMediaPlayer() {
@@ -170,7 +196,6 @@ public class MusicPlayerService extends Service {
                 .Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
-        setMusicUrl(currentSong.getUrl());
         timer = new Timer();
 
     }
@@ -192,8 +217,8 @@ public class MusicPlayerService extends Service {
         PendingIntent homePendingIntent = PendingIntent.getActivity(this, 0, homeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         final Bitmap[] musicThumbnail = new Bitmap[1];
         mediaSessionCompat.setMetadata(new MediaMetadataCompat.Builder()
-                .putString(MediaMetadata.METADATA_KEY_TITLE, currentSong.getName())
-                .putString(MediaMetadata.METADATA_KEY_ARTIST, currentSong.getSingerName())
+                .putString(MediaMetadata.METADATA_KEY_TITLE, CapitalizeWord.CapitalizeWords(currentSong.getName()))
+                .putString(MediaMetadata.METADATA_KEY_ARTIST, CapitalizeWord.CapitalizeWords(currentSong.getSingerName()))
                 .putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, currentSong.getThumbnailUrl())
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, mediaPlayer.getDuration() / 1000)
                 .build()
@@ -202,14 +227,13 @@ public class MusicPlayerService extends Service {
 
         NotificationCompat.Builder notificationCompatBuilder = new NotificationCompat.Builder(this, "AUDIO_SERVICE")
                 .setSmallIcon(R.drawable.ic_notiffication_new)
-                .setContentText(currentSong.getSingerName())
-                .setContentTitle(currentSong.getName())
+                .setContentText(CapitalizeWord.CapitalizeWords(currentSong.getSingerName()))
+                .setContentTitle(CapitalizeWord.CapitalizeWords(currentSong.getName()))
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSessionCompat.getSessionToken())
                         .setShowActionsInCompactView(0, 1, 2))
                 .setContentIntent(homePendingIntent)
                 .setSound(null);
-
 
         if (isPlaying) {
             notificationCompatBuilder
@@ -274,5 +298,10 @@ public class MusicPlayerService extends Service {
             timer.cancel();
             mediaPlayer = null;
         }
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer mediaPlayer) {
+        sendIntentToActivity(MUSIC_PLAYER_ACTION_COMPLETE);
     }
 }

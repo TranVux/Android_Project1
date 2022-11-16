@@ -11,8 +11,7 @@
         android:id="@+id/backgroundImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"
-        android:src="@drawable/img" />
+        android:scaleType="centerCrop" />
 
     <eightbitlab.com.blurview.BlurView
         android:id="@+id/blurView"
@@ -235,6 +234,7 @@
                             android:src="@drawable/ic_hear_white" />
 
                         <TextView
+                            android:id="@+id/view"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto_medium"
@@ -267,7 +267,6 @@
                     android:id="@+id/timeLine"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:progress="30"
                     android:progressTint="@color/white"
                     android:thumbTint="@color/white" />
 

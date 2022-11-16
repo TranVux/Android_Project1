@@ -1,39 +1,39 @@
 package com.example.assignment_pro1121_nhom3.fragments;
 
-import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
+import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.example.assignment_pro1121_nhom3.R;
-import com.example.assignment_pro1121_nhom3.interfaces.EventInterface;
-import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
-import com.example.assignment_pro1121_nhom3.models.Playlist;
+import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
+import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -51,7 +51,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     CoordinatorLayout parentLayout;
 
     //Nút thêm dùng để mở lên danh sách bài hát tiếp theo
-    TextView labelMoreListMusic, musicName, singerName, singerNameNext, musicNameNext, labelViewNextMusic;
+    TextView labelMoreListMusic, musicName, singerName, singerNameNext, musicNameNext, labelViewNextMusic, labelViewCurrentMusic;
     ImageView icMoreListMusic, imageMusicThumbnail, backgroundImage, btnNext, btnPrev, btnAddToPlayList, imageThumbnailNextMusic;
     SeekBar timeLine;
 
@@ -61,8 +61,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     // music player hiện tại
     MusicPlayer musicPlayer = MainActivity.musicPlayer;
 
-    //Tối lưu Glide
-    String oldImage = "";
+    //lấy dữ liệu cần thiết
 
     public static PlayerFragment newInstance(ArrayList<Music> playListMusic) {
         PlayerFragment playerFragment = new PlayerFragment();
@@ -92,11 +91,9 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         // thiết lập thuộc tính ban đầu, ánh xạ view
         init(view);
         //
-
+        handleRotateImageThumbnail();
         //Player hiện tại
-
         setContentInit(musicPlayer.getCurrentSong());
-        oldImage = musicPlayer.getCurrentSong().getThumbnailUrl();
         setContentForNextMusic(musicPlayer.getNextSong());
 
         // bắt sự kiện click cho view
@@ -107,22 +104,37 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         blurBackgroundFragment();
     }
 
-    private void setContentInit(Music music) {
+    public void handleRotateImageThumbnail() {
+        if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_PLAYING)) {
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    imageMusicThumbnail.animate().rotationBy(360).withEndAction(this).setDuration(10000).setInterpolator(new LinearInterpolator()).start();
+                }
+            };
+            imageMusicThumbnail.animate().rotationBy(360).withEndAction(runnable).setDuration(10000).setInterpolator(new LinearInterpolator()).start();
+        } else {
+            imageMusicThumbnail.animate().cancel();
+        }
+    }
+
+    public void setContentInit(Music music) {
         TransitionManager.beginDelayedTransition(parentLayout, new AutoTransition());
         Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(backgroundImage.getDrawable()).into(backgroundImage);
         Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(imageMusicThumbnail.getDrawable()).into(imageMusicThumbnail);
         musicName.setText(CapitalizeWord.CapitalizeWords(music.getName()));
         singerName.setText(CapitalizeWord.CapitalizeWords(music.getSingerName()));
+        labelViewCurrentMusic.setText(String.valueOf(music.getViews()));
     }
 
     public void setContentForNextMusic(Music nextMusic) {
         TransitionManager.beginDelayedTransition(parentLayout, new AutoTransition());
-        Glide.with(requireContext()).load(nextMusic.getThumbnailUrl()).placeholder(imageMusicThumbnail.getDrawable()).into(imageThumbnailNextMusic);
+        Glide.with(requireContext()).load(nextMusic.getThumbnailUrl()).placeholder(imageThumbnailNextMusic.getDrawable()).into(imageThumbnailNextMusic);
         musicNameNext.setText(CapitalizeWord.CapitalizeWords(nextMusic.getName()));
         singerNameNext.setText(CapitalizeWord.CapitalizeWords(nextMusic.getSingerName()));
         labelViewNextMusic.setText(String.valueOf(nextMusic.getViews()));
     }
-    
+
     private void init(View view) {
         parentLayout = view.findViewById(R.id.playerLayout);
         backgroundImage = view.findViewById(R.id.backgroundImage);
@@ -140,6 +152,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         musicNameNext = view.findViewById(R.id.nextMusicName);
         labelViewNextMusic = view.findViewById(R.id.labelNextMusicView);
         imageThumbnailNextMusic = view.findViewById(R.id.imageThumbnailNextMusic);
+        labelViewCurrentMusic = view.findViewById(R.id.view);
     }
 
     public void setEventClick() {
@@ -210,21 +223,31 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.btnSkipToNext: {
                 Log.d(TAG, "onClick: Next");
-                musicPlayer.nextSong(musicPlayer.getCurrentIndexSong());
-                setContentInit(musicPlayer.getCurrentSong());
-                setContentForNextMusic(musicPlayer.getNextSong());
+                nextMusic();
                 break;
             }
             case R.id.btnSkipToPrev: {
                 Log.d(TAG, "onClick: Prev");
-                musicPlayer.previousSong(musicPlayer.getCurrentIndexSong());
-                setContentInit(musicPlayer.getCurrentSong());
-                setContentForNextMusic(musicPlayer.getNextSong());
+                previousMusic();
                 break;
             }
             default: {
                 break;
             }
         }
+    }
+
+    public void nextMusic() {
+        Intent nextIntent = new Intent(requireContext(), MusicPlayerService.class);
+        nextIntent.putExtra("action", MUSIC_PLAYER_ACTION_NEXT);
+        Log.d(TAG, "nextMusic: " + musicPlayer.getCurrentSong().getName());
+        requireContext().startService(nextIntent);
+    }
+
+    public void previousMusic() {
+        Intent previousIntent = new Intent(requireContext(), MusicPlayerService.class);
+        previousIntent.putExtra("action", MUSIC_PLAYER_ACTION_PREVIOUS);
+        Log.d(TAG, "preMusic: " + musicPlayer.getCurrentSong().getName());
+        requireContext().startService(previousIntent);
     }
 }
