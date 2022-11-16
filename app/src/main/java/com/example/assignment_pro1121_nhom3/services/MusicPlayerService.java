@@ -197,7 +197,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
         timer = new Timer();
-
     }
 
     public void setMusicUrl(String url) {
@@ -223,6 +222,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 .putLong(MediaMetadata.METADATA_KEY_DURATION, mediaPlayer.getDuration() / 1000)
                 .build()
         );
+
         mediaControllerCompat = new MediaControllerCompat(getApplicationContext(), mediaSessionCompat.getSessionToken());
 
         NotificationCompat.Builder notificationCompatBuilder = new NotificationCompat.Builder(this, "AUDIO_SERVICE")
