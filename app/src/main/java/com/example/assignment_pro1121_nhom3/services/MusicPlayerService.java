@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
@@ -22,6 +23,7 @@ import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +35,7 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
 
@@ -40,18 +43,25 @@ import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Timer;
 
 import kotlin.jvm.internal.LocalVariableReference;
 
 public class MusicPlayerService extends Service implements MediaPlayer.OnCompletionListener {
+
+    public static final String TAG = MusicPlayerService.class.getSimpleName();
+
     private Music currentSong;
-    private MediaPlayer mediaPlayer;
+    private MusicPlayer musicPlayer;
+    private ArrayList<Music> playListMusic;
+    private MediaPlayer mediaPlayer = new MediaPlayer();
     private Timer timer;
     private boolean isPlaying = false;
     MediaSessionCompat mediaSessionCompat;
     MediaControllerCompat mediaControllerCompat;
+    private String stateServiceMusicPlayer = CHANGE_TO_SERVICE;
 
 
     @Nullable
@@ -69,6 +79,14 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
+            stateServiceMusicPlayer = intent.getStringExtra("state_service");
+            if (stateServiceMusicPlayer == null) {
+                stateServiceMusicPlayer = CHANGE_TO_SERVICE;
+            } else {
+                playListMusic = (ArrayList<Music>) intent.getSerializableExtra("currentPlaylist");
+                Log.d(TAG, "onStartCommand: " + playListMusic.size());
+            }
+            Log.d(TAG, "onStartCommand: " + stateServiceMusicPlayer);
             int action = intent.getIntExtra("action", -1);
             handleActionMusicPlayer(intent, action);
         }
@@ -108,11 +126,17 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 destroyPlayer();
                 break;
             }
+            case MUSIC_PLAYER_ACTION_GO_TO_SONG: {
+                int index = intent.getIntExtra(KEY_SONG_INDEX, 0);
+                goToSong(index);
+                break;
+            }
             default:
                 Log.d(TAG, "handleActionMusicPlayer: Invalid action for music player");
                 break;
         }
     }
+
 
     private void resetSong(Music music) {
         if (!mediaPlayer.isPlaying()) {
@@ -120,6 +144,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         }
         mediaPlayer.release();
         mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioAttributes(new AudioAttributes
+                .Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build());
+        mediaPlayer.setOnCompletionListener(this);
         currentSong = music;
         setMusicUrl(currentSong.getUrl());
         sendNotification();
@@ -128,14 +157,29 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     private void destroyPlayer() {
         onDestroy();
-        sendIntentToActivity(MUSIC_PLAYER_ACTION_DESTROY);
+        sendIntentToActivity(MUSIC_PLAYER_ACTION_DESTROY, 0);
+    }
+
+    private void goToSong(int index) {
+        if (mediaPlayer != null) {
+            if (!mediaPlayer.isPlaying()) {
+                mediaPlayer.stop();
+            }
+            if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
+                sendIntentToActivity(MUSIC_PLAYER_ACTION_GO_TO_SONG, index);
+            } else {
+
+            }
+        }
     }
 
     private void resumeSong() {
         if (!isPlaying && mediaPlayer != null) {
             mediaPlayer.start();
             isPlaying = true;
-            sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME);
+            if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
+                sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
+            }
             sendNotification();
         }
     }
@@ -144,7 +188,9 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         if (isPlaying && mediaPlayer != null) {
             mediaPlayer.pause();
             isPlaying = false;
-            sendIntentToActivity(MUSIC_PLAYER_ACTION_PAUSE);
+            if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
+                sendIntentToActivity(MUSIC_PLAYER_ACTION_PAUSE, 0);
+            }
             sendNotification();
         }
     }
@@ -154,7 +200,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             if (!mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
             }
-            sendIntentToActivity(MUSIC_PLAYER_ACTION_PREVIOUS);
+            if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
+                sendIntentToActivity(MUSIC_PLAYER_ACTION_PREVIOUS, 0);
+            } else {
+
+            }
         }
     }
 
@@ -164,13 +214,16 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             if (!mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
             }
-            sendIntentToActivity(MUSIC_PLAYER_ACTION_NEXT);
+            if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
+                sendIntentToActivity(MUSIC_PLAYER_ACTION_NEXT, 0);
+            }
         }
     }
 
-    public void sendIntentToActivity(int action) {
+    public void sendIntentToActivity(int action, int index) {
         Intent outIntent = new Intent(MUSIC_PLAYER_EVENT);
         outIntent.putExtra("action", action);
+        outIntent.putExtra(KEY_SONG_INDEX, index);
         if (mediaPlayer != null) {
             outIntent.putExtra(KEY_CURRENT_MUSIC_POSITION, mediaPlayer.getCurrentPosition() / 1000);
         }
@@ -186,7 +239,19 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         currentSong = songReceiver;
         setMusicUrl(currentSong.getUrl());
         sendNotification();
-        sendIntentToActivity(MUSIC_PLAYER_ACTION_START);
+        sendIntentToActivity(MUSIC_PLAYER_ACTION_START, 0);
+    }
+
+    public void initMusicPlayer() {
+        SharedPreferences sharedPreferences = getSharedPreferences("music_player", MODE_PRIVATE);
+        boolean isPlaying = sharedPreferences.getBoolean(KEY_STATE_IS_PLAYING, false);
+        boolean isStart = sharedPreferences.getBoolean(KEY_STATE_IS_START, false);
+        boolean isCreated = sharedPreferences.getBoolean(KEY_STATE_IS_CREATED, true);
+        boolean isDestroy = sharedPreferences.getBoolean(KEY_STATE_IS_DESTROYED, false);
+
+        musicPlayer = MusicPlayer.getInstance();
+        musicPlayer.setInitState(isPlaying, isStart, isDestroy, isCreated);
+        musicPlayer.setPlayList(playListMusic);
     }
 
     public void installMediaPlayer() {
@@ -196,6 +261,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 .Builder()
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build());
+        mediaPlayer.setOnCompletionListener(this);
         timer = new Timer();
     }
 
@@ -268,6 +334,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 });
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     public PendingIntent getPendingIntentAction(Context context, int action) {
         Intent intent = new Intent(MusicPlayerService.this, EventMusicPlayerService.class);
         intent.putExtra("action", action);
@@ -302,6 +369,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     @Override
     public void onCompletion(MediaPlayer mediaPlayer) {
-        sendIntentToActivity(MUSIC_PLAYER_ACTION_COMPLETE);
+        sendIntentToActivity(MUSIC_PLAYER_ACTION_COMPLETE, 0);
+        Log.d(TAG, "onCompletion: hát xong");
     }
 }

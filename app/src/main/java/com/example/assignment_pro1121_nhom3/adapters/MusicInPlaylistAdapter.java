@@ -73,7 +73,7 @@ public class MusicInPlaylistAdapter extends RecyclerView.Adapter<MusicInPlaylist
         holder.itemMusic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                itemInPlayListEvent.onItemClick(tempMusic);
+                itemInPlayListEvent.onItemClick(position);
             }
         });
 

@@ -2,6 +2,8 @@ package com.example.assignment_pro1121_nhom3.models;
 
 import android.util.Log;
 
+import com.example.assignment_pro1121_nhom3.utils.RemoveDuplicateArrayItem;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -28,6 +30,7 @@ public class MusicPlayer implements Serializable {
     public static final int MUSIC_PLAYER_ACTION_DESTROY = 666;
     public static final int MUSIC_PLAYER_ACTION_COMPLETE = 777;
     public static final int MUSIC_PLAYER_ACTION_RESET_SONG = 888;
+    public static final int MUSIC_PLAYER_ACTION_GO_TO_SONG = 999;
 
     private static MusicPlayer musicPlayer;
     private ArrayList<Music> playListMusic;
@@ -37,9 +40,9 @@ public class MusicPlayer implements Serializable {
     private String playerState;
     private MusicPlayerCallback musicPlayerCallback;
 
-    public static MusicPlayer getInstance(ArrayList<Music> playListMusic, MusicPlayerCallback musicPlayerCallback) {
+    public static MusicPlayer getInstance(MusicPlayerCallback musicPlayerCallback) {
         if (musicPlayer == null)
-            return new MusicPlayer(playListMusic, musicPlayerCallback);
+            return new MusicPlayer(musicPlayerCallback);
         return musicPlayer;
     }
 
@@ -48,7 +51,22 @@ public class MusicPlayer implements Serializable {
         return musicPlayer;
     }
 
+    public static MusicPlayer getInstance(ArrayList<Music> playListMusic) {
+        if (musicPlayer == null) return new MusicPlayer(playListMusic);
+        return musicPlayer;
+    }
+
     private MusicPlayer() {
+        initState();
+    }
+
+    private MusicPlayer(ArrayList<Music> playListMusic) {
+        this.playListMusic = playListMusic;
+        initState();
+    }
+
+    private MusicPlayer(MusicPlayerCallback musicPlayerCallback) {
+        this.musicPlayerCallback = musicPlayerCallback;
         initState();
     }
 
@@ -56,6 +74,10 @@ public class MusicPlayer implements Serializable {
         this.playListMusic = playListMusic;
         this.musicPlayerCallback = musicPlayerCallback;
         initState();
+    }
+
+    public void setMusicPlayerCallBack(MusicPlayerCallback musicPlayerCallback) {
+        this.musicPlayerCallback = musicPlayerCallback;
     }
 
     private void initState() {
@@ -66,7 +88,13 @@ public class MusicPlayer implements Serializable {
     }
 
     public void setPlayList(ArrayList<Music> playListMusic) {
-        this.playListMusic = playListMusic;
+        ArrayList<Music> listTemp = this.playListMusic;
+        listTemp.addAll(playListMusic);
+        this.playListMusic = RemoveDuplicateArrayItem.getList(listTemp);
+    }
+
+    public void setMusicAtPosition(int index) {
+        currentSong = playListMusic.get(index);
     }
 
     public ArrayList<Music> getPlayListMusic() {

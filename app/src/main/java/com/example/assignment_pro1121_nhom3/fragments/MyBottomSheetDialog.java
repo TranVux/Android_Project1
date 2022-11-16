@@ -1,6 +1,7 @@
 package com.example.assignment_pro1121_nhom3.fragments;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,10 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.MusicInPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
+import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.utils.Constants;
+import com.example.assignment_pro1121_nhom3.views.SplashScreen;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
@@ -65,20 +70,24 @@ public class MyBottomSheetDialog extends BottomSheetDialogFragment {
             }
         });
 
-        handleViewOfBottomSheet();
+        handleViewOfBottomSheet(bottomSheetDialog);
         return bottomSheetDialog;
     }
 
-    public void handleViewOfBottomSheet() {
+    public void handleViewOfBottomSheet(BottomSheetDialog bottomSheetDialog) {
         musicInPlaylistAdapter = new MusicInPlaylistAdapter(listMusic, requireContext(), new ItemEvent.MusicItemInPlayListEvent() {
             @Override
-            public void onItemClick(Music music) {
-                Toast.makeText(requireContext(), music.getName(), Toast.LENGTH_SHORT).show();
+            public void onItemClick(int index) {
+                Intent musicIntent = new Intent(requireContext(), MusicPlayerService.class);
+                musicIntent.putExtra("action", MusicPlayer.MUSIC_PLAYER_ACTION_GO_TO_SONG);
+                musicIntent.putExtra(Constants.KEY_SONG_INDEX, index);
+                requireContext().startService(musicIntent);
+                bottomSheetDialog.dismiss();
             }
 
             @Override
             public void onMoreClick(Music music) {
-                Toast.makeText(requireContext(), "More btn " + music.getName(), Toast.LENGTH_SHORT).show();
+
             }
         });
 

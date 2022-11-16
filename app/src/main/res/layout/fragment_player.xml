@@ -68,8 +68,8 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageMusicThumbnail"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
+                android:layout_width="340dp"
+                android:layout_height="340dp"
                 android:layout_below="@+id/layoutTopBar"
                 android:layout_centerHorizontal="true"
                 android:scaleType="centerCrop"

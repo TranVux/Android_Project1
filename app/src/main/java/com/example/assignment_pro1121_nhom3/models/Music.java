@@ -1,6 +1,7 @@
 package com.example.assignment_pro1121_nhom3.models;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Music implements Serializable {
     private String id;
@@ -108,5 +109,18 @@ public class Music implements Serializable {
 
     public void setGenresId(String genresId) {
         this.genresId = genresId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Music)) return false;
+        Music music = (Music) o;
+        return id.equals(music.id) && name.equals(music.name) && url.equals(music.url) && thumbnailUrl.equals(music.thumbnailUrl) && Objects.equals(creationDate, music.creationDate) && Objects.equals(updateDate, music.updateDate) && singerName.equals(music.singerName) && singerId.equals(music.singerId) && views.equals(music.views) && genresId.equals(music.genresId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, url, thumbnailUrl, creationDate, updateDate, singerName, singerId, views, genresId);
     }
 }

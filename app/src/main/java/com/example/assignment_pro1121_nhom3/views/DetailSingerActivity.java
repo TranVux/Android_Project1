@@ -141,8 +141,8 @@ public class DetailSingerActivity extends AppCompatActivity {
             // xử lý danh sách nhạc của ca sĩ
             musicInPlaylistAdapter = new MusicInPlaylistAdapter(listMusicOfSinger, DetailSingerActivity.this, new ItemEvent.MusicItemInPlayListEvent() {
                 @Override
-                public void onItemClick(Music music) {
-                    Toast.makeText(DetailSingerActivity.this, "Phát " + music.getName(), Toast.LENGTH_SHORT).show();
+                public void onItemClick(int index) {
+                    Toast.makeText(DetailSingerActivity.this, "Phát " + index, Toast.LENGTH_SHORT).show();
                 }
 
                 @Override

@@ -16,7 +16,7 @@ public interface ItemEvent {
     }
 
     interface MusicItemInPlayListEvent {
-        void onItemClick(Music music);
+        void onItemClick(int index);
 
         void onMoreClick(Music music);
     }

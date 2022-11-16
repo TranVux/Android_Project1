@@ -1,6 +1,7 @@
 package com.example.assignment_pro1121_nhom3.fragments;
 
 import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -21,7 +22,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -34,6 +37,7 @@ import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
+import com.example.assignment_pro1121_nhom3.views.SplashScreen;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -59,7 +63,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     ArrayList<Music> playListMusic;
 
     // music player hiện tại
-    MusicPlayer musicPlayer = MainActivity.musicPlayer;
+    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
 
     //lấy dữ liệu cần thiết
 
@@ -89,10 +93,15 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // thiết lập thuộc tính ban đầu, ánh xạ view
+        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("music_player", Context.MODE_PRIVATE);
         init(view);
         //
+        musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
         handleRotateImageThumbnail();
         //Player hiện tại
+
+        Log.d(TAG, "onViewCreated: " + musicPlayer.getCurrentSong().getName());
+        Log.d(TAG, "onViewCreated: " + musicPlayer.getSizeOfPlayList());
         setContentInit(musicPlayer.getCurrentSong());
         setContentForNextMusic(musicPlayer.getNextSong());
 
@@ -106,6 +115,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
 
     public void handleRotateImageThumbnail() {
         if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_PLAYING)) {
+            Log.d(TAG, "handleRotateImageThumbnail: run");
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
@@ -114,6 +124,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
             };
             imageMusicThumbnail.animate().rotationBy(360).withEndAction(runnable).setDuration(10000).setInterpolator(new LinearInterpolator()).start();
         } else {
+            Log.d(TAG, "handleRotateImageThumbnail: cancel");
             imageMusicThumbnail.animate().cancel();
         }
     }
