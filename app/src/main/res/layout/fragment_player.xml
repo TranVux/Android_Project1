@@ -88,9 +88,6 @@
                 android:id="@+id/mainContentLayout"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
-                android:layout_below="@id/imageMusicThumbnail"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
                 app:flexDirection="column"
                 app:justifyContent="space_between">
 
