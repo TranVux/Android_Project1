@@ -20,19 +20,22 @@
         android:theme="@style/Theme.Assignment_PRO1121_Nhom3"
         tools:targetApi="31">
         <activity
-            android:name=".views.DetailSingerActivity"
-            android:exported="true"
-            android:theme="@style/ThemeSubActivity">
+            android:name=".views.DetailPlaylistActivity"
+            android:exported="true">
 
-            <!--            <intent-filter>-->
-            <!--                <action android:name="android.intent.action.MAIN" />-->
+                        <!-- <intent-filter>
+                            <action android:name="android.intent.action.MAIN" />
 
-            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
-            <!--            </intent-filter>-->
+                            <category android:name="android.intent.category.LAUNCHER" />
+                        </intent-filter> -->
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+        <activity
+            android:name=".views.DetailSingerActivity"
+            android:exported="true"
+            android:theme="@style/ThemeSubActivity" />
         <activity
             android:name=".views.ChartActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
@@ -65,8 +68,21 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".views.MainActivity"
-            android:exported="true">
+            android:name=".views.ChartActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true" />
+        <activity
+            android:name=".views.SplashScreen"
+            android:exported="true"
+            android:theme="@style/Splash"
+            android:windowSoftInputMode="adjustResize">
+
+            <!--            <intent-filter>-->
+            <!--                <action android:name="android.intent.action.MAIN" />-->
+
+            <!--                <category android:name="android.intent.category.LAUNCHER" />-->
+            <!--            </intent-filter>-->
+
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />

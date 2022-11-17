@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="1000">
+       <KeyFrameSet>
+           <KeyAttribute
+               motion:motionTarget="@+id/imageViewLayout"
+               motion:framePosition="0"
+               android:alpha="1" />
+           <KeyAttribute
+               motion:motionTarget="@+id/imageViewLayout"
+               motion:framePosition="50"
+               android:alpha="0" />
+           <KeyAttribute
+               motion:motionTarget="@+id/imageViewLayout"
+               motion:framePosition="100"
+               android:alpha="0" />
+           <KeyAttribute
+               motion:motionTarget="@+id/imageViewLayout"
+               motion:framePosition="34"
+               android:translationY="-60dp" />
+           <KeyAttribute
+               motion:motionTarget="@+id/imageViewLayout"
+               motion:framePosition="100"
+               android:translationY="-60dp" />
+           <KeyAttribute
+               motion:motionTarget="@+id/infoLayout"
+               motion:framePosition="34"
+               android:translationY="-60dp" />
+           <KeyAttribute
+               motion:motionTarget="@+id/infoLayout"
+               motion:framePosition="100"
+               android:translationY="-60dp" />
+           <KeyAttribute
+               motion:motionTarget="@+id/infoLayout"
+               motion:framePosition="0"
+               android:alpha="1" />
+           <KeyAttribute
+               motion:motionTarget="@+id/infoLayout"
+               motion:framePosition="50"
+               android:alpha="0" />
+           <KeyAttribute
+               motion:motionTarget="@+id/infoLayout"
+               motion:framePosition="100"
+               android:alpha="0" />
+       </KeyFrameSet>
+        <OnSwipe
+            motion:touchAnchorId="@+id/scrollView"
+            motion:touchAnchorSide="bottom" />
+        <OnSwipe
+            motion:touchAnchorId="@+id/mainContentLayout"
+            motion:touchAnchorSide="bottom" />
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/tvNamePlaylistTopBar"
+            android:elevation="5dp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"
+            android:translationY="-50dp"
+            android:visibility="invisible" />
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/imageForeground"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent" />
+        <Constraint
+            android:layout_height="wrap_content"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="match_parent"
+            motion:layout_constraintTop_toBottomOf="@+id/imageForeground"
+            android:id="@+id/mainContentLayout" />
+        <Constraint
+            android:id="@+id/imageViewLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="72dp"
+            android:translationY="0dp"
+            android:visibility="visible" />
+        <Constraint
+            android:id="@+id/tvNamePlaylistTopBar"
+            android:elevation="5dp"
+            motion:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            motion:layout_constraintTop_toTopOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp"
+            android:translationY="0dp"
+            android:visibility="visible" />
+    </ConstraintSet>
+</MotionScene>
