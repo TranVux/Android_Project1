@@ -5,6 +5,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -79,14 +80,14 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            stateServiceMusicPlayer = intent.getStringExtra("state_service");
-            if (stateServiceMusicPlayer == null) {
-                stateServiceMusicPlayer = CHANGE_TO_SERVICE;
-            } else {
-                playListMusic = (ArrayList<Music>) intent.getSerializableExtra("currentPlaylist");
-                Log.d(TAG, "onStartCommand: " + playListMusic.size());
-            }
-            Log.d(TAG, "onStartCommand: " + stateServiceMusicPlayer);
+//            stateServiceMusicPlayer = intent.getStringExtra("state_service");
+//            if (stateServiceMusicPlayer == null) {
+//                stateServiceMusicPlayer = CHANGE_TO_SERVICE;
+//            } else {
+//                playListMusic = (ArrayList<Music>) intent.getSerializableExtra("currentPlaylist");
+//                Log.d(TAG, "onStartCommand: " + playListMusic.size());
+//            }
+//            Log.d(TAG, "onStartCommand: " + stateServiceMusicPlayer);
             int action = intent.getIntExtra("action", -1);
             handleActionMusicPlayer(intent, action);
         }
@@ -162,7 +163,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     private void goToSong(int index) {
         if (mediaPlayer != null) {
-            if (!mediaPlayer.isPlaying()) {
+            if (mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
             }
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
@@ -197,10 +198,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     private void previousSong() {
         if (mediaPlayer != null) {
-            if (!mediaPlayer.isPlaying()) {
+            if (mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
             }
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
+                Log.d(TAG, "previousSong: ");
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_PREVIOUS, 0);
             } else {
 
@@ -209,12 +211,12 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void nextSong() {
-        Log.d(TAG, "nextSong: ");
         if (mediaPlayer != null) {
-            if (!mediaPlayer.isPlaying()) {
+            if (mediaPlayer.isPlaying()) {
                 mediaPlayer.stop();
             }
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
+                Log.d(TAG, "nextSong: ");
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_NEXT, 0);
             }
         }
@@ -227,7 +229,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         if (mediaPlayer != null) {
             outIntent.putExtra(KEY_CURRENT_MUSIC_POSITION, mediaPlayer.getCurrentPosition() / 1000);
         }
-        LocalBroadcastManager.getInstance(this).sendBroadcast(outIntent);
+        sendBroadcast(outIntent);
     }
 
     private void initService(Intent intent) {

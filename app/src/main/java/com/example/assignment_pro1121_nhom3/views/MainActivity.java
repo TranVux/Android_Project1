@@ -73,7 +73,11 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
     //
 
+    //cache
     SharedPreferences sharedPreferences;
+
+    //Receiver
+    MusicPlayerReceiver musicPlayerReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         // khai báo các fragment
         homeFragment = new HomeFragment(this);
         userFragment = new UserFragment(this);
+        musicPlayerReceiver = new MusicPlayerReceiver();
 //        playerFragment = new PlayerFragment(this);
         setContentView(R.layout.activity_main);
         init();
@@ -106,14 +111,14 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
             @Override
             public void onPause() {
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-                assert playerFragment != null;
+                if (playerFragment == null) return;
                 playerFragment.handleRotateImageThumbnail();
             }
 
             @Override
             public void onResume() {
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-                assert playerFragment != null;
+                if (playerFragment == null) return;
                 playerFragment.handleRotateImageThumbnail();
             }
 
@@ -252,15 +257,6 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 .setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.bg_bottom_navigation));
     }
 
-    private final BroadcastReceiver mediaPlayerServiceBroadcast = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent != null) {
-                handleIntent(intent);
-            }
-        }
-    };
-
     private void handleIntent(Intent intent) {
         int action = intent.getIntExtra("action", -1);
         int currentPositionDuration = intent.getIntExtra(KEY_CURRENT_MUSIC_POSITION, 0);
@@ -299,9 +295,10 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                Log.d(TAG, "handleIntent: next");
                 musicPlayer.nextSong(musicPlayer.getCurrentIndexSong());
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-                assert playerFragment != null;
+                if (playerFragment == null) return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
                 handleChangeMusic();
@@ -319,9 +316,10 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                Log.d(TAG, "handleIntent: previous");
                 musicPlayer.previousSong(musicPlayer.getCurrentIndexSong());
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-                assert playerFragment != null;
+                if (playerFragment == null) return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
                 handleChangeMusic();
@@ -342,7 +340,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 int indexSong = intent.getIntExtra(KEY_SONG_INDEX, 0);
                 musicPlayer.setMusicAtPosition(indexSong);
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-                assert playerFragment != null;
+                if (playerFragment == null) return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
                 handleChangeMusic();
@@ -445,13 +443,13 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     protected void onStart() {
         super.onStart();
         IntentFilter musicServiceIntentFilter = new IntentFilter(MUSIC_PLAYER_EVENT);
-        LocalBroadcastManager.getInstance(this).registerReceiver(mediaPlayerServiceBroadcast, musicServiceIntentFilter);
+        registerReceiver(musicPlayerReceiver, musicServiceIntentFilter);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(mediaPlayerServiceBroadcast);
+        unregisterReceiver(musicPlayerReceiver);
     }
 
 
@@ -503,5 +501,14 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
             }
         }
         return false;
+    }
+
+    public class MusicPlayerReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                handleIntent(intent);
+            }
+        }
     }
 }
