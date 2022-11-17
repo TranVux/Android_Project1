@@ -1,0 +1,1 @@
+# Đây là package sẽ chứa các model của app
