@@ -1,32 +1,45 @@
 package com.example.assignment_pro1121_nhom3.views;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.navigation.Navigation;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowInsets;
-import android.view.WindowInsetsController;
-import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
+import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.fragments.HomeFragment;
 import com.example.assignment_pro1121_nhom3.fragments.PlayerFragment;
 import com.example.assignment_pro1121_nhom3.fragments.UserFragment;
+import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
+import com.example.assignment_pro1121_nhom3.models.Music;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements HandleChangeColorBottomNavigation {
     BottomNavigationView bottomNavigation;
     int state = 1;
+    HomeFragment homeFragment;
+    UserFragment userFragment;
+    PlayerFragment playerFragment;
+    boolean agreeBack = false;
+    private boolean doubleBackToExitPressedOnce = false;
+
+    //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +47,21 @@ public class MainActivity extends AppCompatActivity {
         // đổi màu của status bar
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         //
-
+        // khai báo các fragment
+        homeFragment = new HomeFragment(this);
+        userFragment = new UserFragment(this);
+        playerFragment = new PlayerFragment(this);
         setContentView(R.layout.activity_main);
+
+        // bottom navigation
         bottomNavigation = findViewById(R.id.bottom_navigation);
         bottomNavigation.setItemIconTintList(null);
         BottomNavigationMenuView bottomNavigationMenuView = (BottomNavigationMenuView) bottomNavigation.getChildAt(0);
         BottomNavigationItemView itemView = (BottomNavigationItemView) bottomNavigationMenuView.getChildAt(1);
-        View customRadio = LayoutInflater.from(getApplicationContext()).inflate(R.layout.custom_item_bottom_navigation_player, bottomNavigationMenuView, false);
-        View customButtonPlay = LayoutInflater.from(getApplicationContext()).inflate(R.layout.custom_item_bottom_navigation_button_play, bottomNavigationMenuView, false);
+        View customRadio = LayoutInflater.from(getApplicationContext())
+                .inflate(R.layout.custom_item_bottom_navigation_player, bottomNavigationMenuView, false);
+        View customButtonPlay = LayoutInflater.from(getApplicationContext())
+                .inflate(R.layout.custom_item_bottom_navigation_button_play, bottomNavigationMenuView, false);
         itemView.addView(customRadio);
         itemView.addView(customButtonPlay);
         customButtonPlay.setVisibility(View.GONE);
@@ -54,7 +74,14 @@ public class MainActivity extends AppCompatActivity {
                 customRadio.setVisibility(View.GONE);
                 customButtonPlay.setVisibility(View.VISIBLE);
                 bottomNavigation.getMenu().getItem(1).setChecked(true);
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, new PlayerFragment(), "PlayerFragment").commit();
+                getSupportFragmentManager().beginTransaction()
+                        // .setCustomAnimations(
+                        // R.anim.slide_enter_right_to_left, // enter
+                        // R.anim.slide_exit_right_to_left, // exit
+                        // R.anim.slide_enter_left_to_right, // popEnter
+                        // R.anim.slide_exit_left_to_right // popExit
+                        // )
+                        .replace(R.id.fragmentLayout, playerFragment, "PlayerFragment").commit();
             }
         });
 
@@ -72,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // set layout mặc định cho fragment là màn hình home
-        getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, new HomeFragment(), "FragmentHome").commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, homeFragment, "FragmentHome").commit();
 
         bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -82,13 +109,31 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.home: {
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, new HomeFragment(), "FragmentHome").commit();
+                        getSupportFragmentManager().beginTransaction()
+                                // .setCustomAnimations(
+                                // R.anim.slide_enter_right_to_left, // enter
+                                // R.anim.slide_exit_right_to_left, // exit
+                                // R.anim.slide_enter_left_to_right, // popEnter
+                                // R.anim.slide_exit_left_to_right // popExit
+                                // )
+                                .replace(R.id.fragmentLayout, homeFragment, "FragmentHome").commit();
+                        break;
+                    }
+                    case R.id.player: {
+                        player.performClick();
                         break;
                     }
                     case R.id.user: {
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
-                        getSupportFragmentManager().beginTransaction().replace(R.id.fragmentLayout, new UserFragment(), "FragmentHome").commit();
+                        getSupportFragmentManager().beginTransaction()
+                                // .setCustomAnimations(
+                                // R.anim.slide_enter_right_to_left, // enter
+                                // R.anim.slide_exit_right_to_left, // exit
+                                // R.anim.slide_enter_left_to_right, // popEnter
+                                // R.anim.slide_exit_left_to_right // popExit
+                                // )
+                                .replace(R.id.fragmentLayout, userFragment, "FragmentUser").commit();
                         break;
                     }
                 }
@@ -97,31 +142,40 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-//    public void fixBottomNavigation(){
-//        if (Build.VERSION.SDK_INT >= 30) {
-//            // Root ViewGroup of my activity
-//            val root = findViewById<ConstraintLayout>(R.id.root)
-//
-//                    ViewCompat.setOnApplyWindowInsetsListener(root) { view, windowInsets ->
-//
-//                    val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-//
-//                // Apply the insets as a margin to the view. Here the system is setting
-//                // only the bottom, left, and right dimensions, but apply whichever insets are
-//                // appropriate to your layout. You can also update the view padding
-//                // if that's more appropriate.
-//
-//                view.layoutParams =  (view.layoutParams as FrameLayout.LayoutParams).apply {
-//                    leftMargin = insets.left
-//                    bottomMargin = insets.bottom
-//                    rightMargin = insets.right
-//                }
-//
-//                // Return CONSUMED if you don't want want the window insets to keep being
-//                // passed down to descendant views.
-//                WindowInsetsCompat.CONSUMED
-//            }
-//
-//        }
-//    }
+    @Override
+    public void toTransparent() {
+        bottomNavigation
+                .setBackgroundColor(ContextCompat.getColor(getApplicationContext(), android.R.color.transparent));
+    }
+
+    @Override
+    public void toColor() {
+        bottomNavigation
+                .setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.bg_bottom_navigation));
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    @Override
+    public void onBackPressed() {
+        if (agreeBack) {
+            super.onBackPressed();
+            return;
+        }
+        agreeBack = true;
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Back thêm lần nữa để thoát", Toast.LENGTH_SHORT).show();
+
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
+    }
 }

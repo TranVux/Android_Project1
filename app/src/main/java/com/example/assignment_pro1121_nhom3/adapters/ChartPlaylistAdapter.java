@@ -1,6 +1,7 @@
 package com.example.assignment_pro1121_nhom3.adapters;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
         this.itemChartEvent = itemChartEvent;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     public void setData(List<Music> list) {
         this.list = list;
         notifyDataSetChanged();
@@ -42,15 +44,19 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
         return new ChartplaylistViewHolder(view);
     }
 
+    @SuppressLint("SetTextI18n")
     @Override
     public void onBindViewHolder(@NonNull ChartplaylistViewHolder holder, int position) {
         Music music = list.get(position);
         if (music == null) {
             return;
         }
-        Glide.with(context).load(list.get(position).getImg()).into(holder.imgSong);
-        holder.tvNumber.setText(music.getId());
-        holder.imgSong.setImageResource(music.getImg());
+        Glide.with(context).load(list.get(position).getThumbnailUrl()).into(holder.imgSong);
+        holder.tvNumber.setText(String.valueOf(position + 1));
+        int index = list.indexOf(music);
+        if (index == 0 || index == 1 || index == 2) {
+            holder.tvNumber.setTextColor(context.getResources().getColor(R.color.text_color_item_charts));
+        }
         holder.tvSong.setText(music.getName());
         holder.tvSinger.setText(music.getSingerName());
         holder.tvView.setText(music.getViews().toString());
@@ -58,6 +64,12 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
             @Override
             public void onClick(View v) {
                 itemChartEvent.onItemClick(music);
+            }
+        });
+        holder.buttonMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                itemChartEvent.onMoreButtonClick(music);
             }
         });
     }
@@ -74,7 +86,7 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
 
         ImageView imgSong;
         TextView tvSong, tvSinger, tvView, tvNumber;
-        LinearLayout chartMusicItem;
+        LinearLayout chartMusicItem, buttonMore;
 
         public ChartplaylistViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -84,10 +96,13 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
             tvSinger = itemView.findViewById(R.id.tvSinger);
             tvView = itemView.findViewById(R.id.tvView);
             chartMusicItem = itemView.findViewById(R.id.itemChart);
+            buttonMore = itemView.findViewById(R.id.buttonMore);
         }
     }
 
     public interface ItemChartEvent {
         void onItemClick(Music music);
+
+        void onMoreButtonClick(Music music);
     }
 }

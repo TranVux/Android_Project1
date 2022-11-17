@@ -8,37 +8,22 @@ public class Music implements Serializable {
     private String url;
     private String thumbnailUrl;
     private Long creationDate;
-    private Long modifyDate;
+    private Long updateDate;
     private String singerName;
     private String singerId;
     private Long views;
     private String genresId;
-    // mẫu cho Chart
-    int img;
 
-    public Music(String id,int img, String name,String singerName ,Long views ) {
-        this.id = id;
-        this.name = name;
-        this.singerName = singerName;
-        this.views = views;
-        this.img = img;
+    public Music() {
     }
 
-    public int getImg() {
-        return img;
-    }
-
-    public void setImg(int img) {
-        this.img = img;
-    }
-
-    public Music(String id, String name, String url, String thumbnailUrl, long creationDate, long modifyDate, String singerName, String singerId, long views, String genresId) {
+    public Music(String id, String name, String url, String thumbnailUrl, long creationDate, long updateDate, String singerName, String singerId, long views, String genresId) {
         this.id = id;
         this.name = name;
         this.url = url;
         this.thumbnailUrl = thumbnailUrl;
         this.creationDate = creationDate;
-        this.modifyDate = modifyDate;
+        this.updateDate = updateDate;
         this.singerName = singerName;
         this.singerId = singerId;
         this.views = views;
@@ -85,12 +70,12 @@ public class Music implements Serializable {
         this.creationDate = creationDate;
     }
 
-    public Long getModifyDate() {
-        return modifyDate;
+    public Long getUpdateDate() {
+        return updateDate;
     }
 
-    public void setModifyDate(long modifyDate) {
-        this.modifyDate = modifyDate;
+    public void setUpdateDate(long updateDate) {
+        this.updateDate = updateDate;
     }
 
     public String getSingerName() {
