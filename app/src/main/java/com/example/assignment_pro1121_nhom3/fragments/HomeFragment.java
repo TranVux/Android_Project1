@@ -40,6 +40,7 @@ import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.utils.GridSpacingItemDecoration;
 import com.example.assignment_pro1121_nhom3.views.ChartActivity;
+import com.example.assignment_pro1121_nhom3.views.DetailPlaylistActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
 import com.example.assignment_pro1121_nhom3.views.SingerActivity;
 import com.google.android.flexbox.FlexDirection;
@@ -228,7 +229,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         playListMusicAdapter = new PlayListMusicAdapter(listPlaylist, requireContext(), new ItemEvent.PlaylistItemEvent() {
             @Override
             public void onItemClick(Playlist playlist) {
-                Toast.makeText(requireContext(), playlist.getName(), Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(requireContext(), DetailPlaylistActivity.class));
             }
         });
 
