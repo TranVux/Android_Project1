@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
             android:visibility="visible"
             android:alpha="1"
             motion:transitionEasing="accelerate"

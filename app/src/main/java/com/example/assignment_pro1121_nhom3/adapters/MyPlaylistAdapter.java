@@ -79,12 +79,11 @@ public class MyPlaylistAdapter extends RecyclerView.Adapter<MyPlaylistAdapter.My
         return 0;
     }
 
-    public static class MyPlaylistViewHolder extends RecyclerView.ViewHolder{
+    public static class MyPlaylistViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imgSong1, btnMore;
+        ImageView imgSong1;
         TextView txtSong, txtSinger, txtView;
-        LinearLayout MyPlaylistItem;
-
+        LinearLayout MyPlaylistItem, btnMore;
 
 
         public MyPlaylistViewHolder(@NonNull View itemView) {

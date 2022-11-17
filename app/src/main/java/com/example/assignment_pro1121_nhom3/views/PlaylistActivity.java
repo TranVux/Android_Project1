@@ -5,16 +5,12 @@ import androidx.core.view.WindowCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.graphics.Color;
-import android.graphics.LinearGradient;
-import android.graphics.Shader;
 import android.os.Bundle;
-import android.text.TextPaint;
-import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.assignment_pro1121_nhom3.R;
-import com.example.assignment_pro1121_nhom3.adapters.ChartPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.adapters.MyPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
 import com.example.assignment_pro1121_nhom3.models.Music;
@@ -26,6 +22,7 @@ public class PlaylistActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private MyPlaylistAdapter adapter;
+    ImageView imageForeground;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +31,9 @@ public class PlaylistActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_playlist);
         recyclerView = findViewById(R.id.recyclerView);
+        imageForeground = findViewById(R.id.imageForeground);
+
+        // gắn ảnh cho playlist
 
 
         adapter = new MyPlaylistAdapter(this, new MyPlaylistAdapter.ItemChartEvent() {
@@ -48,11 +48,13 @@ public class PlaylistActivity extends AppCompatActivity {
                 bottomSheet.show(getSupportFragmentManager(), "TAG");
             }
         });
+
         recyclerView.setNestedScrollingEnabled(false);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         adapter.setData(getListMusic());
         recyclerView.setAdapter(adapter);
+
     }
 
     private List<Music> getListMusic() {
