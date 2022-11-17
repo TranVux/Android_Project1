@@ -21,7 +21,7 @@ public class GenreDAO {
     private static final String TAG = GenreDAO.class.getName();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public ArrayList<Genres> getAllDataGenre(ReadAllDataGenre readAllDataGenre){
+    public void getAllDataGenre(ReadAllDataGenre readAllDataGenre){
         ArrayList<Genres> list = new ArrayList<>();
         db.collection("genres")
                 .get()
@@ -47,7 +47,6 @@ public class GenreDAO {
                         }
                     }
                 });
-        return list;
     }
 
     public void getGenre(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id, ReadItemGenre readItemGenre){

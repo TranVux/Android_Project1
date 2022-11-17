@@ -39,6 +39,7 @@ import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.utils.GridSpacingItemDecoration;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
+import com.example.assignment_pro1121_nhom3.views.MoreMusicActivity;
 import com.example.assignment_pro1121_nhom3.views.SingerActivity;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
@@ -336,6 +337,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.labelMoreRecentPublish:
             case R.id.icMoreRecentPublish: {
+                Intent intent = new Intent(getContext(),MoreMusicActivity.class);
+                startActivity(intent);
                 Toast.makeText(requireContext(), "Xem thêm bài hát mới thêm", Toast.LENGTH_SHORT).show();
                 break;
             }

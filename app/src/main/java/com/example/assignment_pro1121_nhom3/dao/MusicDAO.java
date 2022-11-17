@@ -3,6 +3,7 @@ package com.example.assignment_pro1121_nhom3.dao;
 import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.Query.Direction;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -171,11 +173,59 @@ public class MusicDAO {
         });
     }
 
-    public void getTopMusic10(IOnProgressBarStatusListener iOnProgressBarStatusListener, GetTop10Listener getTop10Listener) {
+    public void getTopMusicBuyGenre(IOnProgressBarStatusListener iOnProgressBarStatusListener,int limit, boolean isDescending, String genreId,GetTopMusicBuyGenreListener getTopMusicBuyGenreListener){
         iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Music> list = new ArrayList<>();
         CollectionReference collectionReference = db.collection("musics");
-        collectionReference.orderBy("views", Direction.DESCENDING).limit(10).get()
+        Query query;
+        if(isDescending){
+            query = collectionReference.whereEqualTo("genresID", genreId).orderBy("views", Direction.DESCENDING).limit(limit);
+        }else {
+            query = collectionReference.whereEqualTo("genresID", genreId).limit(limit);
+        }
+        query.get()
+        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        Map<String, Object> map = document.getData();
+                        String id = document.getId();
+                        String name = (String) map.get("name");
+                        String url = (String) map.get("url");
+                        String thumbnailUrl = (String) map.get("thumbnailUrl");
+                        Long creationDate = (Long) map.get("creationDate");
+                        if (creationDate == null) {
+                            creationDate = 0L;
+                        }
+                        Long updateDate = (Long) map.get("modifyDate");
+                        if (updateDate == null) {
+                            updateDate = 0L;
+                        }
+                        String singerName = (String) map.get("singerName");
+                        String singerId = (String) map.get("singerID");
+                        Long views = (Long) map.get("views");
+                        if (views == null) {
+                            views = 0L;
+                        }
+                        String genresId = (String) map.get("genresID");
+                        Music music = new Music(id, name, url, thumbnailUrl, creationDate, updateDate, singerName, singerId, views, genresId);
+                        list.add(music);
+                    }
+                    getTopMusicBuyGenreListener.onGetTopMusicBuyGenreCallback(list);
+                    iOnProgressBarStatusListener.afterGetData();
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void getTopMusicListen(IOnProgressBarStatusListener iOnProgressBarStatusListener,int limit, GetTopMusicListener getTopMusicListener) {
+        iOnProgressBarStatusListener.beforeGetData();
+        ArrayList<Music> list = new ArrayList<>();
+        CollectionReference collectionReference = db.collection("musics");
+        collectionReference.orderBy("views", Direction.DESCENDING).limit(limit).get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -204,7 +254,7 @@ public class MusicDAO {
                                 Music music = new Music(id, name, url, thumbnailUrl, creationDate, updateDate, singerName, singerId, views, genresId);
                                 list.add(music);
                             }
-                            getTop10Listener.onGetTop10Callback(list);
+                            getTopMusicListener.onGetTopMusicCallback(list);
                             iOnProgressBarStatusListener.afterGetData();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -213,8 +263,8 @@ public class MusicDAO {
                 });
     }
 
-    public interface GetTop10Listener {
-        void onGetTop10Callback(ArrayList<Music> list);
+    public interface GetTopMusicListener {
+        void onGetTopMusicCallback(ArrayList<Music> list);
     }
 
     public interface ReadAllDataMusic {
@@ -227,5 +277,9 @@ public class MusicDAO {
 
     public interface GetInitDataMusic {
         void onGetInitData(ArrayList<Music> list);
+    }
+
+    public interface GetTopMusicBuyGenreListener{
+        void onGetTopMusicBuyGenreCallback(ArrayList<Music> list);
     }
 }
