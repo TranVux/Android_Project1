@@ -43,6 +43,10 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         super.onCreate(savedInstanceState);
         // đổi màu của status bar
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+        //đổi màu chữ status bar
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        //
         // cài đặt để firebase có thể lấy data trong cache
         db = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()

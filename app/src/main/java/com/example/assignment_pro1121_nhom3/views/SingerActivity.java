@@ -40,7 +40,11 @@ public class SingerActivity extends AppCompatActivity {
         tabLayout = findViewById(R.id.tabBar);
         viewPager = findViewById(R.id.viewPager);
         btnBack = findViewById(R.id.btnBack);
-
+        getWindow().setStatusBarColor(getResources().getColor(R.color.status_bar,null));
+        //đổi màu chữ status bar
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        //
         //tạo adapter cho viewPager
         viewPagerForSingerAdapter = new ViewPagerForSingerAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         viewPager.setAdapter(viewPagerForSingerAdapter);
