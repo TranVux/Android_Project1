@@ -6,7 +6,6 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.MyPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
@@ -27,9 +25,9 @@ import java.util.List;
 
 import jp.wasabeef.blurry.Blurry;
 
-public class PlaylistActivity extends AppCompatActivity {
+public class DetailPlaylistActivity extends AppCompatActivity {
 
-    public static final String TAG = PlaylistActivity.class.getSimpleName();
+    public static final String TAG = DetailPlaylistActivity.class.getSimpleName();
 
     private RecyclerView recyclerView;
     private MyPlaylistAdapter adapter;
@@ -41,13 +39,13 @@ public class PlaylistActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
-        setContentView(R.layout.activity_playlist);
+        setContentView(R.layout.activity_detail_playlist);
         recyclerView = findViewById(R.id.recyclerView);
         imageForeground = findViewById(R.id.imageForeground);
         nestedScrollView = findViewById(R.id.scrollView);
 
         // gắn ảnh cho playlist
-        Blurry.with(PlaylistActivity.this)
+        Blurry.with(DetailPlaylistActivity.this)
                 .sampling(8)
                 .radius(30)
                 .async()
@@ -56,7 +54,7 @@ public class PlaylistActivity extends AppCompatActivity {
         adapter = new MyPlaylistAdapter(this, new MyPlaylistAdapter.ItemChartEvent() {
             @Override
             public void onItemClick(Music music) {
-                Toast.makeText(PlaylistActivity.this, "Tới activity player", Toast.LENGTH_SHORT).show();
+                Toast.makeText(DetailPlaylistActivity.this, "Tới activity player", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -103,7 +101,7 @@ public class PlaylistActivity extends AppCompatActivity {
     }
 
     public int getNavigationBarHeight() {
-        boolean hasMenuKey = ViewConfiguration.get(PlaylistActivity.this).hasPermanentMenuKey();
+        boolean hasMenuKey = ViewConfiguration.get(DetailPlaylistActivity.this).hasPermanentMenuKey();
         int resourceId = getResources().getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0 && !hasMenuKey) {
             return getResources().getDimensionPixelSize(resourceId);

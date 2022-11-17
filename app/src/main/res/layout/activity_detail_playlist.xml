@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/bg_bottom_sheet"
     app:layoutDescription="@xml/activity_playlist_scene"
-    tools:context=".views.PlaylistActivity">
+    tools:context=".views.DetailPlaylistActivity">
 
     <TextView
         android:id="@+id/tvNamePlaylistTopBar"
