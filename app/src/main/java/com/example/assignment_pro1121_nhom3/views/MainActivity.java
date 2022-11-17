@@ -36,7 +36,6 @@ import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNa
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
-import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -44,8 +43,6 @@ import com.google.android.material.navigation.NavigationBarView;
 
 import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
 import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.Objects;
