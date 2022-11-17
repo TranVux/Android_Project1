@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/playerLayout"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/playerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.PlayerFragment">
@@ -19,9 +19,17 @@
         android:layout_height="match_parent"
         android:background="#48111111">
 
-        <RelativeLayout
+        <!--        <RelativeLayout-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="match_parent">-->
+
+        <com.google.android.flexbox.FlexboxLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:flexDirection="column"
+            app:alignItems="center"
+            app:justifyContent="space_between"
+            android:layout_marginBottom="120dp">
 
             <RelativeLayout
                 android:id="@+id/layoutTopBar"
@@ -29,8 +37,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingHorizontal="26dp"
-                android:paddingBottom="26dp"
-                android:paddingTop="30dp">
+                android:paddingTop="30dp"
+                android:paddingBottom="26dp">
 
                 <TextView
                     android:id="@+id/musicName"
@@ -38,9 +46,9 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
+                    android:ellipsize="end"
                     android:fontFamily="@font/roboto_bold"
                     android:maxLines="1"
-                    android:ellipsize="end"
                     android:text="Muộn rồi mà sao còn"
                     android:textColor="@color/white"
                     android:textSize="18sp" />
@@ -68,12 +76,12 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/imageMusicThumbnail"
-                android:layout_width="340dp"
-                android:layout_height="340dp"
+                android:layout_width="300dp"
+                android:layout_height="300dp"
                 android:layout_below="@+id/layoutTopBar"
                 android:layout_centerHorizontal="true"
-                android:scaleType="centerCrop"
                 android:layout_marginTop="20dp"
+                android:scaleType="centerCrop"
                 android:src="@drawable/img" />
 
             <com.google.android.flexbox.FlexboxLayout
@@ -82,7 +90,6 @@
                 android:layout_height="200dp"
                 android:layout_below="@id/imageMusicThumbnail"
                 android:layout_alignParentStart="true"
-                android:layout_marginTop="50dp"
                 android:layout_alignParentEnd="true"
                 app:flexDirection="column"
                 app:justifyContent="space_between">
@@ -272,7 +279,10 @@
 
             </com.google.android.flexbox.FlexboxLayout>
 
-        </RelativeLayout>
+        </com.google.android.flexbox.FlexboxLayout>
+
+
+        <!--        </RelativeLayout>-->
 
     </eightbitlab.com.blurview.BlurView>
 

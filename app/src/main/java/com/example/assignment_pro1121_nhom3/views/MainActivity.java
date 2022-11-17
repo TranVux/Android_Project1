@@ -149,20 +149,25 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
             musicPlayer.setPlayList(listMusicInCache);
             musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
             playMusicPlayer();
+            musicPlayer.setPlayList(listTop10Music);
+        } else {
+            musicPlayer.setPlayList(listTop10Music);
+            musicPlayer.start();
         }
 
         // xử lý player state
-        musicPlayer.start();
         handleStateMusicPlayer(musicPlayer);
         Log.d(TAG, "onCreate: save state: " + isCreated + " " + isPlaying + " " + isStart + " " + isDestroy);
         Log.d(TAG, "playMusicPlayer: " + musicPlayer.getStateMusicPlayer());
         //
 
-        // handle thumbnail của player
-        Glide.with(MainActivity.this)
-                .load(musicPlayer.getCurrentSong().getThumbnailUrl())
-                .apply(new RequestOptions().override(45, 45))
-                .into(imageThumbnailCurrentMusic);
+        if (musicPlayer.getCurrentSong() != null) {
+            // handle thumbnail của player
+            Glide.with(MainActivity.this)
+                    .load(musicPlayer.getCurrentSong().getThumbnailUrl())
+                    .apply(new RequestOptions().override(45, 45))
+                    .into(imageThumbnailCurrentMusic);
+        }
 
         // set layout mặc định cho fragment là màn hình home
         bottomNavigation.getMenu().getItem(1).setChecked(true);

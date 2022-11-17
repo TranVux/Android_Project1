@@ -35,10 +35,9 @@ public class SplashScreen extends AppCompatActivity {
             public void onGetTop10Callback(ArrayList<Music> list) {
                 Intent intent = new Intent(SplashScreen.this, MainActivity.class);
                 intent.putExtra("fetchData", list);
-                startActivity(intent);
-
+                Log.d(TAG, "onGetTop10Callback: " + list.size());
                 musicPlayer = MusicPlayer.getInstance(list);
-
+                startActivity(intent);
                 finish();
             }
         });
