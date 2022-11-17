@@ -55,6 +55,7 @@ public class ChartActivity extends AppCompatActivity {
         float width = paint.measureText("#BXH");
         Log.d("TAG>>>>>>>>>", "onCreate: " + getNavigationBarHeight());
         setMargins(nestedScrollView, 0, 0, 0, getNavigationBarHeight() - 5);
+
         Shader textShader = new LinearGradient(0, 0, width, textView.getTextSize(),
                 new int[]{
                         Color.parseColor("#13DCFE"),
