@@ -6,6 +6,8 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +24,8 @@ import com.example.assignment_pro1121_nhom3.models.Music;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.wasabeef.blurry.Blurry;
 
 public class PlaylistActivity extends AppCompatActivity {
 
@@ -41,8 +45,13 @@ public class PlaylistActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
         imageForeground = findViewById(R.id.imageForeground);
         nestedScrollView = findViewById(R.id.scrollView);
-        // gắn ảnh cho playlist
 
+        // gắn ảnh cho playlist
+        Blurry.with(PlaylistActivity.this)
+                .sampling(8)
+                .radius(30)
+                .async()
+                .from(BitmapFactory.decodeResource(getResources(), R.drawable.img)).into(imageForeground);
 
         adapter = new MyPlaylistAdapter(this, new MyPlaylistAdapter.ItemChartEvent() {
             @Override
