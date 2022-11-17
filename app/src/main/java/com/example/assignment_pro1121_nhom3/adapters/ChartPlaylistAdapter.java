@@ -53,8 +53,7 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
         }
         Glide.with(context).load(list.get(position).getThumbnailUrl()).into(holder.imgSong);
         holder.tvNumber.setText(String.valueOf(position + 1));
-        int index = list.indexOf(music);
-        if (index == 0 || index == 1 || index == 2) {
+        if (position == 0 || position == 1 || position == 2) {
             holder.tvNumber.setTextColor(context.getResources().getColor(R.color.text_color_item_charts));
         }
         holder.tvSong.setText(music.getName());

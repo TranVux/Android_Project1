@@ -119,5 +119,4 @@
                 android:paddingHorizontal="15dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
-
 </RelativeLayout>
