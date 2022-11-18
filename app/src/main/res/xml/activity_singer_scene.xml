@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:motion="http://schemas.android.com/apk/res-auto">
+
+    <Transition
+        motion:constraintSetEnd="@+id/end"
+        motion:constraintSetStart="@id/start"
+        motion:duration="1000">
+        <KeyFrameSet>
+            <KeyAttribute
+                android:scaleY="10"
+                android:translationY="120dp" />
+            <KeyAttribute
+                android:alpha="1"
+                motion:framePosition="500"
+                motion:motionTarget="@+id/singerNameTopBar" />
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="1000"
+                motion:motionTarget="@+id/singerNameTopBar" />
+            <KeyAttribute
+                android:alpha="0.5"
+                motion:framePosition="1000"
+                motion:motionTarget="@+id/singerNameTopBar" />
+            <KeyAttribute
+                android:alpha="0"
+                motion:framePosition="0"
+                motion:motionTarget="@+id/singerNameTopBar" />
+            <KeyAttribute
+                android:alpha="0"
+                motion:framePosition="74"
+                motion:motionTarget="@+id/singerNameTopBar" />
+            <KeyAttribute
+                android:alpha="1"
+                motion:framePosition="100"
+                motion:motionTarget="@+id/singerNameTopBar" />
+        </KeyFrameSet>
+        <OnSwipe
+            motion:touchAnchorId="@+id/nestedScrollView2"
+            motion:touchAnchorSide="bottom" />
+    </Transition>
+
+    <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/singerNameTopBar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:elevation="8dp"
+            android:visibility="invisible"
+            motion:layout_constraintLeft_toLeftOf="parent"
+            motion:layout_constraintRight_toRightOf="parent"
+            motion:layout_constraintTop_toTopOf="parent" />
+        <Constraint
+            android:id="@+id/nestedScrollView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/roll"
+            motion:layout_constraintVertical_bias="0.019"
+            motion:layout_editor_absoluteX="0dp" />
+    </ConstraintSet>
+
+    <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/singerNameTopBar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:elevation="8dp"
+            android:visibility="visible"
+            motion:layout_constraintLeft_toLeftOf="parent"
+            motion:layout_constraintRight_toRightOf="parent"
+            motion:layout_constraintTop_toTopOf="parent" />
+        <Constraint
+            android:id="@+id/singerThumbnail"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:translationY="-270dp"
+            android:visibility="invisible" />
+        <Constraint
+            android:id="@+id/singerNameMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="36dp"
+            android:translationY="-270dp"
+            android:visibility="invisible"
+            motion:layout_constraintBottom_toBottomOf="@+id/singerThumbnail"
+            motion:layout_constraintEnd_toEndOf="@+id/singerThumbnail"
+            motion:layout_constraintStart_toStartOf="@+id/singerThumbnail" />
+        <Constraint
+            android:id="@+id/buttonPlayAll"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="10dp"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@id/singerNameTopBar" />
+        <Constraint
+            android:id="@+id/nestedScrollView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            motion:layout_constraintTop_toBottomOf="@id/roll" />
+    </ConstraintSet>
+</MotionScene>
