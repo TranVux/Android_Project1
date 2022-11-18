@@ -9,6 +9,7 @@ import com.google.firebase.firestore.AggregateQuery;
 import com.google.firebase.firestore.AggregateQuerySnapshot;
 import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.Query.Direction;
 
@@ -25,6 +26,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
@@ -199,19 +202,19 @@ public class MusicDAO {
     }
 
     public void getCountDocumentMusic(GetCountDocument getCountDocument, String singerID) {
-       db.collection("musics").whereEqualTo("singerID", singerID)
-               .get()
-               .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                   @Override
-                   public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                       getCountDocument.onGetCountSuccess(task.getResult().size());
-                   }
-               }).addOnFailureListener(new OnFailureListener() {
-                   @Override
-                   public void onFailure(@NonNull Exception e) {
-                       e.printStackTrace();
-                   }
-               });
+        db.collection("musics").whereEqualTo("singerID", singerID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        getCountDocument.onGetCountSuccess(task.getResult().size());
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     public void getMusicBySingerId(Query query, String singerID, GetSingerByID getSingerByID, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
@@ -271,6 +274,52 @@ public class MusicDAO {
                 }
             }
         });
+    }
+
+    public void getListMusic(ArrayList<String> listID, GetListMusic getListMusic) {
+        ArrayList<Music> list = new ArrayList<>();
+        db.collection("musics").whereIn(FieldPath.documentId(), listID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                if (document.exists()) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    Map<String, Object> map = document.getData();
+                                    String id = document.getId();
+                                    String name = (String) map.get("name");
+                                    String url = (String) map.get("url");
+                                    String thumbnailUrl = (String) map.get("thumbnailUrl");
+                                    Long creationDate = (Long) map.get("creationDate");
+                                    if (creationDate == null) {
+                                        creationDate = 0L;
+                                    }
+                                    Long updateDate = (Long) map.get("modifyDate");
+                                    if (updateDate == null) {
+                                        updateDate = 0L;
+                                    }
+                                    String singerName = (String) map.get("singerName");
+                                    String singerId = (String) map.get("singerID");
+                                    Long views = (Long) map.get("views");
+                                    if (views == null) {
+                                        views = 0L;
+                                    }
+                                    String genresId = (String) map.get("genresID");
+                                    Music music = new Music(id, name, url, thumbnailUrl, creationDate, updateDate, singerName, singerId, views, genresId);
+                                    list.add(music);
+                                }
+                            }
+                            getListMusic.onGetListMusicSuccess(list);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
     }
 
     public void getTopMusic10(GetTop10Listener getTop10Listener) {
@@ -341,5 +390,9 @@ public class MusicDAO {
 
     public interface GetDataMusicWithLimit {
         void onGetLimitData(ArrayList<Music> list);
+    }
+
+    public interface GetListMusic {
+        void onGetListMusicSuccess(ArrayList<Music> list);
     }
 }

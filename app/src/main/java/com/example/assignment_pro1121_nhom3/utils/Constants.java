@@ -20,8 +20,9 @@ public class Constants {
     public static final String KEY_SONG_GENRES_ID = "KEY_SONG_GENRES_ID";
     public static final String KEY_SONG_CREATION_DATE = "KEY_SONG_CREATION_DATE";
     public static final String KEY_SONG_UPDATE_DATE = "KEY_SONG_UPDATE_DATE";
-    public static final String KEY_SONG_PLAYLIST_NAME = "KEY_SONG_PLAYLIST_NAME";
     public static final String KEY_SONG_INDEX = "KEY_SONG_INDEX";
+    public static final String KEY_SONG_PLAYLIST_NAME = "KEY_SONG_PLAYLIST_NAME";
+    public static final String KEY_ID_OF_PLAYLIST = "KEY_ID_OF_PLAYLIST";
     public static final String CHANGE_TO_FOREGROUND_SERVICE = "CHANGE_TO_FOREGROUND_SERVICE";
     public static final String CHANGE_TO_SERVICE = "CHANGE_TO_SERVICE";
 }

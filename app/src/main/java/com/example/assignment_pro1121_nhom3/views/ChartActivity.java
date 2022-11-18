@@ -21,17 +21,18 @@ import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.ChartPlaylistAdapter;
+import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
 import com.example.assignment_pro1121_nhom3.models.Music;
-import com.example.assignment_pro1121_nhom3.utils.ActionBarSizeUtil;
+
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ChartActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ChartPlaylistAdapter adapter;
+    private MusicDAO musicDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,8 @@ public class ChartActivity extends AppCompatActivity {
         //đổi màu chữ status bar
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+
+        musicDAO = new MusicDAO();
 
         setContentView(R.layout.activity_charts);
         recyclerView = findViewById(R.id.recyclerview);
@@ -86,25 +89,18 @@ public class ChartActivity extends AppCompatActivity {
         recyclerView.setNestedScrollingEnabled(false);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
-        adapter.setData(getListMusic());
         recyclerView.setAdapter(adapter);
-    }
 
-    private List<Music> getListMusic() {
-        List<Music> list = new ArrayList<>();
-        list.add(new Music("1", "Có chắc", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("2", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("3", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("4", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("5", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("6", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("7", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("8", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("9", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        return list;
+        musicDAO.getTopMusic10(new MusicDAO.GetTop10Listener() {
+            @Override
+            public void onGetTop10Callback(ArrayList<Music> list) {
+                adapter.setData(list);
+            }
+        });
+
+        //chart
+        //
+
     }
 
     private void setMargins(View view, int left, int top, int right, int bottom) {

@@ -243,6 +243,10 @@ public class MusicPlayer implements Serializable {
         musicPlayerCallback.updateSeekBar(currentPositionSong);
     }
 
+    public void clearPlaylist() {
+        this.playListMusic.clear();
+    }
+
     public interface MusicPlayerCallback {
         void onPause();
 

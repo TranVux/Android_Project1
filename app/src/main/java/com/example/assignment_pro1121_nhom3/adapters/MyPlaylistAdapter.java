@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Music;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MyPlaylistAdapter extends RecyclerView.Adapter<MyPlaylistAdapter.MyPlaylistViewHolder> {
@@ -34,6 +35,10 @@ public class MyPlaylistAdapter extends RecyclerView.Adapter<MyPlaylistAdapter.My
     public void setData(List<Music> list) {
         this.list = list;
         notifyDataSetChanged();
+    }
+
+    public ArrayList<Music> getList() {
+        return (ArrayList<Music>) list;
     }
 
     @NonNull

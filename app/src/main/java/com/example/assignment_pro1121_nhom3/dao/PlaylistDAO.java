@@ -14,12 +14,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -213,46 +215,38 @@ public class PlaylistDAO {
                 });
     }
 
-    public void getMusicInPlaylist(String idPlaylist, ReadMusicInPlaylist readMusicInPlaylist, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
-        ArrayList<Music> tempListMusic = new ArrayList<>();
+    public void getMusicInPlaylist(String idPlaylist, IOnProgressBarStatusListener iOnProgressBarStatusListener, ReadMusicInPlaylist readMusicInPlaylist) {
+        iOnProgressBarStatusListener.beforeGetData();
         MusicDAO musicDAO = new MusicDAO();
-        getPlaylist(new IOnProgressBarStatusListener() {
+        DocumentReference docRef = db.collection("playlists").document(idPlaylist);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void beforeGetData() {
-                iOnProgressBarStatusListener.beforeGetData();
-            }
-
-            @Override
-            public void afterGetData() {
-            }
-        }, idPlaylist, new ReadItemPlaylist() {
-            @Override
-            public void onReadItemPlaylistCallback(Playlist playlist) {
-                ArrayList<String> idMusics = new ArrayList<>();
-                idMusics = playlist.getMusics();
-                for (String id : idMusics) {
-                    ArrayList<String> finalIdMusics = idMusics;
-                    musicDAO.getMusic(new IOnProgressBarStatusListener() {
-                        @Override
-                        public void beforeGetData() {
-
-                        }
-
-                        @Override
-                        public void afterGetData() {
-                            iOnProgressBarStatusListener.afterGetData();
-                        }
-                    }, id, new MusicDAO.ReadItemMusic() {
-                        @Override
-                        public void onReadItemMusicCallback(Music music) {
-                            tempListMusic.add(music);
-                            if (finalIdMusics.indexOf(id) == finalIdMusics.size() - 1) {
-                                readMusicInPlaylist.onReadSuccess(tempListMusic);
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Map<String, Object> map = document.getData();
+                        if (map != null) {
+                            ArrayList<String> musicsID = (ArrayList<String>) map.getOrDefault("musics", null);
+                            if (musicsID != null) {
+                                musicDAO.getListMusic(musicsID, new MusicDAO.GetListMusic() {
+                                    @Override
+                                    public void onGetListMusicSuccess(ArrayList<Music> list) {
+                                        readMusicInPlaylist.onReadSuccess(list);
+                                        iOnProgressBarStatusListener.afterGetData();
+                                    }
+                                });
                             }
                         }
-                    });
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
                 }
             }
+
         });
     }
 
