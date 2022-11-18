@@ -40,6 +40,10 @@ public class ChartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
 
+        //đổi màu chữ status bar
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        
         setContentView(R.layout.activity_charts);
         recyclerView = findViewById(R.id.recyclerview);
         NestedScrollView nestedScrollView = findViewById(R.id.scrollView);

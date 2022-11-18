@@ -81,7 +81,9 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         super.onCreate(savedInstanceState);
         // đổi màu của status bar
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        //
+        //Đổi màu status bar nè
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
         // khai báo các fragment
         homeFragment = new HomeFragment(this);
