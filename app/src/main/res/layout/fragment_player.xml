@@ -82,6 +82,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:scaleType="centerCrop"
+                android:elevation="10dp"
                 android:src="@drawable/img" />
 
             <com.google.android.flexbox.FlexboxLayout

@@ -104,7 +104,7 @@
             android:layout_height="wrap_content"
             motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="27dp"
             android:translationY="0dp"
             android:visibility="visible" />
     </ConstraintSet>

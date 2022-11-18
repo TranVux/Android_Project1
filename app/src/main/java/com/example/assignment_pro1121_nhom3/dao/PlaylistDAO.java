@@ -6,6 +6,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
+import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -212,6 +213,49 @@ public class PlaylistDAO {
                 });
     }
 
+    public void getMusicInPlaylist(String idPlaylist, ReadMusicInPlaylist readMusicInPlaylist, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
+        ArrayList<Music> tempListMusic = new ArrayList<>();
+        MusicDAO musicDAO = new MusicDAO();
+        getPlaylist(new IOnProgressBarStatusListener() {
+            @Override
+            public void beforeGetData() {
+                iOnProgressBarStatusListener.beforeGetData();
+            }
+
+            @Override
+            public void afterGetData() {
+            }
+        }, idPlaylist, new ReadItemPlaylist() {
+            @Override
+            public void onReadItemPlaylistCallback(Playlist playlist) {
+                ArrayList<String> idMusics = new ArrayList<>();
+                idMusics = playlist.getMusics();
+                for (String id : idMusics) {
+                    ArrayList<String> finalIdMusics = idMusics;
+                    musicDAO.getMusic(new IOnProgressBarStatusListener() {
+                        @Override
+                        public void beforeGetData() {
+
+                        }
+
+                        @Override
+                        public void afterGetData() {
+                            iOnProgressBarStatusListener.afterGetData();
+                        }
+                    }, id, new MusicDAO.ReadItemMusic() {
+                        @Override
+                        public void onReadItemMusicCallback(Music music) {
+                            tempListMusic.add(music);
+                            if (finalIdMusics.indexOf(id) == finalIdMusics.size() - 1) {
+                                readMusicInPlaylist.onReadSuccess(tempListMusic);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+    }
+
     public void renamePlaylist(String id, String newName, RenamePlaylistListener renamePlaylistListener) {
         DocumentReference documentReference = db.collection("playlists").document(id);
         documentReference
@@ -275,5 +319,11 @@ public class PlaylistDAO {
 
     public interface ReadItemPlaylist {
         void onReadItemPlaylistCallback(Playlist playlist);
+    }
+
+    public interface ReadMusicInPlaylist {
+        void onReadSuccess(ArrayList<Music> listMusic);
+
+        void onReadFailure(Exception e);
     }
 }

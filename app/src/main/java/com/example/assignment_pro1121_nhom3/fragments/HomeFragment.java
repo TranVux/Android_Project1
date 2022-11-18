@@ -227,7 +227,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         playListMusicAdapter = new PlayListMusicAdapter(listPlaylist, requireContext(), new ItemEvent.PlaylistItemEvent() {
             @Override
             public void onItemClick(Playlist playlist) {
-                startActivity(new Intent(requireContext(), DetailPlaylistActivity.class));
+                Intent detailPlaylistActivity = new Intent(requireContext(), DetailPlaylistActivity.class);
+                detailPlaylistActivity.putExtra("playlist", playlist);
+                startActivity(detailPlaylistActivity);
             }
         });
 
