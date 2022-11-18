@@ -32,8 +32,6 @@ public class ChartActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private ChartPlaylistAdapter adapter;
-    public final static int ITEM_HEIGHT = 40;
-    public final static int MARGIN_ITEM = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +41,7 @@ public class ChartActivity extends AppCompatActivity {
         //đổi màu chữ status bar
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-        
+
         setContentView(R.layout.activity_charts);
         recyclerView = findViewById(R.id.recyclerview);
         NestedScrollView nestedScrollView = findViewById(R.id.scrollView);
@@ -57,6 +55,9 @@ public class ChartActivity extends AppCompatActivity {
 
         TextPaint paint = textView.getPaint();
         float width = paint.measureText("#BXH");
+        //
+
+        // fix lỗi item của recyclerview bị khuất
         Log.d("TAG>>>>>>>>>", "onCreate: " + getNavigationBarHeight());
         setMargins(nestedScrollView, 0, 0, 0, getNavigationBarHeight() - 5);
 
@@ -68,6 +69,7 @@ public class ChartActivity extends AppCompatActivity {
         textView.getPaint().setShader(textShader);
         //
 
+        //adapter cho top
         adapter = new ChartPlaylistAdapter(this, new ChartPlaylistAdapter.ItemChartEvent() {
             @Override
             public void onItemClick(Music music) {
@@ -80,6 +82,7 @@ public class ChartActivity extends AppCompatActivity {
                 bottomSheet.show(getSupportFragmentManager(), "TAG");
             }
         });
+
         recyclerView.setNestedScrollingEnabled(false);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -98,12 +101,6 @@ public class ChartActivity extends AppCompatActivity {
         list.add(new Music("7", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
         list.add(new Music("8", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
         list.add(new Music("9", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
-        list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
         list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
         list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));
         list.add(new Music("10", "CCYLD", null, "https://upload.wikimedia.org/wikipedia/vi/thumb/3/32/S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg/220px-S%C6%A1n_T%C3%B9ng_M-TP_-_C%C3%B3_ch%E1%BA%AFc_y%C3%AAu_l%C3%A0_%C4%91%C3%A2y.jpg", 1668311586, 1668311586, "Sơn Tùng M-TP", "23133131313131", 2131L, "564645646464644654"));

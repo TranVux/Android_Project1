@@ -277,7 +277,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             public void onFailureGetInitPlayList(Exception e) {
                 e.printStackTrace();
             }
-        }, 3);
+        }, 10);
 
     }
 

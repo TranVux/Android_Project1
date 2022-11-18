@@ -13,6 +13,8 @@
         android:layout_width="27dp"
         android:layout_height="27dp"
         android:layout_gravity="right"
+        android:clickable="true"
+        android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_setting"
         tools:ignore="RtlHardcoded" />
 
@@ -133,8 +135,9 @@
                     android:layout_width="0dp"
                     android:layout_height="65dp"
                     android:layout_weight="1"
-                    android:background="@drawable/user_bg_button"
+                    android:background="@drawable/ripple_bg_button"
                     android:gravity="center"
+                    android:clickable="true"
                     android:orientation="horizontal"
                     android:padding="12dp">
 
@@ -179,7 +182,8 @@
                     android:layout_height="65dp"
                     android:layout_marginStart="10dp"
                     android:layout_weight="1"
-                    android:background="@drawable/user_bg_button"
+                    android:clickable="true"
+                    android:background="@drawable/ripple_bg_button"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:padding="12dp">
@@ -239,9 +243,12 @@
                     android:textSize="20dp" />
 
                 <ImageView
+                    android:id="@+id/btnAddPlaylist"
                     android:layout_width="19dp"
                     android:layout_height="19dp"
-                    android:src="@drawable/ic_add" />
+                    android:src="@drawable/ic_add"
+                    android:clickable="true"
+                    android:background="?selectableItemBackgroundBorderless"/>
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView

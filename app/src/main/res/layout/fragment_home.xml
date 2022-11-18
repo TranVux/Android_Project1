@@ -81,7 +81,9 @@
                 android:layout_alignTop="@+id/search_bar"
                 android:layout_alignBottom="@+id/search_bar"
                 android:layout_alignParentEnd="true"
+                android:clickable="true"
                 android:layout_gravity="center_vertical"
+                android:background="?selectableItemBackgroundBorderless"
                 android:layout_marginStart="6dp"
                 android:src="@drawable/ic_setting"
                 tools:ignore="ContentDescription" />
