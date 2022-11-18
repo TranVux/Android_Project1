@@ -205,13 +205,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         managerRclPlayList.setJustifyContent(JustifyContent.SPACE_BETWEEN);
         managerRclPlayList.setFlexWrap(FlexWrap.WRAP);
 
-//        LinearLayoutManager rclLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager rclRecentLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager rclPlaylistLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
 
-//        GridLayoutManager gridLayoutManagerRclRecentPublish = new GridLayoutManager(requireContext(), 3);
-//        GridLayoutManager gridLayoutManagerRclPlayList = new GridLayoutManager(requireContext(), 3);
-
-        rclRecentPublish.setLayoutManager(managerRclRecentPublish);
-        rclPlaylist.setLayoutManager(managerRclPlayList);
+        rclRecentPublish.setLayoutManager(rclRecentLayoutManager);
+        rclPlaylist.setLayoutManager(rclPlaylistLayoutManager);
 
         musicRecentPublishAdapter = new MusicRecentPublishAdapter(listRecentPublish, requireContext(), new ItemEvent.MusicItemEvent() {
             @Override
@@ -247,7 +245,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                     progressBarLayout.setVisibility(View.GONE);
                 }
             }
-        }, 3, new MusicDAO.GetDataMusicWithLimit() {
+        }, 10, new MusicDAO.GetDataMusicWithLimit() {
             @Override
             public void onGetLimitData(ArrayList<Music> list) {
                 listRecentPublish = list;

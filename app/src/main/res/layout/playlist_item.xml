@@ -4,13 +4,14 @@
     android:id="@+id/itemPlaylist"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_marginEnd="10dp"
     android:layout_marginBottom="10dp">
 
     <ImageView
         android:layout_width="105dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="7dp"
-        android:src="@drawable/foreground"/>
+        android:src="@drawable/foreground" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,11 +34,11 @@
             android:id="@+id/musicName"
             android:layout_width="90dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:ellipsize="end"
             android:fontFamily="@font/roboto_medium"
             android:maxLines="2"
             android:text="Muộn Rồi Mà Sao Còn"
-            android:layout_marginTop="5dp"
             android:textColor="@color/function_text_color"
             android:textSize="11sp" />
 
