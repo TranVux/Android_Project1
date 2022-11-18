@@ -38,7 +38,6 @@ public class MyBottomSheetDialog extends BottomSheetDialogFragment {
         MyBottomSheetDialog bottomSheetDialog = new MyBottomSheetDialog();
         Bundle bundle = new Bundle();
         bundle.putSerializable(KEY_DATA_BOTTOM_SHEET_DIALOG, listMusic);
-
         bottomSheetDialog.setArguments(bundle);
         return bottomSheetDialog;
     }

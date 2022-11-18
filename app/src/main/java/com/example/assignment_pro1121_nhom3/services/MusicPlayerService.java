@@ -154,6 +154,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         setMusicUrl(currentSong.getUrl());
         sendNotification();
         mediaPlayer.start();
+        sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
     }
 
     private void destroyPlayer() {

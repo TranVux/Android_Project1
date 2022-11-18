@@ -143,6 +143,11 @@ public class DetailPlaylistActivity extends AppCompatActivity {
                     musicPlayer.clearPlaylist();
                     musicPlayer.setPlayList(adapter.getList());
                     musicPlayer.start();
+                    try {
+                        musicPlayer.setStateMusicPlayer(MusicPlayer.MUSIC_PLAYER_STATE_PLAYING);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                     saveCurrentMusic(musicPlayer, tempPlaylist.getId());
                     Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
                     startActivity(new Intent(DetailPlaylistActivity.this, MainActivity.class));
