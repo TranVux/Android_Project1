@@ -12,6 +12,7 @@ public class Playlist implements Serializable {
     private String urlThumbnail;
     private String creatorName;
 
+    private String numberSong;
     public Playlist() {
     }
 
@@ -24,7 +25,21 @@ public class Playlist implements Serializable {
         this.urlThumbnail = urlThumbnail;
         this.creatorName = creatorName;
     }
+    // them mau
+    public Playlist(String urlThumbnail, String creatorName, String numberSong) {
+        this.urlThumbnail = urlThumbnail;
+        this.creatorName = creatorName;
+        this.numberSong = numberSong;
+    }
 
+    public String getNumberSong() {
+        return numberSong;
+    }
+
+    public void setNumberSong(String numberSong) {
+        this.numberSong = numberSong;
+    }
+//
     public String getCreatorName() {
         return creatorName;
     }

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="11dp"
+    android:background="@drawable/bg_favorite_list"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/itemPlaylistUser"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/userThumbnail"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="9dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="63dp"
+            android:layout_height="63dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/img" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/playlistName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ten bai hat"
+                android:textColor="@color/white"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="11dp" />
+
+            <TextView
+                android:id="@+id/numbersong"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="ten tac gia"
+                android:fontFamily="@font/roboto_medium"
+                android:textColor="#BFFFFFFF"
+                android:textSize="11dp" />
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/btnMoreOptionUser"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="15dp"
+                android:layout_height="15dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginBottom="33dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/ic_glyph_undefined"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
