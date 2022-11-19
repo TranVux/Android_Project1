@@ -31,6 +31,7 @@ public class MusicPlayer implements Serializable {
     public static final int MUSIC_PLAYER_ACTION_COMPLETE = 777;
     public static final int MUSIC_PLAYER_ACTION_RESET_SONG = 888;
     public static final int MUSIC_PLAYER_ACTION_GO_TO_SONG = 999;
+    public static final int MUSIC_PLAYER_ACTION_SEEK_TO_POSITION = 101010;
 
     private static MusicPlayer musicPlayer;
     private ArrayList<Music> playListMusic;
@@ -238,7 +239,7 @@ public class MusicPlayer implements Serializable {
         this.currentPositionSong = currentPositionSong;
     }
 
-    public void updateSeekBar(MusicPlayerCallback musicPlayerCallback) {
+    public void updateSeekBar() {
         if (Objects.equals(playerState, MUSIC_PLAYER_STATE_DESTROYED)) return;
         musicPlayerCallback.updateSeekBar(currentPositionSong);
     }

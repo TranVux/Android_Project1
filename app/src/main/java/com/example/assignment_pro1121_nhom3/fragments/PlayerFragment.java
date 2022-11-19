@@ -4,8 +4,10 @@ import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
 
 import android.annotation.SuppressLint;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -45,7 +47,7 @@ import java.util.Objects;
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderScriptBlur;
 
-public class PlayerFragment extends Fragment implements View.OnClickListener {
+public class PlayerFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, View.OnLongClickListener {
 
     public static String TAG = PlayerFragment.class.getSimpleName();
     // BlurView sẽ làm mở những đối tượng ở ngoài phạm vi của nó
@@ -64,6 +66,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
 
     // music player hiện tại
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    boolean updateSeekBar = true;
+    private BroadcastReceiver musicPlayerReceiver;
 
     //lấy dữ liệu cần thiết
 
@@ -80,6 +84,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle data = getArguments();
+        musicPlayerReceiver = new MusicPlayerReceiver();
     }
 
     @Override
@@ -111,6 +116,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
 
         //tạo background blur cho fragment
         blurBackgroundFragment();
+
+        timeLine.setOnSeekBarChangeListener(this);
     }
 
     public void handleRotateImageThumbnail() {
@@ -119,10 +126,10 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    imageMusicThumbnail.animate().rotationBy(360).withEndAction(this).setDuration(10000).setInterpolator(new LinearInterpolator()).start();
+                    imageMusicThumbnail.animate().rotationBy(360).withEndAction(this).setDuration(20000).setInterpolator(new LinearInterpolator()).start();
                 }
             };
-            imageMusicThumbnail.animate().rotationBy(360).withEndAction(runnable).setDuration(10000).setInterpolator(new LinearInterpolator()).start();
+            imageMusicThumbnail.animate().rotationBy(360).withEndAction(runnable).setDuration(20000).setInterpolator(new LinearInterpolator()).start();
         } else {
             Log.d(TAG, "handleRotateImageThumbnail: cancel");
             imageMusicThumbnail.animate().cancel();
@@ -204,12 +211,16 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop: ");
+        requireContext().unregisterReceiver(musicPlayerReceiver);
     }
 
+
     @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(TAG, "onPause: ");
+    public void onStart() {
+        super.onStart();
+        IntentFilter musicServiceIntentFilter = new IntentFilter(MUSIC_PLAYER_EVENT);
+        requireContext().registerReceiver(musicPlayerReceiver, musicServiceIntentFilter);
+
     }
 
     public void handleShowBottomSheet() {
@@ -261,5 +272,49 @@ public class PlayerFragment extends Fragment implements View.OnClickListener {
         previousIntent.putExtra("action", MUSIC_PLAYER_ACTION_PREVIOUS);
         Log.d(TAG, "preMusic: " + musicPlayer.getCurrentSong().getName());
         requireContext().startService(previousIntent);
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        Log.d(TAG, "onLongClick: ");
+        return false;
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+        Log.d(TAG, "onProgressChanged: ");
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        Log.d(TAG, "onStartTrackingTouch: ");
+        updateSeekBar = false;
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        Log.d(TAG, "onStopTrackingTouch: ");
+        Intent seekToIntent = new Intent(requireContext(), MusicPlayerService.class);
+        seekToIntent.putExtra("action", MUSIC_PLAYER_ACTION_SEEK_TO_POSITION);
+        seekToIntent.putExtra(KEY_SEEK_TO_POSITION, seekBar.getProgress());
+        requireContext().startService(seekToIntent);
+        updateSeekBar = true;
+    }
+
+    public class MusicPlayerReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                //update duration
+                Log.d(TAG, "onReceive: " + intent.getIntExtra(KEY_CURRENT_MUSIC_POSITION, 0));
+                int currentPositionDuration = intent.getIntExtra(KEY_CURRENT_MUSIC_POSITION, 0);
+                int duration = intent.getIntExtra(KEY_MUSIC_DURATION, 0);
+
+                if (timeLine.getMax() != duration) {
+                    timeLine.setMax(duration);
+                }
+                if (updateSeekBar) timeLine.setProgress(currentPositionDuration, true);
+            }
+        }
     }
 }

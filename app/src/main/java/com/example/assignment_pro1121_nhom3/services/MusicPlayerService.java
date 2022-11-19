@@ -44,9 +44,11 @@ import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
 
 import java.io.IOException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Timer;
+import java.util.TimerTask;
 
 import kotlin.jvm.internal.LocalVariableReference;
 
@@ -80,14 +82,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-//            stateServiceMusicPlayer = intent.getStringExtra("state_service");
-//            if (stateServiceMusicPlayer == null) {
-//                stateServiceMusicPlayer = CHANGE_TO_SERVICE;
-//            } else {
-//                playListMusic = (ArrayList<Music>) intent.getSerializableExtra("currentPlaylist");
-//                Log.d(TAG, "onStartCommand: " + playListMusic.size());
-//            }
-//            Log.d(TAG, "onStartCommand: " + stateServiceMusicPlayer);
             int action = intent.getIntExtra("action", -1);
             handleActionMusicPlayer(intent, action);
         }
@@ -132,6 +126,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 goToSong(index);
                 break;
             }
+            case MUSIC_PLAYER_ACTION_SEEK_TO_POSITION: {
+                int musicDurationPosition = intent.getIntExtra(KEY_SEEK_TO_POSITION, 0);
+                seekToPosition(musicDurationPosition);
+                break;
+            }
             default:
                 Log.d(TAG, "handleActionMusicPlayer: Invalid action for music player");
                 break;
@@ -151,10 +150,18 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 .build());
         mediaPlayer.setOnCompletionListener(this);
         currentSong = music;
+        timer.cancel();
+        timer = new Timer();
         setMusicUrl(currentSong.getUrl());
-        sendNotification();
+    }
+
+    public void seekToPosition(int position) {
+        if (mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+        }
+        mediaPlayer.seekTo(position * 1000);
+        Log.d(TAG, "seekToPosition: ");
         mediaPlayer.start();
-        sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
     }
 
     private void destroyPlayer() {
@@ -169,8 +176,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             }
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_GO_TO_SONG, index);
-            } else {
-
             }
         }
     }
@@ -205,8 +210,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
                 Log.d(TAG, "previousSong: ");
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_PREVIOUS, 0);
-            } else {
-
             }
         }
     }
@@ -227,9 +230,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         Intent outIntent = new Intent(MUSIC_PLAYER_EVENT);
         outIntent.putExtra("action", action);
         outIntent.putExtra(KEY_SONG_INDEX, index);
-        if (mediaPlayer != null) {
-            outIntent.putExtra(KEY_CURRENT_MUSIC_POSITION, mediaPlayer.getCurrentPosition() / 1000);
-        }
         sendBroadcast(outIntent);
     }
 
@@ -242,19 +242,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         currentSong = songReceiver;
         setMusicUrl(currentSong.getUrl());
         sendNotification();
-        sendIntentToActivity(MUSIC_PLAYER_ACTION_START, 0);
-    }
-
-    public void initMusicPlayer() {
-        SharedPreferences sharedPreferences = getSharedPreferences("music_player", MODE_PRIVATE);
-        boolean isPlaying = sharedPreferences.getBoolean(KEY_STATE_IS_PLAYING, false);
-        boolean isStart = sharedPreferences.getBoolean(KEY_STATE_IS_START, false);
-        boolean isCreated = sharedPreferences.getBoolean(KEY_STATE_IS_CREATED, true);
-        boolean isDestroy = sharedPreferences.getBoolean(KEY_STATE_IS_DESTROYED, false);
-
-        musicPlayer = MusicPlayer.getInstance();
-        musicPlayer.setInitState(isPlaying, isStart, isDestroy, isCreated);
-        musicPlayer.setPlayList(playListMusic);
     }
 
     public void installMediaPlayer() {
@@ -271,10 +258,26 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     public void setMusicUrl(String url) {
         try {
             mediaPlayer.setDataSource(url);
-            mediaPlayer.prepare();
-            mediaPlayer.start();
+            mediaPlayer.prepareAsync();
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mediaPlayer) {
+                    mediaPlayer.start();
+                    sendNotification();
+                    sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
+                    timer.scheduleAtFixedRate(new TimerTask() {
+                        @Override
+                        public void run() {
+                            Intent durationIntent = new Intent(MUSIC_PLAYER_EVENT);
+                            durationIntent.putExtra(KEY_CURRENT_MUSIC_POSITION, mediaPlayer.getCurrentPosition() / 1000);
+                            durationIntent.putExtra(KEY_MUSIC_DURATION, mediaPlayer.getDuration() / 1000);
+                            sendBroadcast(durationIntent);
+                        }
+                    }, 0, 1000);
+                }
+            });
             isPlaying = true;
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

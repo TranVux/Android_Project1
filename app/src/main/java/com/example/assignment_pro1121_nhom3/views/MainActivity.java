@@ -103,10 +103,11 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
 
         sharedPreferencesMusicList = getSharedPreferences("music_player", MODE_PRIVATE);
         recentIdPlaylist = sharedPreferencesMusicList.getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10);
-
+        Log.d(TAG, "onCreate: " + recentIdPlaylist);
 
         //Lưu trạng thái có đang chơi nhạc hay không
         sharedPreferences = getSharedPreferences("music_player_state", MODE_PRIVATE);
+
         isPlaying = sharedPreferences.getBoolean(KEY_STATE_IS_PLAYING, false);
         isStart = sharedPreferences.getBoolean(KEY_STATE_IS_START, false);
         isCreated = sharedPreferences.getBoolean(KEY_STATE_IS_CREATED, true);
@@ -141,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
 
         // xử lý player state
         handleStateMusicPlayer(musicPlayer);
+        playMusicPlayer();
+
         Log.d(TAG, "onCreate: save state: " + isCreated + " " + isPlaying + " " + isStart + " " + isDestroy);
         Log.d(TAG, "playMusicPlayer: " + musicPlayer.getStateMusicPlayer());
         //
@@ -249,10 +252,12 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     private void handleIntent(Intent intent) {
         int action = intent.getIntExtra("action", -1);
         int currentPositionDuration = intent.getIntExtra(KEY_CURRENT_MUSIC_POSITION, 0);
+
         switch (action) {
-            case MUSIC_PLAYER_ACTION_START: {
+            case MUSIC_PLAYER_ACTION_START:
+            case MUSIC_PLAYER_ACTION_RESUME: {
+                musicPlayer.resumeSong();
                 try {
-                    musicPlayer.resumeSong();
                     musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -263,15 +268,6 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 musicPlayer.pauseSong(currentPositionDuration);
                 try {
                     musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_IDLE);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                break;
-            }
-            case MUSIC_PLAYER_ACTION_RESUME: {
-                musicPlayer.resumeSong();
-                try {
-                    musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -352,6 +348,8 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     public void playMusicPlayer() {
         if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_IDLE) && isMyServiceRunning(MusicPlayerService.class)) {
             startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESUME);
+        } else if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_PLAYING)) {
+            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESUME);
         } else {
             startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_START);
         }
@@ -373,6 +371,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 btnPlay.setImageResource(R.drawable.ic_play);
                 editor.putBoolean(KEY_STATE_IS_IDLE, true);
                 editor.putBoolean(KEY_STATE_IS_PLAYING, false);
+                editor.putBoolean(KEY_STATE_IS_START, true);
                 break;
             }
             case MUSIC_PLAYER_STATE_PLAYING: {
@@ -476,14 +475,6 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         super.onDestroy();
         saveCurrentMusic(musicPlayer, recentIdPlaylist);
         Log.d(TAG, "onDestroy: Caching");
-        sendMusicPlayerToService();
-    }
-
-    private void sendMusicPlayerToService() {
-        Intent sendIntent = new Intent(getApplicationContext(), MusicPlayerService.class);
-        sendIntent.putExtra("currentPlaylist", musicPlayer.getPlayListMusic());
-        sendIntent.putExtra("state_service", CHANGE_TO_FOREGROUND_SERVICE);
-        startService(sendIntent);
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -500,6 +491,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent != null) {
+                //update duration
                 handleIntent(intent);
             }
         }
