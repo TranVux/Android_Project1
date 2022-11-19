@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
 
     //cache
     SharedPreferences sharedPreferences;
+    SharedPreferences sharedPreferencesMusicList;
 
     //Receiver
     MusicPlayerReceiver musicPlayerReceiver;
@@ -100,14 +101,16 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         setContentView(R.layout.activity_main);
         init();
 
+        sharedPreferencesMusicList = getSharedPreferences("music_player", MODE_PRIVATE);
+        recentIdPlaylist = sharedPreferencesMusicList.getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10);
+
+
         //Lưu trạng thái có đang chơi nhạc hay không
-        sharedPreferences = getSharedPreferences("music_player", MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("music_player_state", MODE_PRIVATE);
         isPlaying = sharedPreferences.getBoolean(KEY_STATE_IS_PLAYING, false);
         isStart = sharedPreferences.getBoolean(KEY_STATE_IS_START, false);
         isCreated = sharedPreferences.getBoolean(KEY_STATE_IS_CREATED, true);
         isDestroy = sharedPreferences.getBoolean(KEY_STATE_IS_DESTROYED, false);
-
-        recentIdPlaylist = sharedPreferences.getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10);
         //cài đặt music player
         Log.d(TAG, "onCreate: " + musicPlayer.getSizeOfPlayList());
         musicPlayer.setMusicPlayerCallBack(new MusicPlayerCallback() {
@@ -363,6 +366,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     public void handleStateMusicPlayer(MusicPlayer musicPlayer) {
         @SuppressLint("CommitPrefEdits")
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
         switch (musicPlayer.getStateMusicPlayer()) {
             case MUSIC_PLAYER_STATE_IDLE: {
                 stateButtonPlay = 0;
@@ -410,7 +414,8 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     }
 
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SharedPreferences.Editor editor = sharedPreferencesMusicList.edit();
+        editor.clear();
         editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
         editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
         editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());
@@ -422,6 +427,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         editor.putLong(KEY_SONG_CREATION_DATE, musicPlayer.getCurrentSong().getCreationDate());
         editor.putLong(KEY_SONG_UPDATE_DATE, musicPlayer.getCurrentSong().getUpdateDate());
         editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
+        Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
         editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
         editor.apply();
     }

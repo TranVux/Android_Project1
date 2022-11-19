@@ -49,7 +49,6 @@ public class SplashScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         sharedPreferences = getSharedPreferences("music_player", MODE_PRIVATE);
-        String musicID = sharedPreferences.getString(KEY_SONG_ID, "");
         String recentIdPlaylist = sharedPreferences.getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10);
         Log.d(TAG, "onCreate: " + recentIdPlaylist);
 

@@ -234,6 +234,7 @@ public class DetailPlaylistActivity extends AppCompatActivity {
 
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
         editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
         editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
         editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());
@@ -245,6 +246,7 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         editor.putLong(KEY_SONG_CREATION_DATE, musicPlayer.getCurrentSong().getCreationDate());
         editor.putLong(KEY_SONG_UPDATE_DATE, musicPlayer.getCurrentSong().getUpdateDate());
         editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
+        Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
         editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
         editor.apply();
     }
