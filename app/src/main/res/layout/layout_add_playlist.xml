@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_playlist_add_playlist"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_medium"
+        android:text="Tạo playlist"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/edtName"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_marginVertical="15dp"
+        android:background="@drawable/bg_edt"
+        android:fontFamily="@font/roboto_medium"
+        android:hint="Nhập tên playlist"
+        android:paddingStart="20dp"
+        android:textColor="@color/white_0.75"
+        android:textColorHint="@color/white_0.75"
+        android:textSize="11sp"
+        tools:ignore="RtlSymmetry" />
+
+    <com.google.android.flexbox.FlexboxLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:alignItems="center"
+        app:justifyContent="space_evenly">
+
+        <TextView
+            android:id="@+id/btnSave"
+            android:layout_width="95dp"
+            android:layout_height="32dp"
+            android:background="@drawable/click_effect"
+            android:clickable="true"
+            android:fontFamily="@font/roboto_bold"
+            android:gravity="center"
+            android:text="Lưu"
+            android:textColor="@color/white"
+            android:textSize="11sp" />
+
+        <TextView
+            android:id="@+id/btnClose"
+            android:layout_width="95dp"
+            android:layout_height="32dp"
+            android:background="@drawable/bg_btn_close"
+            android:clickable="true"
+            android:fontFamily="@font/roboto_bold"
+            android:gravity="center"
+            android:text="Hủy"
+            android:textColor="@color/white"
+            android:textSize="11sp" />
+
+    </com.google.android.flexbox.FlexboxLayout>
+
+</LinearLayout>

@@ -123,7 +123,7 @@ public class DetailPlaylistActivity extends AppCompatActivity {
 
             @Override
             public void onMoreButtonClick(Music music) {
-                BottomSheet bottomSheet = new BottomSheet();
+                BottomSheet bottomSheet = BottomSheet.newInstance(music);
                 bottomSheet.show(getSupportFragmentManager(), "TAG");
             }
         });

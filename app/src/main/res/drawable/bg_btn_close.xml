@@ -4,8 +4,10 @@
 
     <item>
         <shape>
-            <corners android:radius="5dp" />
-            <solid android:color="@color/bg_btn_close_bottom_sheet" />
+            <corners android:radius="38dp" />
+            <stroke
+                android:width="2dp"
+                android:color="#17A3FC" />
         </shape>
     </item>
 

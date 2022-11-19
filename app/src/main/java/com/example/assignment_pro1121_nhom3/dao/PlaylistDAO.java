@@ -74,7 +74,8 @@ public class PlaylistDAO {
                                 Map<String, Object> map = document.getData();
                                 String id = document.getId();
                                 String name = (String) map.get("name");
-                                ArrayList<String> musicsID = (ArrayList<String>) map.getOrDefault("musics", null);
+                                ArrayList<String> emptyList = new ArrayList<>();
+                                ArrayList<String> musicsID = (ArrayList<String>) map.getOrDefault("musics", emptyList);
                                 Long modifyDate = (Long) map.getOrDefault("modifyDate", 0L);
                                 Long creationDate = (Long) map.get("creationDate");
                                 String urlThumbnail = (String) map.get("urlThumbnail");
@@ -234,6 +235,11 @@ public class PlaylistDAO {
                                     @Override
                                     public void onGetListMusicSuccess(ArrayList<Music> list) {
                                         readMusicInPlaylist.onReadSuccess(list);
+                                        iOnProgressBarStatusListener.afterGetData();
+                                    }
+
+                                    @Override
+                                    public void onGetListMusicFailure() {
                                         iOnProgressBarStatusListener.afterGetData();
                                     }
                                 });

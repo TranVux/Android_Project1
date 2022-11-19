@@ -21,6 +21,7 @@
         android:orientation="horizontal">
 
         <ImageView
+            android:id="@+id/musicThumbnail"
             android:layout_width="63dp"
             android:layout_height="63dp"
             android:scaleType="centerCrop"
@@ -35,18 +36,20 @@
             android:padding="5dp">
 
             <TextView
+                android:id="@+id/musicName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_medium"
                 android:text="ten bai hat"
                 android:textColor="@color/white"
-                android:fontFamily="@font/roboto_medium"
                 android:textSize="11dp" />
 
             <TextView
+                android:id="@+id/artistName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="ten tac gia"
                 android:fontFamily="@font/roboto_medium"
+                android:text="ten tac gia"
                 android:textColor="#BFFFFFFF"
                 android:textSize="11dp" />
         </LinearLayout>
@@ -58,10 +61,10 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginHorizontal="30dp"
         android:layout_marginVertical="15dp"
-        android:background="@color/white_0.75"/>
+        android:background="@color/white_0.75" />
 
     <LinearLayout
-        android:id="@+id/Addplaylistchart"
+        android:id="@+id/btnAddToPlaylist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="30dp"
@@ -76,20 +79,21 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fontFamily="@font/roboto_medium"
             android:gravity="center_vertical"
             android:paddingStart="15dp"
             android:text="Thêm vào playlist"
             android:textColor="@color/white"
-            android:textSize="15sp"
-            android:fontFamily="@font/roboto_medium"/>
+            android:textSize="15sp" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/btnGoToArtist"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginHorizontal="30dp"
         android:layout_marginBottom="15dp"
+        android:orientation="horizontal"
         tools:ignore="RtlSymmetry">
 
         <ImageView
@@ -100,16 +104,16 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:fontFamily="@font/roboto_medium"
             android:gravity="center_vertical"
             android:paddingStart="26dp"
             android:text="Nghệ sĩ"
-            android:textSize="15sp"
-            android:fontFamily="@font/roboto_medium"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:textSize="15sp" />
     </LinearLayout>
 
     <TextView
-        android:id="@+id/button2"
+        android:id="@+id/btnClose"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@color/bg_btn_close_bottom_sheet"

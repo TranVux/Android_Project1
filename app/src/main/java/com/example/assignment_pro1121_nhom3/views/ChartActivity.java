@@ -30,6 +30,8 @@ import java.util.ArrayList;
 
 public class ChartActivity extends AppCompatActivity {
 
+    public static final String TAG = ChartActivity.class.getSimpleName();
+
     private RecyclerView recyclerView;
     private ChartPlaylistAdapter adapter;
     private MusicDAO musicDAO;
@@ -81,8 +83,8 @@ public class ChartActivity extends AppCompatActivity {
 
             @Override
             public void onMoreButtonClick(Music music) {
-                BottomSheet bottomSheet = new BottomSheet();
-                bottomSheet.show(getSupportFragmentManager(), "TAG");
+                BottomSheet bottomSheet = BottomSheet.newInstance(music);
+                bottomSheet.show(getSupportFragmentManager(), TAG);
             }
         });
 
