@@ -88,7 +88,12 @@ public class UserFragment extends Fragment {
         init(view);
         recyclerView = view.findViewById(R.id.playlistMusic);
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        adapter = new UserFavoritesListAdapter(list,getContext());
+        adapter = new UserFavoritesListAdapter(list, getContext(), new UserFavoritesListAdapter.ItemFavoriteslistEvent() {
+            @Override
+            public void onItemclick(Playlist playlist) {
+                Toast.makeText(getContext(), "Tới activity playlist", Toast.LENGTH_SHORT).show();
+            }
+        });
         recyclerView.setNestedScrollingEnabled(false);
         recyclerView.setLayoutManager(manager);
         adapter.setData(getListMusic());

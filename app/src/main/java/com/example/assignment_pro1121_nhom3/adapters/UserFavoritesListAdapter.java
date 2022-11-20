@@ -2,6 +2,7 @@ package com.example.assignment_pro1121_nhom3.adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,10 +30,12 @@ public class UserFavoritesListAdapter extends RecyclerView.Adapter<UserFavorites
 
     private List<Playlist> list;
     private Context context;
+    public ItemFavoriteslistEvent favoriteslistEvent;
 
-    public UserFavoritesListAdapter(List<Playlist> list, Context context) {
+    public UserFavoritesListAdapter(List<Playlist> list, Context context, ItemFavoriteslistEvent favoriteslistEvent) {
         this.list = list;
         this.context = context;
+        this.favoriteslistEvent = favoriteslistEvent;
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -55,6 +58,12 @@ public class UserFavoritesListAdapter extends RecyclerView.Adapter<UserFavorites
         holder.playlistName.setText(CapitalizeWord.CapitalizeWords(playlistTemp.getCreatorName()));
         holder.numbersong.setText(CapitalizeWord.CapitalizeWords(playlistTemp.getNumberSong()));
         Glide.with(context).load(list.get(position).getUrlThumbnail()).into(holder.musicThumbnail);
+        holder.itemplaylist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                favoriteslistEvent.onItemclick(playlistTemp);
+            }
+        });
     }
 
     @Override
@@ -72,11 +81,14 @@ public class UserFavoritesListAdapter extends RecyclerView.Adapter<UserFavorites
         public FavoriteslistViewHolder(@NonNull View itemView) {
             super(itemView);
 //            btnMoreOption = itemView.findViewById(R.id.btnMoreOptionUser);
-//            itemplaylist = itemView.findViewById(R.id.itemPlaylistUser);
+            itemplaylist = itemView.findViewById(R.id.itemPlaylistUser);
             playlistName = itemView.findViewById(R.id.playlistName);
             numbersong = itemView.findViewById(R.id.numbersong);
             musicThumbnail = itemView.findViewById(R.id.userThumbnail);
 
         }
+    }
+    public interface ItemFavoriteslistEvent{
+        void onItemclick(Playlist playlist);
     }
 }
