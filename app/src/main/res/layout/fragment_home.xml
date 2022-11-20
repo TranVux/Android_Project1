@@ -81,10 +81,10 @@
                 android:layout_alignTop="@+id/search_bar"
                 android:layout_alignBottom="@+id/search_bar"
                 android:layout_alignParentEnd="true"
-                android:clickable="true"
                 android:layout_gravity="center_vertical"
-                android:background="?selectableItemBackgroundBorderless"
                 android:layout_marginStart="6dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:clickable="true"
                 android:src="@drawable/ic_setting"
                 tools:ignore="ContentDescription" />
 
@@ -104,8 +104,9 @@
 
                     <androidx.cardview.widget.CardView
                         android:layout_width="match_parent"
-                        android:layout_height="136dp"
-                        android:layout_marginTop="8dp">
+                        android:layout_height="145dp"
+                        android:layout_marginTop="8dp"
+                        app:cardCornerRadius="15dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -118,7 +119,9 @@
                                 app:iss_auto_cycle="true"
                                 app:iss_corner_radius="15"
                                 app:iss_delay="2500"
-                                app:iss_period="2500" />
+                                app:iss_period="2500"
+                                app:iss_selected_dot="@drawable/slide_selected_dot"
+                                app:iss_unselected_dot="@drawable/slide_un_selected_dot" />
                         </LinearLayout>
                     </androidx.cardview.widget.CardView>
 
