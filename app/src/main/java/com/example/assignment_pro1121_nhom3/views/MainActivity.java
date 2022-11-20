@@ -10,6 +10,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Fragment;
+import android.app.SharedElementCallback;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.transition.Fade;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -48,6 +52,7 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
 import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements HandleChangeColorBottomNavigation {
@@ -86,11 +91,18 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         // đổi màu của status bar
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
         //Đổi màu status bar nè
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+
+        // bỏ hiệu ứng fade
+        Transition transition = TransitionInflater.from(MainActivity.this).inflateTransition(android.R.transition.no_transition);
+        getWindow().setEnterTransition(transition);
+        getWindow().setExitTransition(transition);
 
         // khai báo các fragment
         homeFragment = new HomeFragment(this);

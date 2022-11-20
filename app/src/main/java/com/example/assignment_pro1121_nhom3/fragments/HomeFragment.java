@@ -7,12 +7,18 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.transition.Fade;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +48,7 @@ import com.example.assignment_pro1121_nhom3.utils.GridSpacingItemDecoration;
 import com.example.assignment_pro1121_nhom3.views.ChartActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailPlaylistActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
+import com.example.assignment_pro1121_nhom3.views.SearchActivity;
 import com.example.assignment_pro1121_nhom3.views.SingerActivity;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
@@ -49,6 +56,7 @@ import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderScriptBlur;
@@ -78,8 +86,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     TextView labelMorePlaylist, labelMoreRecentPublishMusic;
     ImageView icMorePlaylist, icMoreRecentPublishMusic;
 
+    //search bar
+    LinearLayout searchBar;
+
     //nút chuyển sang các màn hình khác (bxh, nghệ sĩ,...)
-    LinearLayout btnBxh, btnArtis, btnPlaylist, btnCatogory;
+    LinearLayout btnBxh, btnArtis, btnPlaylist, btnCategory;
 
     //xử lý đổi màu bottom navigation
     HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
@@ -114,6 +125,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        //bỏ hiểu ứng fade từ search activity
+        Transition transition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.no_transition);
+        requireActivity().getWindow().setEnterTransition(transition);
+        requireActivity().getWindow().setExitTransition(transition);
+
         //thiết lập cơ bản, ánh xạ view cho fragment
         musicDAO = new MusicDAO();
         playlistDAO = new PlaylistDAO();
@@ -175,10 +192,11 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         labelMoreRecentPublishMusic = view.findViewById(R.id.labelMoreRecentPublish);
         btnBxh = view.findViewById(R.id.btnBxh);
         btnArtis = view.findViewById(R.id.btnArtis);
-        btnCatogory = view.findViewById(R.id.btnCategory);
+        btnCategory = view.findViewById(R.id.btnCategory);
         btnPlaylist = view.findViewById(R.id.btnPlaylist);
         progressBar = view.findViewById(R.id.progressBar);
         progressBarLayout = view.findViewById(R.id.progressBarLayout);
+        searchBar = view.findViewById(R.id.search_bar);
 
         //bắt sự kiện onClick cho view
         icMorePlaylist.setOnClickListener(this);
@@ -187,8 +205,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         labelMoreRecentPublishMusic.setOnClickListener(this);
         btnPlaylist.setOnClickListener(this);
         btnArtis.setOnClickListener(this);
-        btnCatogory.setOnClickListener(this);
+        btnCategory.setOnClickListener(this);
         btnBxh.setOnClickListener(this);
+        searchBar.setOnClickListener(this);
 
         // hủy bỏ trạng thái trượt của list
         rclRecentPublish.setNestedScrollingEnabled(false);
@@ -362,8 +381,28 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(requireContext(), "Tới activity thể loại", Toast.LENGTH_SHORT).show();
                 break;
             }
+            case R.id.search_bar: {
+                Intent searchIntent = new Intent(requireContext(), SearchActivity.class);
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        requireActivity(), searchBar,
+                        Objects.requireNonNull(ViewCompat.getTransitionName(searchBar))
+                );
+                startActivity(searchIntent, optionsCompat.toBundle());
+                break;
+            }
             default:
                 break;
         }
+    }
+
+    public void turnOfFadeEffect() {
+        Fade fade = new Fade();
+        View decor = requireActivity().getWindow().getDecorView();
+        fade.excludeTarget(decor.findViewById(androidx.appcompat.R.id.action_bar_container), true);
+        fade.excludeTarget(android.R.id.statusBarBackground, true);
+        fade.excludeTarget(android.R.id.navigationBarBackground, true);
+
+        requireActivity().getWindow().setEnterTransition(fade);
+        requireActivity().getWindow().setExitTransition(fade);
     }
 }

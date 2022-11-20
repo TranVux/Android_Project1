@@ -55,6 +55,7 @@
                 android:background="@drawable/bg_search_bar"
                 android:gravity="center_vertical"
                 android:paddingStart="15dp"
+                android:transitionName="searchBarTransition"
                 tools:ignore="RtlSymmetry">
 
 
