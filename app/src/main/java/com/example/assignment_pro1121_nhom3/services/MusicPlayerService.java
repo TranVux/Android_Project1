@@ -271,8 +271,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
-                    mediaPlayer.start();
                     sendNotification();
+                    mediaPlayer.start();
                     sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
                     timer.scheduleAtFixedRate(new TimerTask() {
                         @Override
