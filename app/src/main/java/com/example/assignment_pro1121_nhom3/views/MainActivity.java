@@ -286,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 if (playerFragment == null) return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
+                playerFragment.timeLine.setProgress(0);
                 handleChangeMusic();
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -307,6 +308,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 if (playerFragment == null) return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
+                playerFragment.timeLine.setProgress(0);
                 handleChangeMusic();
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -328,6 +330,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 if (playerFragment == null) return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
+                playerFragment.timeLine.setProgress(0);
                 handleChangeMusic();
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -335,6 +338,17 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                         startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESET_SONG);
                     }
                 }, 500);
+                break;
+            }
+            case MUSIC_PLAYER_ACTION_SEEK_TO_POSITION: {
+                try {
+                    musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+                if (playerFragment == null) return;
+                playerFragment.handleRotateImageThumbnail();
                 break;
             }
             default:

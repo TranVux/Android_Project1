@@ -47,7 +47,7 @@ import java.util.Objects;
 import eightbitlab.com.blurview.BlurView;
 import eightbitlab.com.blurview.RenderScriptBlur;
 
-public class PlayerFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, View.OnLongClickListener {
+public class PlayerFragment extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
     public static String TAG = PlayerFragment.class.getSimpleName();
     // BlurView sẽ làm mở những đối tượng ở ngoài phạm vi của nó
@@ -59,7 +59,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
     //Nút thêm dùng để mở lên danh sách bài hát tiếp theo
     TextView labelMoreListMusic, musicName, singerName, singerNameNext, musicNameNext, labelViewNextMusic, labelViewCurrentMusic;
     ImageView icMoreListMusic, imageMusicThumbnail, backgroundImage, btnNext, btnPrev, btnAddToPlayList, imageThumbnailNextMusic;
-    SeekBar timeLine;
+    public SeekBar timeLine;
 
     //playlist hiện tại
     ArrayList<Music> playListMusic;
@@ -69,7 +69,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
     boolean updateSeekBar = true;
     private BroadcastReceiver musicPlayerReceiver;
 
-    //lấy dữ liệu cần thiết
+    //handle timeline
+    boolean isSetMax = false;
 
     public static PlayerFragment newInstance(ArrayList<Music> playListMusic) {
         PlayerFragment playerFragment = new PlayerFragment();
@@ -264,25 +265,20 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         Intent nextIntent = new Intent(requireContext(), MusicPlayerService.class);
         nextIntent.putExtra("action", MUSIC_PLAYER_ACTION_NEXT);
         Log.d(TAG, "nextMusic: " + musicPlayer.getCurrentSong().getName());
+        isSetMax = false;
         requireContext().startService(nextIntent);
     }
 
     public void previousMusic() {
         Intent previousIntent = new Intent(requireContext(), MusicPlayerService.class);
         previousIntent.putExtra("action", MUSIC_PLAYER_ACTION_PREVIOUS);
+        isSetMax = false;
         Log.d(TAG, "preMusic: " + musicPlayer.getCurrentSong().getName());
         requireContext().startService(previousIntent);
     }
 
     @Override
-    public boolean onLongClick(View view) {
-        Log.d(TAG, "onLongClick: ");
-        return false;
-    }
-
-    @Override
     public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-        Log.d(TAG, "onProgressChanged: ");
     }
 
     @Override
@@ -306,14 +302,24 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         public void onReceive(Context context, Intent intent) {
             if (intent != null) {
                 //update duration
-                Log.d(TAG, "onReceive: " + intent.getIntExtra(KEY_CURRENT_MUSIC_POSITION, 0));
                 int currentPositionDuration = intent.getIntExtra(KEY_CURRENT_MUSIC_POSITION, 0);
                 int duration = intent.getIntExtra(KEY_MUSIC_DURATION, 0);
 
-                if (timeLine.getMax() != duration) {
-                    timeLine.setMax(duration);
+                if (!isSetMax) {
+                    if (duration != 0) {
+                        timeLine.setMax(duration);
+                        isSetMax = true;
+                    }
+                    Log.d(TAG, "onReceive: setMax");
                 }
-                if (updateSeekBar) timeLine.setProgress(currentPositionDuration, true);
+
+                if (updateSeekBar) {
+                    Log.d(TAG, "onReceive: " + currentPositionDuration);
+                    if (currentPositionDuration > 0) {
+                        timeLine.setProgress(currentPositionDuration, true);
+                    }
+                }
+
             }
         }
     }

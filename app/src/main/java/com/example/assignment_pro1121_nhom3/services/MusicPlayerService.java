@@ -57,8 +57,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     public static final String TAG = MusicPlayerService.class.getSimpleName();
 
     private Music currentSong;
-    private MusicPlayer musicPlayer;
-    private ArrayList<Music> playListMusic;
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private Timer timer;
     private boolean isPlaying = false;
@@ -128,6 +126,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             }
             case MUSIC_PLAYER_ACTION_SEEK_TO_POSITION: {
                 int musicDurationPosition = intent.getIntExtra(KEY_SEEK_TO_POSITION, 0);
+                Log.d(TAG, "handleActionMusicPlayer: " + musicDurationPosition);
                 seekToPosition(musicDurationPosition);
                 break;
             }
@@ -158,10 +157,15 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     public void seekToPosition(int position) {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
+            isPlaying = false;
+            sendNotification();
         }
         mediaPlayer.seekTo(position * 1000);
         Log.d(TAG, "seekToPosition: ");
         mediaPlayer.start();
+        isPlaying = true;
+        sendNotification();
+        sendIntentToActivity(MUSIC_PLAYER_ACTION_SEEK_TO_POSITION, 0);
     }
 
     private void destroyPlayer() {
@@ -176,18 +180,21 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             }
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_GO_TO_SONG, index);
+                timer.cancel();
             }
         }
     }
 
     private void resumeSong() {
-        if (!isPlaying && mediaPlayer != null) {
+        if (!isPlaying && mediaPlayer != null && currentSong != null) {
             mediaPlayer.start();
             isPlaying = true;
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
             }
             sendNotification();
+        } else if (currentSong == null) {
+            sendIntentToActivity(MUSIC_PLAYER_ACTION_GO_TO_SONG, getSharedPreferences("music_player", MODE_PRIVATE).getInt(KEY_SONG_INDEX, 0));
         }
     }
 
@@ -210,6 +217,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
                 Log.d(TAG, "previousSong: ");
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_PREVIOUS, 0);
+                timer.cancel();
             }
         }
     }
@@ -222,6 +230,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
                 Log.d(TAG, "nextSong: ");
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_NEXT, 0);
+                timer.cancel();
             }
         }
     }
@@ -371,6 +380,17 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             timer.cancel();
             mediaPlayer = null;
         }
+        destroyMusicPlayer();
+    }
+
+    public void destroyMusicPlayer() {
+        SharedPreferences sharedPreferences = getSharedPreferences("music_player_state", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(KEY_STATE_IS_CREATED, true);
+        editor.putBoolean(KEY_STATE_IS_DESTROYED, true);
+        editor.putBoolean(KEY_STATE_IS_PLAYING, false);
+        editor.putBoolean(KEY_STATE_IS_START, false);
+        editor.apply();
     }
 
     @Override
