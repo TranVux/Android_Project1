@@ -236,13 +236,9 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
             @Override
             public void onClick(View v) {
                 if (stateButtonPlay == 1) {
-                    btnPlay.setImageResource(R.drawable.ic_play);
                     stopMusicPlayer();
-                    stateButtonPlay = 0;
                 } else {
-                    btnPlay.setImageResource(R.drawable.ic_pause);
                     playMusicPlayer();
-                    stateButtonPlay = 1;
                 }
             }
         });
@@ -274,6 +270,9 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                // cập nhật lại nút play
+                btnPlay.setImageResource(R.drawable.ic_pause);
+                stateButtonPlay = 1;
                 break;
             }
             case MUSIC_PLAYER_ACTION_PAUSE: {
@@ -283,6 +282,9 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                // cập nhật lại nút play
+                btnPlay.setImageResource(R.drawable.ic_play);
+                stateButtonPlay = 0;
                 break;
             }
             case MUSIC_PLAYER_ACTION_NEXT:

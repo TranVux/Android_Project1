@@ -17,7 +17,6 @@ import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
 
-import android.os.Handler;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.Log;
@@ -25,8 +24,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -37,7 +36,6 @@ import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
-import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.example.assignment_pro1121_nhom3.views.SplashScreen;
 
@@ -58,11 +56,15 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
 
     //Nút thêm dùng để mở lên danh sách bài hát tiếp theo
     TextView labelMoreListMusic, musicName, singerName, singerNameNext, musicNameNext, labelViewNextMusic, labelViewCurrentMusic;
-    ImageView icMoreListMusic, imageMusicThumbnail, backgroundImage, btnNext, btnPrev, btnAddToPlayList, imageThumbnailNextMusic;
+    ImageView icMoreListMusic, imageMusicThumbnail1, imageMusicThumbnail2, backgroundImage1, btnNext, btnPrev, btnAddToPlayList, imageThumbnailNextMusic;
     public SeekBar timeLine;
 
     //playlist hiện tại
     ArrayList<Music> playListMusic;
+
+    //animation
+    Animation fadeOut, fadeIn;
+    boolean imageMusicThumbnail1IsVisible = true;
 
     // music player hiện tại
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
@@ -127,23 +129,42 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    imageMusicThumbnail.animate().rotationBy(360).withEndAction(this).setDuration(20000).setInterpolator(new LinearInterpolator()).start();
+                    imageMusicThumbnail1.animate().rotationBy(360).withEndAction(this).setDuration(20000).setInterpolator(new LinearInterpolator()).start();
+                    imageMusicThumbnail2.animate().rotationBy(360).withEndAction(this).setDuration(20000).setInterpolator(new LinearInterpolator()).start();
                 }
             };
-            imageMusicThumbnail.animate().rotationBy(360).withEndAction(runnable).setDuration(20000).setInterpolator(new LinearInterpolator()).start();
+            imageMusicThumbnail2.animate().rotationBy(360).withEndAction(runnable).setDuration(20000).setInterpolator(new LinearInterpolator()).start();
+            imageMusicThumbnail1.animate().rotationBy(360).withEndAction(runnable).setDuration(20000).setInterpolator(new LinearInterpolator()).start();
         } else {
             Log.d(TAG, "handleRotateImageThumbnail: cancel");
-            imageMusicThumbnail.animate().cancel();
+            imageMusicThumbnail1.animate().cancel();
+            imageMusicThumbnail2.animate().cancel();
         }
     }
 
     public void setContentInit(Music music) {
         TransitionManager.beginDelayedTransition(parentLayout, new AutoTransition());
-        Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(backgroundImage.getDrawable()).into(backgroundImage);
-        Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(imageMusicThumbnail.getDrawable()).into(imageMusicThumbnail);
+        Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(backgroundImage1.getDrawable()).into(backgroundImage1);
+        reLoadImageThumbnail(music, imageMusicThumbnail1, imageMusicThumbnail2);
         musicName.setText(CapitalizeWord.CapitalizeWords(music.getName()));
         singerName.setText(CapitalizeWord.CapitalizeWords(music.getSingerName()));
         labelViewCurrentMusic.setText(String.valueOf(music.getViews()));
+    }
+
+    public void reLoadImageThumbnail(Music music, ImageView imageView1, ImageView imageView2) {
+        if (!imageMusicThumbnail1IsVisible) {
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(imageView1.getDrawable()).into(imageView1);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(imageView2.getDrawable()).into(imageView2);
+            imageView1.animate().alpha(0f).setDuration(350);
+            imageView2.animate().alpha(1f).setDuration(350);
+            imageMusicThumbnail1IsVisible = true;
+        } else {
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(imageView1.getDrawable()).into(imageView1);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(imageView2.getDrawable()).into(imageView2);
+            imageView1.animate().alpha(1f).setDuration(350);
+            imageView2.animate().alpha(0f).setDuration(350);
+            imageMusicThumbnail1IsVisible = false;
+        }
     }
 
     public void setContentForNextMusic(Music nextMusic) {
@@ -156,12 +177,13 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
 
     private void init(View view) {
         parentLayout = view.findViewById(R.id.playerLayout);
-        backgroundImage = view.findViewById(R.id.backgroundImage);
+        backgroundImage1 = view.findViewById(R.id.backgroundImage1);
         backgroundFragment = view.findViewById(R.id.blurView);
         labelMoreListMusic = view.findViewById(R.id.moreLabel);
         musicName = view.findViewById(R.id.musicName);
         singerName = view.findViewById(R.id.singerName);
-        imageMusicThumbnail = view.findViewById(R.id.imageMusicThumbnail);
+        imageMusicThumbnail1 = view.findViewById(R.id.imageMusicThumbnail1);
+        imageMusicThumbnail2 = view.findViewById(R.id.imageMusicThumbnail2);
         timeLine = view.findViewById(R.id.timeLine);
         icMoreListMusic = view.findViewById(R.id.icMoreMusic);
         btnAddToPlayList = view.findViewById(R.id.btnAddToPlaylist);
@@ -172,6 +194,9 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         labelViewNextMusic = view.findViewById(R.id.labelNextMusicView);
         imageThumbnailNextMusic = view.findViewById(R.id.imageThumbnailNextMusic);
         labelViewCurrentMusic = view.findViewById(R.id.view);
+
+        fadeOut = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out_anim);
+        fadeIn = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in_anim);
     }
 
     public void setEventClick() {

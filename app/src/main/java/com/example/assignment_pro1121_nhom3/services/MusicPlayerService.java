@@ -63,6 +63,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     MediaSessionCompat mediaSessionCompat;
     MediaControllerCompat mediaControllerCompat;
     private String stateServiceMusicPlayer = CHANGE_TO_SERVICE;
+    private boolean isLoadSuccess = false;
 
 
     @Nullable
@@ -180,13 +181,13 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             }
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_GO_TO_SONG, index);
-                timer.cancel();
+//                timer.cancel();
             }
         }
     }
 
     private void resumeSong() {
-        if (!isPlaying && mediaPlayer != null && currentSong != null) {
+        if (!isPlaying && mediaPlayer != null && currentSong != null && isLoadSuccess) {
             mediaPlayer.start();
             isPlaying = true;
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
@@ -199,7 +200,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void pauseSong() {
-        if (isPlaying && mediaPlayer != null) {
+        if (isPlaying && mediaPlayer != null && isLoadSuccess) {
             mediaPlayer.pause();
             isPlaying = false;
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
@@ -217,7 +218,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
                 Log.d(TAG, "previousSong: ");
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_PREVIOUS, 0);
-                timer.cancel();
+//                timer.cancel();
             }
         }
     }
@@ -230,7 +231,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
                 Log.d(TAG, "nextSong: ");
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_NEXT, 0);
-                timer.cancel();
+//                timer.cancel();
             }
         }
     }
@@ -266,6 +267,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     public void setMusicUrl(String url) {
         try {
+            isLoadSuccess = false;
             mediaPlayer.setDataSource(url);
             mediaPlayer.prepareAsync();
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -277,6 +279,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                     timer.scheduleAtFixedRate(new TimerTask() {
                         @Override
                         public void run() {
+                            isLoadSuccess = true;
                             Intent durationIntent = new Intent(MUSIC_PLAYER_EVENT);
                             durationIntent.putExtra(KEY_CURRENT_MUSIC_POSITION, mediaPlayer.getCurrentPosition() / 1000);
                             durationIntent.putExtra(KEY_MUSIC_DURATION, mediaPlayer.getDuration() / 1000);

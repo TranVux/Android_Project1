@@ -8,7 +8,7 @@
     tools:context=".fragments.PlayerFragment">
 
     <ImageView
-        android:id="@+id/backgroundImage"
+        android:id="@+id/backgroundImage1"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop" />
@@ -26,10 +26,10 @@
         <com.google.android.flexbox.FlexboxLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:flexDirection="column"
+            android:layout_marginBottom="120dp"
             app:alignItems="center"
-            app:justifyContent="space_between"
-            android:layout_marginBottom="120dp">
+            app:flexDirection="column"
+            app:justifyContent="space_between">
 
             <RelativeLayout
                 android:id="@+id/layoutTopBar"
@@ -74,16 +74,32 @@
 
             </RelativeLayout>
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/imageMusicThumbnail"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:layout_below="@+id/layoutTopBar"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:scaleType="centerCrop"
-                android:elevation="10dp"
-                android:src="@drawable/img" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/layoutTopBar">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/imageMusicThumbnail1"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:elevation="10dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/imageMusicThumbnail2"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="20dp"
+                    android:elevation="10dp"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img" />
+
+            </RelativeLayout>
 
             <com.google.android.flexbox.FlexboxLayout
                 android:id="@+id/mainContentLayout"
