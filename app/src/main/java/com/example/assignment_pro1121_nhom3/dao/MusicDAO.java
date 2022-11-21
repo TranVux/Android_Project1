@@ -327,6 +327,56 @@ public class MusicDAO {
         }
     }
 
+    public void searchMusic(String query, SearchMusic searchMusic, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
+        String end = query.trim() + "\uf8ff";
+        ArrayList<Music> listResult = new ArrayList<>();
+        iOnProgressBarStatusListener.beforeGetData();
+        db.collection("musics").whereGreaterThanOrEqualTo("name", query).whereLessThanOrEqualTo("name", end)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                if (document.exists()) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    Map<String, Object> map = document.getData();
+                                    String id = document.getId();
+                                    String name = (String) map.get("name");
+                                    String url = (String) map.get("url");
+                                    String thumbnailUrl = (String) map.get("thumbnailUrl");
+                                    Long creationDate = (Long) map.get("creationDate");
+                                    if (creationDate == null) {
+                                        creationDate = 0L;
+                                    }
+                                    Long updateDate = (Long) map.get("modifyDate");
+                                    if (updateDate == null) {
+                                        updateDate = 0L;
+                                    }
+                                    String singerName = (String) map.get("singerName");
+                                    String singerId = (String) map.get("singerID");
+                                    Long views = (Long) map.get("views");
+                                    if (views == null) {
+                                        views = 0L;
+                                    }
+                                    String genresId = (String) map.get("genresID");
+                                    Music music = new Music(id, name, url, thumbnailUrl, creationDate, updateDate, singerName, singerId, views, genresId);
+                                    listResult.add(music);
+                                }
+                            }
+                            searchMusic.onSearchSuccess(listResult);
+                            iOnProgressBarStatusListener.afterGetData();
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        searchMusic.onSearchFailure();
+                        iOnProgressBarStatusListener.afterGetData();
+                    }
+                });
+    }
+
     public void getTopMusic10(GetTop10Listener getTop10Listener) {
         ArrayList<Music> list = new ArrayList<>();
         CollectionReference collectionReference = db.collection("musics");
@@ -401,5 +451,11 @@ public class MusicDAO {
         void onGetListMusicSuccess(ArrayList<Music> list);
 
         void onGetListMusicFailure();
+    }
+
+    public interface SearchMusic {
+        void onSearchSuccess(ArrayList<Music> result);
+
+        void onSearchFailure();
     }
 }

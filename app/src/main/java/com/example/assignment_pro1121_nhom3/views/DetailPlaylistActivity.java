@@ -118,7 +118,8 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         adapter = new MyPlaylistAdapter(this, new MyPlaylistAdapter.ItemChartEvent() {
             @Override
             public void onItemClick(Music music) {
-                Toast.makeText(DetailPlaylistActivity.this, "Tới activity player", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(DetailPlaylistActivity.this, "Tới activity player", Toast.LENGTH_SHORT).show();
+                btnPlayAll.performClick();
             }
 
             @Override

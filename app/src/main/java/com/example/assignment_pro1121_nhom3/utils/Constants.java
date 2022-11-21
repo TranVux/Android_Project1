@@ -29,4 +29,6 @@ public class Constants {
     public static final String KEY_TOP_10 = "KEY_TOP_10";
     public static final String CHANGE_TO_FOREGROUND_SERVICE = "CHANGE_TO_FOREGROUND_SERVICE";
     public static final String CHANGE_TO_SERVICE = "CHANGE_TO_SERVICE";
+
+    public static final String KEY_RECENT_KEY_WORDS = "KEY_RECENT_KEY_WORDS";
 }

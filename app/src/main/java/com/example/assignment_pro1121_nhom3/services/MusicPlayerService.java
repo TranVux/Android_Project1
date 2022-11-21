@@ -269,11 +269,12 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         try {
             isLoadSuccess = false;
             mediaPlayer.setDataSource(url);
-            mediaPlayer.prepareAsync();
+            Log.d(TAG, "onPrepared: Setup");
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mediaPlayer) {
                     sendNotification();
+                    Log.d(TAG, "onPrepared: Complete");
                     mediaPlayer.start();
                     sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
                     timer.scheduleAtFixedRate(new TimerTask() {
@@ -288,6 +289,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                     }, 0, 1000);
                 }
             });
+            mediaPlayer.prepareAsync();
             isPlaying = true;
         } catch (Exception e) {
             e.printStackTrace();
