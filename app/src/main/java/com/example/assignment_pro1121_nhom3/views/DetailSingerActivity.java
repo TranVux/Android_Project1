@@ -108,6 +108,7 @@ public class DetailSingerActivity extends AppCompatActivity {
                 }
             }, receiverSinger.getId());
 
+
             String finalTempDesc = tempDesc;
             info.setOnClickListener(new View.OnClickListener() {
                 @Override

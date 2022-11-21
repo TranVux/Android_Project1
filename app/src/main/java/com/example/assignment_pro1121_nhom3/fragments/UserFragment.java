@@ -15,8 +15,6 @@ import android.widget.TextView;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
-import com.example.assignment_pro1121_nhom3.views.MainActivity;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 public class UserFragment extends Fragment implements View.OnClickListener {
     public static String TAG = UserFragment.class.getSimpleName();
