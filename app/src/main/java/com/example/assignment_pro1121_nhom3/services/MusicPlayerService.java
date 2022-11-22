@@ -139,7 +139,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
 
     private void resetSong(Music music) {
-        if (!mediaPlayer.isPlaying()) {
+        if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
         }
         mediaPlayer.release();
@@ -156,6 +156,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     public void seekToPosition(int position) {
+        if (!isLoadSuccess) return;
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             isPlaying = false;
@@ -181,7 +182,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             }
             if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_GO_TO_SONG, index);
-//                timer.cancel();
             }
         }
     }
