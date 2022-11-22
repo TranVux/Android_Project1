@@ -123,6 +123,54 @@ public class MusicDAO {
                 });
     }
 
+    public void getMusicRecentPublish(GetMusicRecentPublish getMusicRecentPublish, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
+        iOnProgressBarStatusListener.beforeGetData();
+        ArrayList<Music> list = new ArrayList<>();
+        db.collection("musics").orderBy("creationDate", Direction.DESCENDING).limit(10)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                Map<String, Object> map = document.getData();
+                                String id = document.getId();
+                                String name = (String) map.get("name");
+                                String url = (String) map.get("url");
+                                String thumbnailUrl = (String) map.get("thumbnailUrl");
+                                Long creationDate = (Long) map.get("creationDate");
+                                if (creationDate == null) {
+                                    creationDate = 0L;
+                                }
+                                Long updateDate = (Long) map.get("modifyDate");
+                                if (updateDate == null) {
+                                    updateDate = 0L;
+                                }
+                                String singerName = (String) map.get("singerName");
+                                String singerId = (String) map.get("singerID");
+                                Long views = (Long) map.get("views");
+                                if (views == null) {
+                                    views = 0L;
+                                }
+                                String genresId = (String) map.get("genresID");
+                                Music music = new Music(id, name, url, thumbnailUrl, creationDate, updateDate, singerName, singerId, views, genresId);
+                                list.add(music);
+                            }
+                            Log.d("finish getting documents", list.size() + "");
+                            getMusicRecentPublish.onGetSuccess(list);
+                            iOnProgressBarStatusListener.afterGetData();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        iOnProgressBarStatusListener.afterGetData();
+                        getMusicRecentPublish.onGetFailure();
+                    }
+                });
+    }
 
     //lấy  1 bài hát
     public void getMusic(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id, ReadItemMusic readItemMusic) {
@@ -457,5 +505,11 @@ public class MusicDAO {
         void onSearchSuccess(ArrayList<Music> result);
 
         void onSearchFailure();
+    }
+
+    public interface GetMusicRecentPublish {
+        void onGetSuccess(ArrayList<Music> result);
+
+        void onGetFailure();
     }
 }

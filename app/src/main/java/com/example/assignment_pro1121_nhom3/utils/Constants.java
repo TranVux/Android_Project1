@@ -33,5 +33,7 @@ public class Constants {
 
     public static final String PLAYLIST_TYPE_SINGER = "PLAYLIST_TYPE_SINGER";
     public static final String PLAYLIST_TYPE_DEFAULT = "PLAYLIST_TYPE_DEFAULT";
+    public static final String PLAYLIST_TYPE_RECENT_PUBLISH = "PLAYLIST_TYPE_RECENT_PUBLISH";
+
     public static final String KEY_RECENT_KEY_WORDS = "KEY_RECENT_KEY_WORDS";
 }

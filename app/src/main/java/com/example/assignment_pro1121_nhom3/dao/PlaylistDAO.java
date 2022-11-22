@@ -63,6 +63,7 @@ public class PlaylistDAO {
         ArrayList<Playlist> list = new ArrayList<>();
         iOnProgressBarStatusListener.beforeGetData();
         db.collection("playlists")
+                .whereEqualTo("isPublic", true)
                 .limit(limit)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -88,6 +89,7 @@ public class PlaylistDAO {
                             iOnProgressBarStatusListener.afterGetData();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
+                            iOnProgressBarStatusListener.afterGetData();
                         }
                     }
                 });

@@ -58,7 +58,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity implements HandleChangeColorBottomNavigation {
     public static final String TAG = MainActivity.class.getSimpleName();
     BottomNavigationView bottomNavigation;
-    ImageView imageThumbnailCurrentMusic;
+    public ImageView imageThumbnailCurrentMusic;
     View customButtonPlay, customRadio;
     //Trạng thái của nút play 0 là pause 1 là start/resume
     int stateButtonPlay = 0;

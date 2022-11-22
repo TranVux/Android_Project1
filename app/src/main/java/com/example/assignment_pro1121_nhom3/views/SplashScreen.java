@@ -89,7 +89,7 @@ public class SplashScreen extends AppCompatActivity {
                         Log.d(TAG, "onReadFailure: lỗi nè");
                     }
                 });
-            } else {
+            } else if (playlistType.equals(PLAYLIST_TYPE_SINGER)) {
                 musicDAO.getMusicBySingerId(null, recentIdPlaylist, new MusicDAO.GetSingerByID() {
                     @Override
                     public void onGetSuccess(ArrayList<Music> list) {
@@ -102,6 +102,32 @@ public class SplashScreen extends AppCompatActivity {
 
                     @Override
                     public void getNextQuery(Query query) {
+
+                    }
+                }, new IOnProgressBarStatusListener() {
+                    @Override
+                    public void beforeGetData() {
+
+                    }
+
+                    @Override
+                    public void afterGetData() {
+
+                    }
+                });
+            } else {
+                musicDAO.getMusicRecentPublish(new MusicDAO.GetMusicRecentPublish() {
+                    @Override
+                    public void onGetSuccess(ArrayList<Music> result) {
+                        musicPlayer = MusicPlayer.getInstance(result);
+                        Log.d(TAG, "onReadSuccess: " + result.size());
+                        musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+                        startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                        finish();
+                    }
+
+                    @Override
+                    public void onGetFailure() {
 
                     }
                 }, new IOnProgressBarStatusListener() {

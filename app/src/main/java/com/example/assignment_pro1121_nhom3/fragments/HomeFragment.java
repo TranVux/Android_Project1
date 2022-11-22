@@ -1,7 +1,26 @@
 package com.example.assignment_pro1121_nhom3.fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MUSIC;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_CREATION_DATE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_GENRES_ID;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_ID;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_INDEX;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_NAME;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_SINGER_ID;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_SINGER_NAME;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_THUMBNAIL_URL;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_UPDATE_DATE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_RECENT_PUBLISH;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_SINGER;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
@@ -43,13 +62,18 @@ import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNa
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
+import com.example.assignment_pro1121_nhom3.models.Singer;
+import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.utils.GridSpacingItemDecoration;
 import com.example.assignment_pro1121_nhom3.views.ChartActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailPlaylistActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
+import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.example.assignment_pro1121_nhom3.views.SearchActivity;
 import com.example.assignment_pro1121_nhom3.views.SingerActivity;
+import com.example.assignment_pro1121_nhom3.views.SplashScreen;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -104,6 +128,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     //xử lý progressbar
     LinearLayout progressBarLayout;
     ProgressBar progressBar;
+
+    //player
+    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+
 
     public HomeFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
         this.handleChangeColorBottomNavigation = handleChangeColorBottomNavigation;
@@ -214,15 +242,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         rclPlaylist.setNestedScrollingEnabled(false);
         //
 
-        FlexboxLayoutManager managerRclRecentPublish = new FlexboxLayoutManager(requireContext());
-        managerRclRecentPublish.setFlexDirection(FlexDirection.ROW);
-        managerRclRecentPublish.setJustifyContent(JustifyContent.SPACE_BETWEEN);
-        managerRclRecentPublish.setFlexWrap(FlexWrap.WRAP);
-
-        FlexboxLayoutManager managerRclPlayList = new FlexboxLayoutManager(requireContext());
-        managerRclPlayList.setFlexDirection(FlexDirection.ROW);
-        managerRclPlayList.setJustifyContent(JustifyContent.SPACE_BETWEEN);
-        managerRclPlayList.setFlexWrap(FlexWrap.WRAP);
+//        FlexboxLayoutManager managerRclRecentPublish = new FlexboxLayoutManager(requireContext());
+//        managerRclRecentPublish.setFlexDirection(FlexDirection.ROW);
+//        managerRclRecentPublish.setJustifyContent(JustifyContent.FLEX_START);
+////        managerRclRecentPublish.setFlexWrap(FlexWrap.WRAP);
+//
+//        FlexboxLayoutManager managerRclPlayList = new FlexboxLayoutManager(requireContext());
+//        managerRclPlayList.setFlexDirection(FlexDirection.ROW);
+//        managerRclPlayList.setJustifyContent(JustifyContent.FLEX_START);
+////        managerRclPlayList.setFlexWrap(FlexWrap.WRAP);
 
         LinearLayoutManager rclRecentLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
         LinearLayoutManager rclPlaylistLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -232,14 +260,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         musicRecentPublishAdapter = new MusicRecentPublishAdapter(listRecentPublish, requireContext(), new ItemEvent.MusicItemEvent() {
             @Override
-            public void onItemClick(Music music) {
-                Toast.makeText(requireContext(), music.getName(), Toast.LENGTH_SHORT).show();
+            public void onItemClick(Music music, int position) {
+                navigateToPlayer(position);
             }
 
             @Override
             public void onSingerNameClick(String singerID) {
                 Toast.makeText(requireContext(), singerID, Toast.LENGTH_SHORT).show();
-                requireContext().startActivity(new Intent(requireContext(), DetailSingerActivity.class));
             }
         });
 
@@ -255,9 +282,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         rclRecentPublish.setAdapter(musicRecentPublishAdapter);
         rclPlaylist.setAdapter(playListMusicAdapter);
 //        setDataForList();
-        musicDAO.getMusicItemWithLimit(new IOnProgressBarStatusListener() {
+
+        musicDAO.getMusicRecentPublish(new MusicDAO.GetMusicRecentPublish() {
+            @Override
+            public void onGetSuccess(ArrayList<Music> result) {
+                listRecentPublish = result;
+                musicRecentPublishAdapter.setList(listRecentPublish);
+            }
+
+            @Override
+            public void onGetFailure() {
+
+            }
+        }, new IOnProgressBarStatusListener() {
             @Override
             public void beforeGetData() {
+
             }
 
             @Override
@@ -265,12 +305,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 if (listPlaylist.size() != 0 && listRecentPublish.size() != 0) {
                     progressBarLayout.setVisibility(View.GONE);
                 }
-            }
-        }, 10, new MusicDAO.GetDataMusicWithLimit() {
-            @Override
-            public void onGetLimitData(ArrayList<Music> list) {
-                listRecentPublish = list;
-                musicRecentPublishAdapter.setList(listRecentPublish);
             }
         });
 
@@ -281,7 +315,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
             @Override
             public void afterGetData() {
-                if (listPlaylist.size() != 0 && listRecentPublish.size() != 0) {
+                if (listPlaylist.size() != 0 || listRecentPublish.size() != 0) {
                     progressBarLayout.setVisibility(View.GONE);
                 }
             }
@@ -300,6 +334,24 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     }
 
+    public void navigateToPlayer(int position) {
+        if (musicRecentPublishAdapter.getItemCount() > 0) {
+            musicPlayer.pauseSong(musicPlayer.getCurrentPositionSong());
+            musicPlayer.clearPlaylist();
+            musicPlayer.setPlayList(musicRecentPublishAdapter.getList());
+            musicPlayer.setMusicAtPosition(position);
+            try {
+                musicPlayer.setStateMusicPlayer(MusicPlayer.MUSIC_PLAYER_STATE_PLAYING);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            saveCurrentMusic(musicPlayer, "", PLAYLIST_TYPE_RECENT_PUBLISH);
+            Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
+            ((MainActivity) requireActivity()).imageThumbnailCurrentMusic.performClick();
+            startServiceMusic(musicPlayer.getCurrentSong(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_SONG);
+        }
+    }
+
     public void FakeDataSlide() {
         listPictureSlide = new ArrayList<>();
         listPictureSlide.add(new SlideModel("https://photo-resize-zmp3.zmdcdn.me/w600_r1x1_webp/covers/c/b/cb61528885ea3cdcd9bdb9dfbab067b1_1504988884.jpg", ScaleTypes.CENTER_CROP));
@@ -310,15 +362,31 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         listPictureSlide.add(new SlideModel("https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/2/3/0/9/230932fdd1bca925c22c487a06359a5a.jpg", ScaleTypes.CENTER_CROP));
     }
 
-    public void setDataForList() {
-//        listRecentPublish = new ArrayList<>();
-        listPlaylist = new ArrayList<>();
+    public void startServiceMusic(Music music, int action) {
+        Intent serviceMusic = new Intent(requireContext(), MusicPlayerService.class);
+        serviceMusic.putExtra("action", action);
+        serviceMusic.putExtra(KEY_MUSIC, music);
+        requireContext().startService(serviceMusic);
+    }
 
-        //thêm dữ liệu cho listPlaylist
-        listPlaylist.add(new Playlist("OGYOj3aeIdT0LsxkPwi4", "US - UK songs", null, 1667278226L, 1667278226L, "https://avatar-ex-swe.nixcdn.com/singer/avatar/2017/11/18/7/a/1/0/1510943948217_600.jpg", "V"));
-        listPlaylist.add(new Playlist("OGYOj3aeIdT0LsxkPwi4", "Bảng xếp hạng tháng 10", null, 1667278226L, 1667278226L, "https://www.google.com/url?sa=i&url=https%3A%2F%2Fdvt.vn%2Fmono-nguyen-viet-hoang-la-ai-tieu-su-va-hanh-trinh-debut-tro-thanh-ca-si-a116552.html&psig=AOvVaw3oSEIIS7FVuRGM0RGxpKc7&ust=1667960131773000&source=images&cd=vfe&ved=0CA0QjRxqFwoTCKjS7-rBnfsCFQAAAAAdAAAAABAE", "V"));
-        listPlaylist.add(new Playlist("OGYOj3aeIdT0LsxkPwi4", "Ngủ", null, 1667278226L, 1667278226L, "https://truyenvn.vip/tin/wp-content/uploads/2020/09/thanh-guom-diet-quy-chuyen-tau-bat-tan-4.jpg", "Vũ"));
-
+    public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlaylist) {
+        SharedPreferences sharedPreferencesMusicList = requireContext().getSharedPreferences("music_player", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferencesMusicList.edit();
+        editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
+        editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
+        editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());
+        editor.putString(KEY_SONG_ID, musicPlayer.getCurrentSong().getId());
+        editor.putLong(KEY_SONG_VIEWS, musicPlayer.getCurrentSong().getViews());
+        editor.putString(KEY_SONG_SINGER_ID, musicPlayer.getCurrentSong().getSingerId());
+        editor.putString(KEY_SONG_SINGER_NAME, musicPlayer.getCurrentSong().getSingerName());
+        editor.putString(KEY_SONG_GENRES_ID, musicPlayer.getCurrentSong().getGenresId());
+        editor.putLong(KEY_SONG_CREATION_DATE, musicPlayer.getCurrentSong().getCreationDate());
+        editor.putLong(KEY_SONG_UPDATE_DATE, musicPlayer.getCurrentSong().getUpdateDate());
+        editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
+        Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
+        editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
+        editor.putString(KEY_PLAYLIST_TYPE, typePlaylist);
+        editor.apply();
     }
 
     @Override
@@ -393,16 +461,5 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             default:
                 break;
         }
-    }
-
-    public void turnOfFadeEffect() {
-        Fade fade = new Fade();
-        View decor = requireActivity().getWindow().getDecorView();
-        fade.excludeTarget(decor.findViewById(androidx.appcompat.R.id.action_bar_container), true);
-        fade.excludeTarget(android.R.id.statusBarBackground, true);
-        fade.excludeTarget(android.R.id.navigationBarBackground, true);
-
-        requireActivity().getWindow().setEnterTransition(fade);
-        requireActivity().getWindow().setExitTransition(fade);
     }
 }

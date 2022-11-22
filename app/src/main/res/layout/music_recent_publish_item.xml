@@ -27,7 +27,7 @@
         android:textSize="11sp"
         android:fontFamily="@font/roboto_medium"
         android:textColor="@color/function_text_color"
-        android:maxLines="2"
+        android:maxLines="1"
         android:layout_marginTop="5dp"
         android:ellipsize="end"
         android:text="Muộn Rồi Mà Sao Còn" />

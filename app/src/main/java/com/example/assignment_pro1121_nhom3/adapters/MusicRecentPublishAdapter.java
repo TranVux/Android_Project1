@@ -45,6 +45,10 @@ public class MusicRecentPublishAdapter extends RecyclerView.Adapter<RecyclerView
         result.dispatchUpdatesTo(this);
     }
 
+    public ArrayList<Music> getList() {
+        return list;
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (list != null && position == list.size() - 1 && isLoadingAdd) {
@@ -81,7 +85,7 @@ public class MusicRecentPublishAdapter extends RecyclerView.Adapter<RecyclerView
             publishViewHolder.itemMusic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    itemEvent.onItemClick(musicTemp);
+                    itemEvent.onItemClick(musicTemp, position);
                 }
             });
 
