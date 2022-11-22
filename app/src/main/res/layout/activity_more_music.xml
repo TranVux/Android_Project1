@@ -65,10 +65,16 @@
         android:animateLayoutChanges="true"
         android:background="@color/bg_activity"
         android:elevation="0dp"
+        app:tabIndicator="@drawable/tab_indicator_custom"
+        app:tabIndicatorColor="@color/bg_btn"
+        app:tabIndicatorHeight="3dp"
+        app:tabIndicatorAnimationMode="elastic"
+        app:tabTextAppearance="@style/TabLayoutStyle"
+        app:tabRippleColor="@null"
         android:transitionGroup="true"
         app:tabBackground="@color/bg_activity"
-        app:tabIndicatorHeight="0dp"
         app:tabMode="scrollable"
+        android:layout_marginBottom="8dp"
         app:tabTextColor="@color/white">
 
         <com.google.android.material.tabs.TabItem

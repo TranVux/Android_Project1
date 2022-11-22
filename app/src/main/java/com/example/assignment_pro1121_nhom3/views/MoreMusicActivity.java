@@ -31,8 +31,6 @@ public class MoreMusicActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager2 viewPager2;
     public static final String TAG = MoreMusicActivity.class.getSimpleName();
-    int currentFontSizeTabLayout1 = 25;
-    int currentFontSizeTabLayout2 = 15;
     ImageView btnBack;
     Chip chipAll;
     ChipGroup chipGroup;
@@ -54,46 +52,15 @@ public class MoreMusicActivity extends AppCompatActivity {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
               if(position == 0){
-                  tab.setCustomView(createCustomTabView("Top Lượt Nghe", currentFontSizeTabLayout1));
+                  tab.setText("Top Lượt Nghe");
               }
               if(position == 1){
-                  tab.setCustomView(createCustomTabView("Tất cả", currentFontSizeTabLayout2));
+                  tab.setText("Tất cả");
               }
             }
         }).attach();
         tabLayout.setSmoothScrollingEnabled(true);
-        TabLayout.Tab tab1 = tabLayout.getTabAt(0);
-        TabLayout.Tab tab2 = tabLayout.getTabAt(1);
-        assert tab1 != null;
-        assert tab2 != null;
 
-        viewPager2.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                super.onPageScrolled(position, positionOffset, positionOffsetPixels);
-                int offset = (int) (Math.round(Math.ceil(positionOffset * 15)));
-                if (offset <= 0 || offset > 10) {
-                    //xử lý phần chữ của tablayout
-                    if (tab1 != null) {
-                        setTabTextSize(tab1, (currentFontSizeTabLayout1 - 10));
-                    }
-                    if (tab2 != null) {
-                        setTabTextSize(tab2, (currentFontSizeTabLayout2 + 10));
-                    }
-                }
-                if (position == 0) {
-                    if ((currentFontSizeTabLayout1 - offset) >= 15) {
-//                        Log.d(TAG, "onPageScrolled: " + (currentFontSizeTabLayout1 - offset) + " " + (currentFontSizeTabLayout2 + offset));
-                        if (tab1 != null) {
-                            setTabTextSize(tab1, (currentFontSizeTabLayout1 - offset));
-                        }
-                        if (tab2 != null) {
-                            setTabTextSize(tab2, (currentFontSizeTabLayout2 + offset));
-                        }
-                    }
-                }
-            }
-        });
        // xử lý nút back cho activity
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,7 +68,6 @@ public class MoreMusicActivity extends AppCompatActivity {
                 onBackPressed();
             }
         });
-
 
         chipGroup.setOnCheckedStateChangeListener(new ChipGroup.OnCheckedStateChangeListener() {
             @Override
@@ -130,22 +96,6 @@ public class MoreMusicActivity extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private View createCustomTabView(String tabText, int tabSizeSp) {
-        View tabCustomView = getLayoutInflater().inflate(R.layout.layout_tab, null);
-        TextView tabTextView = tabCustomView.findViewById(R.id.tabTV);
-        tabTextView.setText(tabText);
-        tabTextView.setTextSize(tabSizeSp);
-        return tabCustomView;
-    }
-
-    private void setTabTextSize(TabLayout.Tab tab, int tabSizeSp) {
-        View tabCustomView = tab.getCustomView();
-        if(tabCustomView != null){
-            TextView tabTextView = tabCustomView.findViewById(R.id.tabTV);
-            tabTextView.setTextSize(tabSizeSp);
-        }
     }
 
     private void reference() {
