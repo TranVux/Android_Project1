@@ -44,6 +44,10 @@ public class MusicInPlaylistAdapter extends RecyclerView.Adapter<MusicInPlaylist
         notifyItemChanged(initPosition, listMusic.size());
     }
 
+    public ArrayList<Music> getListMusic() {
+        return listMusic;
+    }
+
     @NonNull
     @Override
     public MusicInPlaylistViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

@@ -442,7 +442,6 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
 
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist) {
         SharedPreferences.Editor editor = sharedPreferencesMusicList.edit();
-        editor.clear();
         editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
         editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
         editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());

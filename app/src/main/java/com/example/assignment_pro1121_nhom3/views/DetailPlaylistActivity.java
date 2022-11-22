@@ -2,6 +2,7 @@ package com.example.assignment_pro1121_nhom3.views;
 
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MUSIC;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_CREATION_DATE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_GENRES_ID;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_ID;
@@ -13,6 +14,7 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_THUM
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_UPDATE_DATE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_DEFAULT;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -117,9 +119,8 @@ public class DetailPlaylistActivity extends AppCompatActivity {
 
         adapter = new MyPlaylistAdapter(this, new MyPlaylistAdapter.ItemChartEvent() {
             @Override
-            public void onItemClick(Music music) {
-//                Toast.makeText(DetailPlaylistActivity.this, "Tới activity player", Toast.LENGTH_SHORT).show();
-                btnPlayAll.performClick();
+            public void onItemClick(Music music, int position) {
+                navigateToPLayer(position);
             }
 
             @Override
@@ -139,21 +140,7 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         btnPlayAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (adapter.getItemCount() > 0) {
-                    musicPlayer.pauseSong(musicPlayer.getCurrentPositionSong());
-                    musicPlayer.clearPlaylist();
-                    musicPlayer.setPlayList(adapter.getList());
-                    musicPlayer.start();
-                    try {
-                        musicPlayer.setStateMusicPlayer(MusicPlayer.MUSIC_PLAYER_STATE_PLAYING);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    saveCurrentMusic(musicPlayer, tempPlaylist.getId());
-                    Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
-                    startActivity(new Intent(DetailPlaylistActivity.this, MainActivity.class));
-                    startServiceMusic(musicPlayer.getCurrentSong(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_SONG);
-                }
+                navigateToPLayer(0);
             }
         });
 
@@ -216,6 +203,24 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         }
     }
 
+    public void navigateToPLayer(int position) {
+        if (adapter.getItemCount() > 0) {
+            musicPlayer.pauseSong(musicPlayer.getCurrentPositionSong());
+            musicPlayer.clearPlaylist();
+            musicPlayer.setPlayList(adapter.getList());
+            musicPlayer.setMusicAtPosition(position);
+            try {
+                musicPlayer.setStateMusicPlayer(MusicPlayer.MUSIC_PLAYER_STATE_PLAYING);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            saveCurrentMusic(musicPlayer, tempPlaylist.getId(), PLAYLIST_TYPE_DEFAULT);
+            Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
+            startActivity(new Intent(DetailPlaylistActivity.this, MainActivity.class));
+            startServiceMusic(musicPlayer.getCurrentSong(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_SONG);
+        }
+    }
+
     private void setMargins(View view, int left, int top, int right, int bottom) {
         if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
@@ -233,9 +238,8 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         return 0;
     }
 
-    public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist) {
+    public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlayList) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
         editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
         editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
         editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());
@@ -248,6 +252,8 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         editor.putLong(KEY_SONG_UPDATE_DATE, musicPlayer.getCurrentSong().getUpdateDate());
         editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
         Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
+        Log.d(TAG, "saveCurrentMusic: " + typePlayList);
+        editor.putString(KEY_PLAYLIST_TYPE, typePlayList);
         editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
         editor.apply();
     }

@@ -1,5 +1,22 @@
 package com.example.assignment_pro1121_nhom3.views;
 
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MUSIC;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_CREATION_DATE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_GENRES_ID;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_ID;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_INDEX;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_NAME;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_SINGER_ID;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_SINGER_NAME;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_THUMBNAIL_URL;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_UPDATE_DATE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_TOP_10;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_SINGER;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.widget.NestedScrollView;
@@ -7,9 +24,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextPaint;
 import android.util.Log;
@@ -24,6 +44,8 @@ import com.example.assignment_pro1121_nhom3.adapters.ChartPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
 import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
+import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.utils.RoundedBarChart;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
@@ -44,6 +66,7 @@ public class ChartActivity extends AppCompatActivity {
     private ChartPlaylistAdapter adapter;
     private MusicDAO musicDAO;
     private RoundedBarChart barChart;
+    public MusicPlayer musicPlayer = SplashScreen.musicPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +110,22 @@ public class ChartActivity extends AppCompatActivity {
         //adapter cho top
         adapter = new ChartPlaylistAdapter(this, new ChartPlaylistAdapter.ItemChartEvent() {
             @Override
-            public void onItemClick(Music music) {
-                Toast.makeText(ChartActivity.this, "Tới activity player", Toast.LENGTH_SHORT).show();
+            public void onItemClick(Music music, int position) {
+                if (adapter.getItemCount() > 0) {
+                    musicPlayer.pauseSong(musicPlayer.getCurrentPositionSong());
+                    musicPlayer.clearPlaylist();
+                    musicPlayer.setPlayList((ArrayList<Music>) adapter.getList());
+                    musicPlayer.setMusicAtPosition(position);
+                    try {
+                        musicPlayer.setStateMusicPlayer(MusicPlayer.MUSIC_PLAYER_STATE_PLAYING);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    saveCurrentMusic(musicPlayer, KEY_TOP_10, KEY_TOP_10);
+                    Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
+                    startActivity(new Intent(ChartActivity.this, MainActivity.class));
+                    startServiceMusic(musicPlayer.getCurrentSong(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_SONG);
+                }
             }
 
             @Override
@@ -127,11 +164,11 @@ public class ChartActivity extends AppCompatActivity {
 
         BarDataSet barDataSet = new BarDataSet(barChartEntry, "");
         barDataSet.setValueTextSize(13f);
-        barDataSet.setStackLabels(new String[]{"Em của ngày hôm qua", "Yêu 1", "Yêu 2", "Yêu 3", "Yêu 4", "Yêu 5"});
 
         BarData barData = new BarData(barDataSet);
         barData.setBarWidth(.3f);
         barData.setDrawValues(false);
+        barData.setValueTextColor(Color.WHITE);
 
         barChart.setData(barData);
         barChart.animateY(1000, Easing.EaseInOutCirc);
@@ -177,5 +214,32 @@ public class ChartActivity extends AppCompatActivity {
             return getResources().getDimensionPixelSize(resourceId);
         }
         return 0;
+    }
+
+    public void startServiceMusic(Music music, int action) {
+        Intent serviceMusic = new Intent(ChartActivity.this, MusicPlayerService.class);
+        serviceMusic.putExtra("action", action);
+        serviceMusic.putExtra(KEY_MUSIC, music);
+        startService(serviceMusic);
+    }
+
+    public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlaylist) {
+        SharedPreferences sharedPreferencesMusicList = getSharedPreferences("music_player", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferencesMusicList.edit();
+        editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
+        editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
+        editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());
+        editor.putString(KEY_SONG_ID, musicPlayer.getCurrentSong().getId());
+        editor.putLong(KEY_SONG_VIEWS, musicPlayer.getCurrentSong().getViews());
+        editor.putString(KEY_SONG_SINGER_ID, musicPlayer.getCurrentSong().getSingerId());
+        editor.putString(KEY_SONG_SINGER_NAME, musicPlayer.getCurrentSong().getSingerName());
+        editor.putString(KEY_SONG_GENRES_ID, musicPlayer.getCurrentSong().getGenresId());
+        editor.putLong(KEY_SONG_CREATION_DATE, musicPlayer.getCurrentSong().getCreationDate());
+        editor.putLong(KEY_SONG_UPDATE_DATE, musicPlayer.getCurrentSong().getUpdateDate());
+        editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
+        Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
+        editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
+        editor.putString(KEY_PLAYLIST_TYPE, typePlaylist);
+        editor.apply();
     }
 }

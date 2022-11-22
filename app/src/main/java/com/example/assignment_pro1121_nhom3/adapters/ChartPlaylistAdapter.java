@@ -37,6 +37,10 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
         notifyDataSetChanged();
     }
 
+    public List<Music> getList() {
+        return list;
+    }
+
     @NonNull
     @Override
     public ChartplaylistViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -62,7 +66,7 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
         holder.chartMusicItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                itemChartEvent.onItemClick(music);
+                itemChartEvent.onItemClick(music, position);
             }
         });
         holder.buttonMore.setOnClickListener(new View.OnClickListener() {
@@ -100,7 +104,7 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
     }
 
     public interface ItemChartEvent {
-        void onItemClick(Music music);
+        void onItemClick(Music music, int position);
 
         void onMoreButtonClick(Music music);
     }

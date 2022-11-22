@@ -64,7 +64,7 @@ public class MyPlaylistAdapter extends RecyclerView.Adapter<MyPlaylistAdapter.My
         holder.MyPlaylistItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                itemChartEvent.onItemClick(music);
+                itemChartEvent.onItemClick(music, position);
             }
         });
         holder.btnMore.setOnClickListener(new View.OnClickListener() {
@@ -106,7 +106,7 @@ public class MyPlaylistAdapter extends RecyclerView.Adapter<MyPlaylistAdapter.My
     }
 
     public interface ItemChartEvent {
-        void onItemClick(Music music);
+        void onItemClick(Music music, int position);
 
         void onMoreButtonClick(Music music);
     }

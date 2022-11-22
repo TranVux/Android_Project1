@@ -55,7 +55,9 @@ public class SingerActivity extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                Log.d(TAG, "onPageScrolled: positionOffset" + positionOffset);
                 int offset = (int) (Math.round(Math.ceil(positionOffset * 15)));
+                Log.d(TAG, "onPageScrolled: " + offset);
                 assert tab2 != null;
                 assert tab1 != null;
                 if (offset <= 0 || offset > 10) {
@@ -79,8 +81,10 @@ public class SingerActivity extends AppCompatActivity {
 
             @Override
             public void onPageScrollStateChanged(int state) {
+                Log.d(TAG, "onPageScrollStateChanged: " + state);
             }
         });
+
         // set item cho tablayout
         assert tab1 != null;
         tab1.setCustomView(createCustomTabView("Top Lượt Nghe", currentFontSizeTabLayout1));

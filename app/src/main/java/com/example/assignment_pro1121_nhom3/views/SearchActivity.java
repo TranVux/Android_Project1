@@ -2,6 +2,7 @@ package com.example.assignment_pro1121_nhom3.views;
 
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MUSIC;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_RECENT_KEY_WORDS;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_CREATION_DATE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_GENRES_ID;
@@ -15,6 +16,7 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_UPDA
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_TOP_10;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_SINGER;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -180,7 +182,7 @@ public class SearchActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(SearchActivity.this));
         myPlaylistAdapter = new MyPlaylistAdapter(SearchActivity.this, new MyPlaylistAdapter.ItemChartEvent() {
             @Override
-            public void onItemClick(Music music) {
+            public void onItemClick(Music music, int position) {
                 if (myPlaylistAdapter.getItemCount() > 0) {
                     musicPlayer.pauseSong(musicPlayer.getCurrentPositionSong());
                     musicPlayer.clearPlaylist();
@@ -191,7 +193,7 @@ public class SearchActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    saveCurrentMusic(musicPlayer, KEY_TOP_10);
+                    saveCurrentMusic(musicPlayer, music.getSingerId(), PLAYLIST_TYPE_SINGER);
                     Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
                     startActivity(new Intent(SearchActivity.this, MainActivity.class));
                     startServiceMusic(musicPlayer.getCurrentSong(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_SONG);
@@ -208,10 +210,9 @@ public class SearchActivity extends AppCompatActivity {
         recyclerView.setAdapter(myPlaylistAdapter);
     }
 
-    public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist) {
+    public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlayList) {
         SharedPreferences sharedPreferences = getSharedPreferences("music_player", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
         editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
         editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
         editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());
@@ -223,6 +224,8 @@ public class SearchActivity extends AppCompatActivity {
         editor.putLong(KEY_SONG_CREATION_DATE, musicPlayer.getCurrentSong().getCreationDate());
         editor.putLong(KEY_SONG_UPDATE_DATE, musicPlayer.getCurrentSong().getUpdateDate());
         editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
+        editor.putString(KEY_PLAYLIST_TYPE, typePlayList);
+        Log.d(TAG, "saveCurrentMusic: " + typePlayList);
         Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
         editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
         editor.apply();

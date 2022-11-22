@@ -63,8 +63,9 @@
         android:layout_height="40dp"
         android:layout_marginStart="25dp"
         android:layout_marginTop="10dp"
-        android:background="@drawable/singer_round_button"
+        android:background="@drawable/ripple_btn_play_all"
         android:gravity="center"
+        android:clickable="true"
         android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/singerThumbnail">
