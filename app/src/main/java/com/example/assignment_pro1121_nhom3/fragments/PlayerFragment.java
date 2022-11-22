@@ -15,9 +15,14 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.transition.AutoTransition;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -27,6 +32,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -37,6 +43,7 @@ import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
+import com.example.assignment_pro1121_nhom3.views.SearchActivity;
 import com.example.assignment_pro1121_nhom3.views.SplashScreen;
 
 import java.util.ArrayList;
@@ -56,7 +63,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
 
     //Nút thêm dùng để mở lên danh sách bài hát tiếp theo
     TextView labelMoreListMusic, musicName, singerName, singerNameNext, musicNameNext, labelViewNextMusic, labelViewCurrentMusic;
-    ImageView icMoreListMusic, imageMusicThumbnail1, imageMusicThumbnail2, backgroundImage1, btnNext, btnPrev, btnAddToPlayList, imageThumbnailNextMusic;
+    ImageView icMoreListMusic, imageMusicThumbnail1, imageMusicThumbnail2, backgroundImage1, btnNext, btnPrev, btnAddToPlayList, imageThumbnailNextMusic, btnSearch;
     public SeekBar timeLine;
 
     //playlist hiện tại
@@ -73,6 +80,9 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
 
     //handle timeline
     boolean isSetMax = false;
+
+    //nextmusic playout
+    LinearLayout nextMusic;
 
     public static PlayerFragment newInstance(ArrayList<Music> playListMusic) {
         PlayerFragment playerFragment = new PlayerFragment();
@@ -100,6 +110,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         // thiết lập thuộc tính ban đầu, ánh xạ view
         SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("music_player", Context.MODE_PRIVATE);
         init(view);
@@ -194,6 +205,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         labelViewNextMusic = view.findViewById(R.id.labelNextMusicView);
         imageThumbnailNextMusic = view.findViewById(R.id.imageThumbnailNextMusic);
         labelViewCurrentMusic = view.findViewById(R.id.view);
+        nextMusic = view.findViewById(R.id.nextMusic);
+        btnSearch = view.findViewById(R.id.btnSearch);
 
         fadeOut = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out_anim);
         fadeIn = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in_anim);
@@ -205,6 +218,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         btnPrev.setOnClickListener(this);
         btnNext.setOnClickListener(this);
         btnAddToPlayList.setOnClickListener(this);
+        nextMusic.setOnClickListener(this);
+        btnSearch.setOnClickListener(this);
     }
 
     private void blurBackgroundFragment() {
@@ -237,7 +252,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
     public void onStop() {
         super.onStop();
         Log.d(TAG, "onStop: ");
-        requireContext().unregisterReceiver(musicPlayerReceiver);
+        LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(musicPlayerReceiver);
     }
 
 
@@ -245,7 +260,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
     public void onStart() {
         super.onStart();
         IntentFilter musicServiceIntentFilter = new IntentFilter(MUSIC_PLAYER_EVENT);
-        requireContext().registerReceiver(musicPlayerReceiver, musicServiceIntentFilter);
+        LocalBroadcastManager.getInstance(requireContext()).registerReceiver(musicPlayerReceiver, musicServiceIntentFilter);
 
     }
 
@@ -270,7 +285,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
                 bottomSheet.show(getParentFragmentManager(), TAG);
                 break;
             }
-            case R.id.btnSkipToNext: {
+            case R.id.btnSkipToNext:
+            case R.id.nextMusic: {
                 Log.d(TAG, "onClick: Next");
                 nextMusic();
                 break;
@@ -278,6 +294,11 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
             case R.id.btnSkipToPrev: {
                 Log.d(TAG, "onClick: Prev");
                 previousMusic();
+                break;
+            }
+            case R.id.btnSearch: {
+                Intent searchIntent = new Intent(requireContext(), SearchActivity.class);
+                startActivity(searchIntent);
                 break;
             }
             default: {
@@ -344,7 +365,6 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
                         timeLine.setProgress(currentPositionDuration, true);
                     }
                 }
-
             }
         }
     }

@@ -143,6 +143,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             mediaPlayer.stop();
         }
         mediaPlayer.release();
+        timer.cancel();
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioAttributes(new AudioAttributes
                 .Builder()
@@ -150,7 +151,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 .build());
         mediaPlayer.setOnCompletionListener(this);
         currentSong = music;
-        timer.cancel();
         timer = new Timer();
         setMusicUrl(currentSong.getUrl());
     }
@@ -240,7 +240,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         Intent outIntent = new Intent(MUSIC_PLAYER_EVENT);
         outIntent.putExtra("action", action);
         outIntent.putExtra(KEY_SONG_INDEX, index);
-        sendBroadcast(outIntent);
+        LocalBroadcastManager.getInstance(this).sendBroadcast(outIntent);
     }
 
     private void initService(Intent intent) {
@@ -284,7 +284,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                             Intent durationIntent = new Intent(MUSIC_PLAYER_EVENT);
                             durationIntent.putExtra(KEY_CURRENT_MUSIC_POSITION, mediaPlayer.getCurrentPosition() / 1000);
                             durationIntent.putExtra(KEY_MUSIC_DURATION, mediaPlayer.getDuration() / 1000);
-                            sendBroadcast(durationIntent);
+                            LocalBroadcastManager.getInstance(MusicPlayerService.this).sendBroadcast(durationIntent);
                         }
                     }, 0, 1000);
                 }

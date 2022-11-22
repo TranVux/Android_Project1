@@ -63,7 +63,7 @@ public class MusicInPlaylistAdapter extends RecyclerView.Adapter<MusicInPlaylist
         holder.views.setText(String.valueOf(tempMusic.getViews()));
         holder.musicName.setText(CapitalizeWord.CapitalizeWords(tempMusic.getName()));
         Glide.with(context).load(tempMusic.getThumbnailUrl())
-                .apply(new RequestOptions().override(63, 63))
+                .apply(new RequestOptions().override(150, 150))
                 .error(R.drawable.fallback_img)
                 .into(holder.musicThumbnail);
 

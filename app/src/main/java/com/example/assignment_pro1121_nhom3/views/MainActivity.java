@@ -1,6 +1,7 @@
 package com.example.assignment_pro1121_nhom3.views;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -28,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -55,14 +57,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import me.tankery.lib.circularseekbar.CircularSeekBar;
+
 public class MainActivity extends AppCompatActivity implements HandleChangeColorBottomNavigation {
     public static final String TAG = MainActivity.class.getSimpleName();
+
     BottomNavigationView bottomNavigation;
     public ImageView imageThumbnailCurrentMusic;
+
+    //handle seekbar
+    boolean isSetMax = false;
+    boolean updateSeekBar = true;
+    public CircularSeekBar circularSeekBar;
     View customButtonPlay, customRadio;
+
     //Trạng thái của nút play 0 là pause 1 là start/resume
     int stateButtonPlay = 0;
-
 
     PlayerFragment playerFragment;
     HomeFragment homeFragment;
@@ -83,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     SharedPreferences sharedPreferencesMusicList;
 
     //Receiver
-    MusicPlayerReceiver musicPlayerReceiver;
+//    MusicPlayerReceiver musicPlayerReceiver;
 
     String recentIdPlaylist;
     PlaylistDAO playlistDAO;
@@ -107,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         // khai báo các fragment
         homeFragment = new HomeFragment(this);
         userFragment = new UserFragment(this);
-        musicPlayerReceiver = new MusicPlayerReceiver();
+//        musicPlayerReceiver = new MusicPlayerReceiver();
         playlistDAO = new PlaylistDAO();
 //        playerFragment = new PlayerFragment(this);
         setContentView(R.layout.activity_main);
@@ -164,7 +174,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
             // handle thumbnail của player
             Glide.with(MainActivity.this)
                     .load(musicPlayer.getCurrentSong().getThumbnailUrl())
-                    .apply(new RequestOptions().override(45, 45))
+                    .apply(new RequestOptions().override(180, 180))
                     .into(imageThumbnailCurrentMusic);
         }
 
@@ -211,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         customRadio = LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.custom_item_bottom_navigation_player, bottomNavigationMenuView, false);
         imageThumbnailCurrentMusic = customRadio.findViewById(R.id.imageThumbnailCurrentMusic);
+        circularSeekBar = customRadio.findViewById(R.id.seekbar);
 
         customButtonPlay = LayoutInflater.from(getApplicationContext())
                 .inflate(R.layout.custom_item_bottom_navigation_button_play, bottomNavigationMenuView, false);
@@ -301,6 +312,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
                 playerFragment.timeLine.setProgress(0);
+                circularSeekBar.setProgress(0);
                 handleChangeMusic();
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -323,6 +335,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
                 playerFragment.timeLine.setProgress(0);
+                circularSeekBar.setProgress(0);
                 handleChangeMusic();
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -345,6 +358,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
                 playerFragment.timeLine.setProgress(0);
+                circularSeekBar.setProgress(0);
                 handleChangeMusic();
                 new Handler().postDelayed(new Runnable() {
                     @Override
@@ -425,6 +439,16 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         editor.apply();
     }
 
+    private BroadcastReceiver musicReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                updateSeekBar(intent);
+                handleIntent(intent);
+            }
+        }
+    };
+
     public void handleChangeMusic() {
         Glide.with(MainActivity.this)
                 .load(musicPlayer.getCurrentSong().getThumbnailUrl())
@@ -462,13 +486,13 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     protected void onStart() {
         super.onStart();
         IntentFilter musicServiceIntentFilter = new IntentFilter(MUSIC_PLAYER_EVENT);
-        registerReceiver(musicPlayerReceiver, musicServiceIntentFilter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(musicReceiver, musicServiceIntentFilter);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        unregisterReceiver(musicPlayerReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(musicReceiver);
     }
 
 
@@ -514,13 +538,34 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         return false;
     }
 
-    public class MusicPlayerReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent != null) {
-                //update duration
-                handleIntent(intent);
+    public void updateSeekBar(Intent intent) {
+        //update duration
+        int currentPositionDuration = intent.getIntExtra(KEY_CURRENT_MUSIC_POSITION, 0);
+        int duration = intent.getIntExtra(KEY_MUSIC_DURATION, 0);
+
+        if (!isSetMax) {
+            if (duration != 0) {
+                circularSeekBar.setMax(duration);
+                isSetMax = true;
+            }
+            Log.d(TAG, "onReceive: setMax");
+        }
+
+        if (updateSeekBar) {
+            Log.d(TAG, "onReceive: " + currentPositionDuration);
+            if (currentPositionDuration > 0) {
+                circularSeekBar.setProgress(currentPositionDuration);
             }
         }
     }
+
+//    public class MusicPlayerReceiver extends BroadcastReceiver {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            if (intent != null) {
+//                //update duration
+//                handleIntent(intent);
+//            }
+//        }
+//    }
 }
