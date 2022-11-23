@@ -96,7 +96,6 @@ public class MusicInPlaylistAdapter extends RecyclerView.Adapter<MusicInPlaylist
 
         public MusicInPlaylistViewHolder(@NonNull View itemView) {
             super(itemView);
-
             itemMusic = itemView.findViewById(R.id.itemMusic);
             musicName = itemView.findViewById(R.id.musicName);
             singerName = itemView.findViewById(R.id.singerName);

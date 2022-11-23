@@ -72,6 +72,7 @@ import com.example.assignment_pro1121_nhom3.views.DetailPlaylistActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.example.assignment_pro1121_nhom3.views.SearchActivity;
+import com.example.assignment_pro1121_nhom3.views.MoreMusicActivity;
 import com.example.assignment_pro1121_nhom3.views.SingerActivity;
 import com.example.assignment_pro1121_nhom3.views.SplashScreen;
 import com.google.android.flexbox.FlexDirection;
@@ -92,14 +93,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     BlurView blurViewSlide;
     ImageView imageForeground;
 
-    //nestedScrollView chứa phần dưới layout tìm kiếm
+    // nestedScrollView chứa phần dưới layout tìm kiếm
     NestedScrollView nestedScrollView;
     // slide ảnh
     ImageSlider imageSlider;
     // list ảnh trong slide
     ArrayList<SlideModel> listPictureSlide;
 
-    //RecyclerView của danh sách phát và mới phát hành
+    // RecyclerView của danh sách phát và mới phát hành
     RecyclerView rclPlaylist, rclRecentPublish;
     ArrayList<Music> listRecentPublish = new ArrayList<>();
     ArrayList<Playlist> listPlaylist = new ArrayList<>();
@@ -110,28 +111,27 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     TextView labelMorePlaylist, labelMoreRecentPublishMusic;
     ImageView icMorePlaylist, icMoreRecentPublishMusic;
 
-    //search bar
+    // search bar
     LinearLayout searchBar;
 
-    //nút chuyển sang các màn hình khác (bxh, nghệ sĩ,...)
+    // nút chuyển sang các màn hình khác (bxh, nghệ sĩ,...)
     LinearLayout btnBxh, btnArtis, btnPlaylist, btnCategory;
 
-    //xử lý đổi màu bottom navigation
+    // xử lý đổi màu bottom navigation
     HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
 
-    //DAO lấy dữ liệu music
+    // DAO lấy dữ liệu music
     MusicDAO musicDAO;
 
-    //DAO lấy dữ liệu của playlist
+    // DAO lấy dữ liệu của playlist
     PlaylistDAO playlistDAO;
 
-    //xử lý progressbar
+    // xử lý progressbar
     LinearLayout progressBarLayout;
     ProgressBar progressBar;
 
-    //player
+    // player
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
-
 
     public HomeFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
         this.handleChangeColorBottomNavigation = handleChangeColorBottomNavigation;
@@ -145,7 +145,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
@@ -154,12 +154,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        //bỏ hiểu ứng fade từ search activity
-        Transition transition = TransitionInflater.from(requireContext()).inflateTransition(android.R.transition.no_transition);
+        // bỏ hiểu ứng fade từ search activity
+        Transition transition = TransitionInflater.from(requireContext())
+                .inflateTransition(android.R.transition.no_transition);
         requireActivity().getWindow().setEnterTransition(transition);
         requireActivity().getWindow().setExitTransition(transition);
 
-        //thiết lập cơ bản, ánh xạ view cho fragment
+        // thiết lập cơ bản, ánh xạ view cho fragment
         musicDAO = new MusicDAO();
         playlistDAO = new PlaylistDAO();
         init(view);
@@ -167,7 +168,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         // làm mờ background fragment
         blurBackgroundFragment();
 
-        //hiện thị slide
+        // hiện thị slide
         FakeDataSlide();
         imageSlider.setImageList(listPictureSlide, ScaleTypes.CENTER_CROP);
         imageSlider.setItemChangeListener(new ItemChangeListener() {
@@ -181,7 +182,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         // xử lý phần dừng và tiếp tục chuyển của slide
         nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
-            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+            public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX,
+                    int oldScrollY) {
                 if (scrollY >= 250) {
                     imageSlider.stopSliding();
                 } else {
@@ -226,7 +228,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         progressBarLayout = view.findViewById(R.id.progressBarLayout);
         searchBar = view.findViewById(R.id.search_bar);
 
-        //bắt sự kiện onClick cho view
+        // bắt sự kiện onClick cho view
         icMorePlaylist.setOnClickListener(this);
         labelMorePlaylist.setOnClickListener(this);
         icMoreRecentPublishMusic.setOnClickListener(this);
@@ -242,46 +244,52 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         rclPlaylist.setNestedScrollingEnabled(false);
         //
 
-//        FlexboxLayoutManager managerRclRecentPublish = new FlexboxLayoutManager(requireContext());
-//        managerRclRecentPublish.setFlexDirection(FlexDirection.ROW);
-//        managerRclRecentPublish.setJustifyContent(JustifyContent.FLEX_START);
-////        managerRclRecentPublish.setFlexWrap(FlexWrap.WRAP);
-//
-//        FlexboxLayoutManager managerRclPlayList = new FlexboxLayoutManager(requireContext());
-//        managerRclPlayList.setFlexDirection(FlexDirection.ROW);
-//        managerRclPlayList.setJustifyContent(JustifyContent.FLEX_START);
-////        managerRclPlayList.setFlexWrap(FlexWrap.WRAP);
+        // FlexboxLayoutManager managerRclRecentPublish = new
+        // FlexboxLayoutManager(requireContext());
+        // managerRclRecentPublish.setFlexDirection(FlexDirection.ROW);
+        // managerRclRecentPublish.setJustifyContent(JustifyContent.FLEX_START);
+        //// managerRclRecentPublish.setFlexWrap(FlexWrap.WRAP);
+        //
+        // FlexboxLayoutManager managerRclPlayList = new
+        // FlexboxLayoutManager(requireContext());
+        // managerRclPlayList.setFlexDirection(FlexDirection.ROW);
+        // managerRclPlayList.setJustifyContent(JustifyContent.FLEX_START);
+        //// managerRclPlayList.setFlexWrap(FlexWrap.WRAP);
 
-        LinearLayoutManager rclRecentLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
-        LinearLayoutManager rclPlaylistLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager rclRecentLayoutManager = new LinearLayoutManager(requireContext(),
+                LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager rclPlaylistLayoutManager = new LinearLayoutManager(requireContext(),
+                LinearLayoutManager.HORIZONTAL, false);
 
         rclRecentPublish.setLayoutManager(rclRecentLayoutManager);
         rclPlaylist.setLayoutManager(rclPlaylistLayoutManager);
 
-        musicRecentPublishAdapter = new MusicRecentPublishAdapter(listRecentPublish, requireContext(), new ItemEvent.MusicItemEvent() {
-            @Override
-            public void onItemClick(Music music, int position) {
-                navigateToPlayer(position);
-            }
+        musicRecentPublishAdapter = new MusicRecentPublishAdapter(listRecentPublish, requireContext(),
+                new ItemEvent.MusicItemEvent() {
+                    @Override
+                    public void onItemClick(Music music, int position) {
+                        navigateToPlayer(position);
+                    }
 
-            @Override
-            public void onSingerNameClick(String singerID) {
-                Toast.makeText(requireContext(), singerID, Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onSingerNameClick(String singerID) {
+                        Toast.makeText(requireContext(), singerID, Toast.LENGTH_SHORT).show();
+                    }
+                });
 
-        playListMusicAdapter = new PlayListMusicAdapter(listPlaylist, requireContext(), new ItemEvent.PlaylistItemEvent() {
-            @Override
-            public void onItemClick(Playlist playlist) {
-                Intent detailPlaylistActivity = new Intent(requireContext(), DetailPlaylistActivity.class);
-                detailPlaylistActivity.putExtra("playlist", playlist);
-                startActivity(detailPlaylistActivity);
-            }
-        });
+        playListMusicAdapter = new PlayListMusicAdapter(listPlaylist, requireContext(),
+                new ItemEvent.PlaylistItemEvent() {
+                    @Override
+                    public void onItemClick(Playlist playlist) {
+                        Intent detailPlaylistActivity = new Intent(requireContext(), DetailPlaylistActivity.class);
+                        detailPlaylistActivity.putExtra("playlist", playlist);
+                        startActivity(detailPlaylistActivity);
+                    }
+                });
 
         rclRecentPublish.setAdapter(musicRecentPublishAdapter);
         rclPlaylist.setAdapter(playListMusicAdapter);
-//        setDataForList();
+        // setDataForList();
 
         musicDAO.getMusicRecentPublish(new MusicDAO.GetMusicRecentPublish() {
             @Override
@@ -354,12 +362,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     public void FakeDataSlide() {
         listPictureSlide = new ArrayList<>();
-        listPictureSlide.add(new SlideModel("https://photo-resize-zmp3.zmdcdn.me/w600_r1x1_webp/covers/c/b/cb61528885ea3cdcd9bdb9dfbab067b1_1504988884.jpg", ScaleTypes.CENTER_CROP));
-        listPictureSlide.add(new SlideModel("https://data.chiasenhac.com/data/cover/124/123404.jpg", ScaleTypes.CENTER_CROP));
-        listPictureSlide.add(new SlideModel("https://i.scdn.co/image/ab67616d0000b27329f906fe7a60df7777b02ee1", ScaleTypes.CENTER_CROP));
-        listPictureSlide.add(new SlideModel("https://data.chiasenhac.com/data/cover/118/117188.jpg", ScaleTypes.CENTER_CROP));
-        listPictureSlide.add(new SlideModel("https://i.scdn.co/image/ab67616d0000b2737f0d153d87dc03712137029b", ScaleTypes.CENTER_CROP));
-        listPictureSlide.add(new SlideModel("https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/2/3/0/9/230932fdd1bca925c22c487a06359a5a.jpg", ScaleTypes.CENTER_CROP));
+        listPictureSlide.add(new SlideModel(
+                "https://photo-resize-zmp3.zmdcdn.me/w600_r1x1_webp/covers/c/b/cb61528885ea3cdcd9bdb9dfbab067b1_1504988884.jpg",
+                ScaleTypes.CENTER_CROP));
+        listPictureSlide
+                .add(new SlideModel("https://data.chiasenhac.com/data/cover/124/123404.jpg", ScaleTypes.CENTER_CROP));
+        listPictureSlide.add(new SlideModel("https://i.scdn.co/image/ab67616d0000b27329f906fe7a60df7777b02ee1",
+                ScaleTypes.CENTER_CROP));
+        listPictureSlide
+                .add(new SlideModel("https://data.chiasenhac.com/data/cover/118/117188.jpg", ScaleTypes.CENTER_CROP));
+        listPictureSlide.add(new SlideModel("https://i.scdn.co/image/ab67616d0000b2737f0d153d87dc03712137029b",
+                ScaleTypes.CENTER_CROP));
+        listPictureSlide.add(new SlideModel(
+                "https://photo-resize-zmp3.zmdcdn.me/w240_r1x1_webp/cover/2/3/0/9/230932fdd1bca925c22c487a06359a5a.jpg",
+                ScaleTypes.CENTER_CROP));
     }
 
     public void startServiceMusic(Music music, int action) {
@@ -370,7 +386,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlaylist) {
-        SharedPreferences sharedPreferencesMusicList = requireContext().getSharedPreferences("music_player", MODE_PRIVATE);
+        SharedPreferences sharedPreferencesMusicList = requireContext().getSharedPreferences("music_player",
+                MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferencesMusicList.edit();
         editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
         editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
@@ -428,16 +445,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.labelMoreRecentPublish:
             case R.id.icMoreRecentPublish: {
+                Intent intent = new Intent(getContext(), MoreMusicActivity.class);
+                startActivity(intent);
                 Toast.makeText(requireContext(), "Xem thêm bài hát mới thêm", Toast.LENGTH_SHORT).show();
                 break;
             }
             case R.id.btnBxh: {
-//                Toast.makeText(requireContext(), "Tới Activity bảng xếp hạng", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(requireContext(), "Tới Activity bảng xếp hạng",
+                // Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(requireContext(), ChartActivity.class));
                 break;
             }
             case R.id.btnArtis: {
-//                Toast.makeText(requireContext(), "Tới Activity nghệ sĩ", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(requireContext(), "Tới Activity nghệ sĩ",
+                // Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(requireContext(), SingerActivity.class));
                 break;
             }
@@ -453,8 +474,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 Intent searchIntent = new Intent(requireContext(), SearchActivity.class);
                 ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(
                         requireActivity(), searchBar,
-                        Objects.requireNonNull(ViewCompat.getTransitionName(searchBar))
-                );
+                        Objects.requireNonNull(ViewCompat.getTransitionName(searchBar)));
                 startActivity(searchIntent, optionsCompat.toBundle());
                 break;
             }

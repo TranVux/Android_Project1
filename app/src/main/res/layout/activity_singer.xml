@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/status_bar"
+    android:background="@color/bg_activity"
     android:orientation="vertical"
     tools:context=".views.SingerActivity">
 
@@ -14,7 +14,7 @@
         android:layout_height="65dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:background="@color/status_bar"
+        android:background="@color/bg_activity"
         android:fontFamily="@font/roboto_medium"
         android:gravity="center"
         android:text="Nghệ sĩ"
@@ -44,7 +44,7 @@
         android:elevation="0dp"
         android:transitionGroup="true"
         android:animateLayoutChanges="true"
-        app:tabBackground="@color/status_bar"
+        app:tabBackground="@color/bg_activity"
         app:tabIndicatorHeight="0dp"
         app:tabMode="scrollable"
         app:tabTextColor="@color/white">

@@ -49,6 +49,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
 import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
@@ -65,13 +67,13 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     BottomNavigationView bottomNavigation;
     public ImageView imageThumbnailCurrentMusic;
 
-    //handle seekbar
+    // handle seekbar
     boolean isSetMax = false;
     boolean updateSeekBar = true;
     public CircularSeekBar circularSeekBar;
     View customButtonPlay, customRadio;
 
-    //Trạng thái của nút play 0 là pause 1 là start/resume
+    // Trạng thái của nút play 0 là pause 1 là start/resume
     int stateButtonPlay = 0;
 
     PlayerFragment playerFragment;
@@ -84,16 +86,19 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
 
     ImageView btnPlay;
 
-    //Music player
+    // Music player
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
     //
 
-    //cache
+    // db
+    FirebaseFirestore db;
+
+    // cache
     SharedPreferences sharedPreferences;
     SharedPreferences sharedPreferencesMusicList;
 
-    //Receiver
-//    MusicPlayerReceiver musicPlayerReceiver;
+    // Receiver
+    // MusicPlayerReceiver musicPlayerReceiver;
 
     String recentIdPlaylist;
     PlaylistDAO playlistDAO;
@@ -102,24 +107,31 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
         // đổi màu của status bar
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        //Đổi màu status bar nè
+        // Đổi màu status bar nè
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
         // bỏ hiệu ứng fade
-        Transition transition = TransitionInflater.from(MainActivity.this).inflateTransition(android.R.transition.no_transition);
+        Transition transition = TransitionInflater.from(MainActivity.this)
+                .inflateTransition(android.R.transition.no_transition);
         getWindow().setEnterTransition(transition);
         getWindow().setExitTransition(transition);
+
+        // cài đặt để firebase có thể lấy data trong cache
+        db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
 
         // khai báo các fragment
         homeFragment = new HomeFragment(this);
         userFragment = new UserFragment(this);
-//        musicPlayerReceiver = new MusicPlayerReceiver();
+        // musicPlayerReceiver = new MusicPlayerReceiver();
         playlistDAO = new PlaylistDAO();
-//        playerFragment = new PlayerFragment(this);
+        // playerFragment = new PlayerFragment(this);
         setContentView(R.layout.activity_main);
         init();
 
@@ -127,27 +139,29 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         recentIdPlaylist = sharedPreferencesMusicList.getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10);
         Log.d(TAG, "onCreate: " + recentIdPlaylist);
 
-        //Lưu trạng thái có đang chơi nhạc hay không
+        // Lưu trạng thái có đang chơi nhạc hay không
         sharedPreferences = getSharedPreferences("music_player_state", MODE_PRIVATE);
 
         isPlaying = sharedPreferences.getBoolean(KEY_STATE_IS_PLAYING, false);
         isStart = sharedPreferences.getBoolean(KEY_STATE_IS_START, false);
         isCreated = sharedPreferences.getBoolean(KEY_STATE_IS_CREATED, true);
         isDestroy = sharedPreferences.getBoolean(KEY_STATE_IS_DESTROYED, false);
-        //cài đặt music player
+        // cài đặt music player
         Log.d(TAG, "onCreate: " + musicPlayer.getSizeOfPlayList());
         musicPlayer.setMusicPlayerCallBack(new MusicPlayerCallback() {
             @Override
             public void onPause() {
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-                if (playerFragment == null) return;
+                if (playerFragment == null)
+                    return;
                 playerFragment.handleRotateImageThumbnail();
             }
 
             @Override
             public void onResume() {
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-                if (playerFragment == null) return;
+                if (playerFragment == null)
+                    return;
                 playerFragment.handleRotateImageThumbnail();
             }
 
@@ -157,10 +171,9 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
             }
         });
         Log.d(TAG, "onCreate: " + musicPlayer.getPlayListMusic().size());
-        //set state for music player
+        // set state for music player
         musicPlayer.setInitState(isPlaying, isStart, isDestroy, isCreated);
-        //get cache data previous music
-
+        // get cache data previous music
 
         // xử lý player state
         handleStateMusicPlayer(musicPlayer);
@@ -169,7 +182,9 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         Log.d(TAG, "onCreate: save state: " + isCreated + " " + isPlaying + " " + isStart + " " + isDestroy);
         Log.d(TAG, "playMusicPlayer: " + musicPlayer.getStateMusicPlayer());
         //
-        getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, PlayerFragment.newInstance(musicPlayer.getPlayListMusic()), "PlayerFragment").commit();
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragmentLayout, PlayerFragment.newInstance(musicPlayer.getPlayListMusic()), "PlayerFragment")
+                .commit();
         if (musicPlayer.getCurrentSong() != null) {
             // handle thumbnail của player
             Glide.with(MainActivity.this)
@@ -180,7 +195,9 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
 
         // set layout mặc định cho fragment là màn hình home
         bottomNavigation.getMenu().getItem(1).setChecked(true);
-//        getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, PlayerFragment.newInstance(musicPlayer.getPlayListMusic()), "PlayerFragment").commit();
+        // getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout,
+        // PlayerFragment.newInstance(musicPlayer.getPlayListMusic()),
+        // "PlayerFragment").commit();
 
         bottomNavigation.setOnItemSelectedListener(new NavigationBarView.OnItemSelectedListener() {
             @Override
@@ -239,7 +256,8 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 customButtonPlay.setVisibility(View.VISIBLE);
                 bottomNavigation.getMenu().getItem(1).setChecked(true);
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentLayout, PlayerFragment.newInstance(listMusicRecent), "PlayerFragment").commit();
+                        .replace(R.id.fragmentLayout, PlayerFragment.newInstance(listMusicRecent), "PlayerFragment")
+                        .commit();
             }
         });
 
@@ -308,7 +326,8 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 Log.d(TAG, "handleIntent: next");
                 musicPlayer.nextSong(musicPlayer.getCurrentIndexSong());
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-                if (playerFragment == null) return;
+                if (playerFragment == null)
+                    return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
                 playerFragment.timeLine.setProgress(0);
@@ -331,7 +350,8 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 Log.d(TAG, "handleIntent: previous");
                 musicPlayer.previousSong(musicPlayer.getCurrentIndexSong());
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-                if (playerFragment == null) return;
+                if (playerFragment == null)
+                    return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
                 playerFragment.timeLine.setProgress(0);
@@ -354,7 +374,8 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 int indexSong = intent.getIntExtra(KEY_SONG_INDEX, 0);
                 musicPlayer.setMusicAtPosition(indexSong);
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-                if (playerFragment == null) return;
+                if (playerFragment == null)
+                    return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
                 playerFragment.timeLine.setProgress(0);
@@ -375,7 +396,8 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                     e.printStackTrace();
                 }
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
-                if (playerFragment == null) return;
+                if (playerFragment == null)
+                    return;
                 playerFragment.handleRotateImageThumbnail();
                 break;
             }
@@ -388,7 +410,8 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     }
 
     public void playMusicPlayer() {
-        if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_IDLE) && isMyServiceRunning(MusicPlayerService.class)) {
+        if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_IDLE)
+                && isMyServiceRunning(MusicPlayerService.class)) {
             startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESUME);
         } else if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_PLAYING)) {
             startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESUME);
@@ -456,7 +479,6 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 .into(imageThumbnailCurrentMusic);
     }
 
-
     public void startServiceMusic(Music music, int action) {
         Intent serviceMusic = new Intent(MainActivity.this, MusicPlayerService.class);
         serviceMusic.putExtra("action", action);
@@ -494,7 +516,6 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         super.onStop();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(musicReceiver);
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
@@ -539,7 +560,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     }
 
     public void updateSeekBar(Intent intent) {
-        //update duration
+        // update duration
         int currentPositionDuration = intent.getIntExtra(KEY_CURRENT_MUSIC_POSITION, 0);
         int duration = intent.getIntExtra(KEY_MUSIC_DURATION, 0);
 
@@ -559,13 +580,13 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         }
     }
 
-//    public class MusicPlayerReceiver extends BroadcastReceiver {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            if (intent != null) {
-//                //update duration
-//                handleIntent(intent);
-//            }
-//        }
-//    }
+    // public class MusicPlayerReceiver extends BroadcastReceiver {
+    // @Override
+    // public void onReceive(Context context, Intent intent) {
+    // if (intent != null) {
+    // //update duration
+    // handleIntent(intent);
+    // }
+    // }
+    // }
 }
