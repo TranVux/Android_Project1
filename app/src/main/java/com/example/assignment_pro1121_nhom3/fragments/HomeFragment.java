@@ -71,6 +71,7 @@ import com.example.assignment_pro1121_nhom3.views.ChartActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailPlaylistActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
+import com.example.assignment_pro1121_nhom3.views.MorePlaylistActivity;
 import com.example.assignment_pro1121_nhom3.views.SearchActivity;
 import com.example.assignment_pro1121_nhom3.views.MoreMusicActivity;
 import com.example.assignment_pro1121_nhom3.views.SingerActivity;
@@ -439,8 +440,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         // xử lý xử kiện onclick cho các view
         switch (view.getId()) {
             case R.id.labelMorePlayList:
-            case R.id.icMorePlayList: {
-                Toast.makeText(requireContext(), "Xem thêm danh sách phát", Toast.LENGTH_SHORT).show();
+            case R.id.icMorePlayList:
+            case R.id.btnPlaylist: {
+//                Toast.makeText(requireContext(), "Xem thêm danh sách phát", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(requireContext(), MorePlaylistActivity.class));
                 break;
             }
             case R.id.labelMoreRecentPublish:
@@ -455,10 +458,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.btnArtis: {
                 startActivity(new Intent(requireContext(), SingerActivity.class));
-                break;
-            }
-            case R.id.btnPlaylist: {
-                Toast.makeText(requireContext(), "Tới activity playlist", Toast.LENGTH_SHORT).show();
                 break;
             }
             case R.id.btnCategory: {

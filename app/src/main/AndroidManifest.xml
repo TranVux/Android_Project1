@@ -19,6 +19,13 @@
         android:theme="@style/Theme.Assignment_PRO1121_Nhom3"
         tools:targetApi="31">
         <activity
+            android:name=".views.MorePlaylistActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".views.SearchActivity"
             android:exported="false"
             android:theme="@style/ThemeSubActivity">
@@ -41,7 +48,6 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-
         <activity
             android:name=".views.MoreMusicActivity"
             android:exported="true" />
