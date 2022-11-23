@@ -145,7 +145,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
@@ -183,7 +183,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         nestedScrollView.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(@NonNull NestedScrollView v, int scrollX, int scrollY, int oldScrollX,
-                    int oldScrollY) {
+                                       int oldScrollY) {
                 if (scrollY >= 250) {
                     imageSlider.stopSliding();
                 } else {
@@ -447,18 +447,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
             case R.id.icMoreRecentPublish: {
                 Intent intent = new Intent(getContext(), MoreMusicActivity.class);
                 startActivity(intent);
-                Toast.makeText(requireContext(), "Xem thêm bài hát mới thêm", Toast.LENGTH_SHORT).show();
                 break;
             }
             case R.id.btnBxh: {
-                // Toast.makeText(requireContext(), "Tới Activity bảng xếp hạng",
-                // Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(requireContext(), ChartActivity.class));
                 break;
             }
             case R.id.btnArtis: {
-                // Toast.makeText(requireContext(), "Tới Activity nghệ sĩ",
-                // Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(requireContext(), SingerActivity.class));
                 break;
             }

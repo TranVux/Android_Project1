@@ -30,10 +30,13 @@ public class Constants {
     public static final String KEY_TOP_10 = "KEY_TOP_10";
     public static final String CHANGE_TO_FOREGROUND_SERVICE = "CHANGE_TO_FOREGROUND_SERVICE";
     public static final String CHANGE_TO_SERVICE = "CHANGE_TO_SERVICE";
+    public static final String KEY_IS_DECREASE = "KEY_IS_DECREASE";
+    public static final String KEY_LIMIT = "KEY_LIMIT";
 
     public static final String PLAYLIST_TYPE_SINGER = "PLAYLIST_TYPE_SINGER";
     public static final String PLAYLIST_TYPE_DEFAULT = "PLAYLIST_TYPE_DEFAULT";
     public static final String PLAYLIST_TYPE_RECENT_PUBLISH = "PLAYLIST_TYPE_RECENT_PUBLISH";
+    public static final String PLAYLIST_TYPE_GENRES = "PLAYLIST_TYPE_GENRES";
 
     public static final String KEY_RECENT_KEY_WORDS = "KEY_RECENT_KEY_WORDS";
 }

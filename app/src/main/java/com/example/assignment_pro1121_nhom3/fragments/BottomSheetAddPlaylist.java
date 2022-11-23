@@ -117,7 +117,17 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
                         if (edtName.getText().toString().isEmpty()) {
                             Toast.makeText(requireContext(), "Không để trống tên playlist!", Toast.LENGTH_SHORT).show();
                         } else {
-                            playlistDAO.addPlaylist(playlistTemp, new PlaylistDAO.AddPlaylistListener() {
+                            playlistDAO.addPlaylist(new IOnProgressBarStatusListener() {
+                                @Override
+                                public void beforeGetData() {
+
+                                }
+
+                                @Override
+                                public void afterGetData() {
+
+                                }
+                            }, playlistTemp, new PlaylistDAO.AddPlaylistListener() {
                                 @Override
                                 public void onAddPlaylistSuccessCallback(DocumentReference documentReference) {
                                     Toast.makeText(requireContext(), "Tạo thành công playlist " + edtName.getText().toString(), Toast.LENGTH_SHORT).show();
@@ -153,7 +163,17 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
                     Toast.makeText(requireContext(), "Bài hát đã có sẵn trong playlist", Toast.LENGTH_SHORT).show();
                 } else {
                     Log.d(TAG, "onItemClick: chưa có");
-                    playlistDAO.addItemMusicInPlaylist(playlist.getId(), currentMusic.getId(), new PlaylistDAO.AddItemMusicInPlaylistListener() {
+                    playlistDAO.addItemMusicInPlaylist(new IOnProgressBarStatusListener() {
+                        @Override
+                        public void beforeGetData() {
+
+                        }
+
+                        @Override
+                        public void afterGetData() {
+
+                        }
+                    }, playlist.getId(), currentMusic.getId(), new PlaylistDAO.AddItemMusicInPlaylistListener() {
                         @Override
                         public void onAddItemMusicInPlaylistSuccessCallback() {
                             Toast.makeText(requireContext(), "Thêm thành công", Toast.LENGTH_SHORT).show();
@@ -176,7 +196,17 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
         listPlaylist.setLayoutManager(new LinearLayoutManager(requireContext()));
         listPlaylist.setAdapter(adapterAddMusicToPlaylist);
 
-        playlistDAO.getAllDataPlaylist(new PlaylistDAO.ReadAllDataPlaylistListener() {
+        playlistDAO.getAllDataPlaylist(new IOnProgressBarStatusListener() {
+            @Override
+            public void beforeGetData() {
+
+            }
+
+            @Override
+            public void afterGetData() {
+
+            }
+        }, new PlaylistDAO.ReadAllDataPlaylistListener() {
             @Override
             public void onReadAllDataPlaylistCallback(ArrayList<Playlist> list) {
                 listItemPlaylist = list;

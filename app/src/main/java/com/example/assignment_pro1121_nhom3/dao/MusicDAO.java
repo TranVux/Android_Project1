@@ -1,13 +1,8 @@
 package com.example.assignment_pro1121_nhom3.dao;
 
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
-
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.firebase.firestore.AggregateQuery;
-import com.google.firebase.firestore.AggregateQuerySnapshot;
-import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.Query;
@@ -24,11 +19,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
@@ -38,7 +30,7 @@ public class MusicDAO {
 
     // lấy toàn bộ bài hát
     public void getAllDataMusic(IOnProgressBarStatusListener iOnProgressBarStatusListener,
-            ReadAllDataMusic readAllDataMusic) {
+                                ReadAllDataMusic readAllDataMusic) {
         iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Music> list = new ArrayList<>();
         db.collection("musics")
@@ -84,7 +76,7 @@ public class MusicDAO {
     }
 
     public void getMusicItemWithLimit(IOnProgressBarStatusListener iOnProgressBarStatusListener, int limitCount,
-            GetDataMusicWithLimit getDataMusicWithLimit) {
+                                      GetDataMusicWithLimit getDataMusicWithLimit) {
         ArrayList<Music> list = new ArrayList<>();
         iOnProgressBarStatusListener.beforeGetData();
         db.collection("musics")
@@ -131,7 +123,7 @@ public class MusicDAO {
     }
 
     public void getMusicRecentPublish(GetMusicRecentPublish getMusicRecentPublish,
-            IOnProgressBarStatusListener iOnProgressBarStatusListener) {
+                                      IOnProgressBarStatusListener iOnProgressBarStatusListener) {
         iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Music> list = new ArrayList<>();
         db.collection("musics").orderBy("creationDate", Direction.DESCENDING).limit(10)
@@ -183,7 +175,7 @@ public class MusicDAO {
 
     // lấy 1 bài hát
     public void getMusic(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id,
-            ReadItemMusic readItemMusic) {
+                         ReadItemMusic readItemMusic) {
         iOnProgressBarStatusListener.beforeGetData();
         Music music = new Music();
         DocumentReference docRef = db.collection("musics").document(id);
@@ -276,7 +268,7 @@ public class MusicDAO {
     }
 
     public void getMusicBySingerId(Query query, String singerID, GetSingerByID getSingerByID,
-            IOnProgressBarStatusListener iOnProgressBarStatusListener) {
+                                   IOnProgressBarStatusListener iOnProgressBarStatusListener) {
         ArrayList<Music> list = new ArrayList<>();
         Query dataQuery;
         if (query == null) {
@@ -389,7 +381,7 @@ public class MusicDAO {
     }
 
     public void searchMusic(String query, SearchMusic searchMusic,
-            IOnProgressBarStatusListener iOnProgressBarStatusListener) {
+                            IOnProgressBarStatusListener iOnProgressBarStatusListener) {
         String end = query.trim() + "\uf8ff";
         ArrayList<Music> listResult = new ArrayList<>();
         iOnProgressBarStatusListener.beforeGetData();
@@ -442,8 +434,8 @@ public class MusicDAO {
 
     // public void getTopMusic10(GetTop10Listener getTop10Listener) {
 
-    public void getTopMusicBuyGenre(IOnProgressBarStatusListener iOnProgressBarStatusListener, int limit,
-            boolean isDescending, String genreId, GetTopMusicBuyGenreListener getTopMusicBuyGenreListener) {
+    public void getTopMusicByGenres(IOnProgressBarStatusListener iOnProgressBarStatusListener, int limit,
+                                    boolean isDescending, String genreId, GetTopMusicByGenres getTopMusicBuyGenreListener) {
         iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Music> list = new ArrayList<>();
         CollectionReference collectionReference = db.collection("musics");
@@ -484,7 +476,7 @@ public class MusicDAO {
                                         singerName, singerId, views, genresId);
                                 list.add(music);
                             }
-                            getTopMusicBuyGenreListener.onGetTopMusicBuyGenreCallback(list);
+                            getTopMusicBuyGenreListener.onGetTopByGenresCallBack(list);
                             iOnProgressBarStatusListener.afterGetData();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -494,7 +486,7 @@ public class MusicDAO {
     }
 
     public void getTopMusicListen(IOnProgressBarStatusListener iOnProgressBarStatusListener, int limit,
-            GetTopMusicListener getTopMusicListener) {
+                                  GetTopMusicListener getTopMusicListener) {
         iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Music> list = new ArrayList<>();
         CollectionReference collectionReference = db.collection("musics");
@@ -551,10 +543,6 @@ public class MusicDAO {
         void onGetSuccess(ArrayList<Music> list);
     }
 
-    public interface GetTop10Listener {
-        void onGetTop10Callback(ArrayList<Music> list);
-    }
-
     public interface GetTopMusicListener {
         void onGetTopMusicCallback(ArrayList<Music> list);
     }
@@ -589,7 +577,7 @@ public class MusicDAO {
         void onGetFailure();
     }
 
-    public interface GetTopMusicBuyGenreListener {
-        void onGetTopMusicBuyGenreCallback(ArrayList<Music> list);
+    public interface GetTopMusicByGenres {
+        void onGetTopByGenresCallBack(ArrayList<Music> list);
     }
 }

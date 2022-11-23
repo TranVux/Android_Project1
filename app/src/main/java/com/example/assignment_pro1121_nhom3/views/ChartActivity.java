@@ -43,6 +43,7 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.ChartPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
+import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
@@ -140,9 +141,19 @@ public class ChartActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
 
-        musicDAO.getTopMusic10(new MusicDAO.GetTop10Listener() {
+        musicDAO.getTopMusicListen(new IOnProgressBarStatusListener() {
             @Override
-            public void onGetTop10Callback(ArrayList<Music> list) {
+            public void beforeGetData() {
+
+            }
+
+            @Override
+            public void afterGetData() {
+
+            }
+        }, 10, new MusicDAO.GetTopMusicListener() {
+            @Override
+            public void onGetTopMusicCallback(ArrayList<Music> list) {
                 adapter.setData(list);
             }
         });

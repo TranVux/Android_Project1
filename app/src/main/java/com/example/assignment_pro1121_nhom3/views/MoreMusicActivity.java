@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,13 +35,15 @@ public class MoreMusicActivity extends AppCompatActivity {
     ImageView btnBack;
     Chip chipAll;
     ChipGroup chipGroup;
-    public static String valueChip;
+    public static Genres tempGenres;
+    ArrayList<Genres> listGenres = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_more_music);
         reference();
-        getWindow().setStatusBarColor(getResources().getColor(R.color.status_bar,null));
+        getWindow().setStatusBarColor(getResources().getColor(R.color.status_bar, null));
         //đổi màu chữ status bar
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
@@ -48,20 +51,21 @@ public class MoreMusicActivity extends AppCompatActivity {
         setDataForChip();
         ViewPager2ForMoreMusicAdapter viewPager2ForMoreMusicAdapter = new ViewPager2ForMoreMusicAdapter(this);
         viewPager2.setAdapter(viewPager2ForMoreMusicAdapter);
+
         new TabLayoutMediator(tabLayout, viewPager2, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-              if(position == 0){
-                  tab.setText("Top Lượt Nghe");
-              }
-              if(position == 1){
-                  tab.setText("Tất cả");
-              }
+                if (position == 0) {
+                    tab.setText("Top Lượt Nghe");
+                }
+                if (position == 1) {
+                    tab.setText("Tất cả");
+                }
             }
         }).attach();
         tabLayout.setSmoothScrollingEnabled(true);
 
-       // xử lý nút back cho activity
+        // xử lý nút back cho activity
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,8 +78,9 @@ public class MoreMusicActivity extends AppCompatActivity {
             public void onCheckedChanged(@NonNull ChipGroup group, @NonNull List<Integer> checkedIds) {
                 Chip chip = chipGroup.findViewById(chipGroup.getCheckedChipId());
                 ViewPager2ForMoreMusicAdapter viewPager2ForMoreMusicAdapter1;
-                if(chip != null){
-                    valueChip = chip.getText().toString();
+                if (chip != null) {
+                    String valueChip = chip.getText().toString();
+                    setDataForTempGenres(valueChip);
                     viewPager2ForMoreMusicAdapter1 = new ViewPager2ForMoreMusicAdapter(MoreMusicActivity.this);
                     viewPager2.setAdapter(viewPager2ForMoreMusicAdapter1);
                 }
@@ -83,14 +88,24 @@ public class MoreMusicActivity extends AppCompatActivity {
         });
     }
 
+    public void setDataForTempGenres(String nameGenres) {
+        for (Genres genres : listGenres) {
+            if (genres.getName().equalsIgnoreCase(nameGenres)) {
+                tempGenres = genres;
+                return;
+            }
+        }
+        tempGenres = null;
+    }
+
     private void setDataForChip() {
         GenreDAO genreDAO = new GenreDAO();
         genreDAO.getAllDataGenre(new GenreDAO.ReadAllDataGenre() {
             @Override
             public void onReadAllDataGenreCallback(ArrayList<Genres> list) {
+                listGenres = list;
                 for (int i = 0; i < list.size(); i++) {
-                    Chip chip =
-                            (Chip) getLayoutInflater().inflate(R.layout.single_chip_layout, chipGroup, false);
+                    Chip chip = (Chip) getLayoutInflater().inflate(R.layout.single_chip_layout, chipGroup, false);
                     chip.setText(list.get(i).getName());
                     chipGroup.addView(chip);
                 }
@@ -109,12 +124,12 @@ public class MoreMusicActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        valueChip = "Tất cả";
+        tempGenres = null;
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        valueChip = null;
+        tempGenres = null;
     }
 }

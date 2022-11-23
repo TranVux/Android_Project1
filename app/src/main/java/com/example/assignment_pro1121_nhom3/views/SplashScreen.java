@@ -2,6 +2,8 @@ package com.example.assignment_pro1121_nhom3.views;
 
 import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.TAG;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_IS_DECREASE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_LIMIT;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_CREATION_DATE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_GENRES_ID;
@@ -16,6 +18,7 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_TOP_10;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_DEFAULT;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_RECENT_PUBLISH;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_SINGER;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -115,7 +118,7 @@ public class SplashScreen extends AppCompatActivity {
 
                     }
                 });
-            } else {
+            } else if (playlistType.equals(PLAYLIST_TYPE_RECENT_PUBLISH)) {
                 musicDAO.getMusicRecentPublish(new MusicDAO.GetMusicRecentPublish() {
                     @Override
                     public void onGetSuccess(ArrayList<Music> result) {
@@ -141,11 +144,41 @@ public class SplashScreen extends AppCompatActivity {
 
                     }
                 });
+            } else {
+                musicDAO.getTopMusicByGenres(new IOnProgressBarStatusListener() {
+                    @Override
+                    public void beforeGetData() {
+
+                    }
+
+                    @Override
+                    public void afterGetData() {
+
+                    }
+                }, sharedPreferences.getInt(KEY_LIMIT, 100), sharedPreferences.getBoolean(KEY_IS_DECREASE, false), sharedPreferences.getString(KEY_SONG_GENRES_ID, "BXz0IZNAAfk4m56GPfP8"), new MusicDAO.GetTopMusicByGenres() {
+                    @Override
+                    public void onGetTopByGenresCallBack(ArrayList<Music> list) {
+                        musicPlayer = MusicPlayer.getInstance(list);
+                        musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+                        startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                        finish();
+                    }
+                });
             }
         } else {
-            musicDAO.getTopMusic10(new MusicDAO.GetTop10Listener() {
+            musicDAO.getTopMusicListen(new IOnProgressBarStatusListener() {
                 @Override
-                public void onGetTop10Callback(ArrayList<Music> list) {
+                public void beforeGetData() {
+
+                }
+
+                @Override
+                public void afterGetData() {
+
+                }
+            }, 10, new MusicDAO.GetTopMusicListener() {
+                @Override
+                public void onGetTopMusicCallback(ArrayList<Music> list) {
                     musicPlayer = MusicPlayer.getInstance(list);
                     musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
                     startActivity(new Intent(SplashScreen.this, MainActivity.class));

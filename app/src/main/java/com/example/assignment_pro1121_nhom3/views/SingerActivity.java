@@ -1,5 +1,6 @@
 package com.example.assignment_pro1121_nhom3.views;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -23,77 +24,84 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.ViewPagerForSingerAdapter;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.android.material.transition.MaterialElevationScale;
 
 public class SingerActivity extends AppCompatActivity {
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-    private ViewPagerForSingerAdapter viewPagerForSingerAdapter;
     public static final String TAG = SingerActivity.class.getSimpleName();
-    int currentFontSizeTabLayout1 = 25;
-    int currentFontSizeTabLayout2 = 15;
     ImageView btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_singer);
-        tabLayout = findViewById(R.id.tabBar);
-        viewPager = findViewById(R.id.viewPager);
+        TabLayout tabLayout = findViewById(R.id.tabBar);
+        ViewPager2 viewPager = findViewById(R.id.viewPager);
         btnBack = findViewById(R.id.btnBack);
-        getWindow().setStatusBarColor(getResources().getColor(R.color.status_bar,null));
+
+        getWindow().setStatusBarColor(getResources().getColor(R.color.status_bar, null));
         //đổi màu chữ status bar
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         //
         //tạo adapter cho viewPager
-        viewPagerForSingerAdapter = new ViewPagerForSingerAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        ViewPagerForSingerAdapter viewPagerForSingerAdapter = new ViewPagerForSingerAdapter(this);
         viewPager.setAdapter(viewPagerForSingerAdapter);
 
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setSmoothScrollingEnabled(true);
-        //custom layout cho tabLayout
-        TabLayout.Tab tab1 = tabLayout.getTabAt(0);
-        TabLayout.Tab tab2 = tabLayout.getTabAt(1);
-
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.d(TAG, "onPageScrolled: positionOffset" + positionOffset);
-                int offset = (int) (Math.round(Math.ceil(positionOffset * 15)));
-                Log.d(TAG, "onPageScrolled: " + offset);
-                assert tab2 != null;
-                assert tab1 != null;
-                if (offset <= 0 || offset > 10) {
-                    //xử lý phần chữ của tablayout
-                    setTabTextSize(tab1, (currentFontSizeTabLayout1 - 10));
-                    setTabTextSize(tab2, (currentFontSizeTabLayout2 + 10));
-                }
+            public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 if (position == 0) {
-                    if ((currentFontSizeTabLayout1 - offset) >= 15) {
-//                        Log.d(TAG, "onPageScrolled: " + (currentFontSizeTabLayout1 - offset) + " " + (currentFontSizeTabLayout2 + offset));
-                        setTabTextSize(tab1, (currentFontSizeTabLayout1 - offset));
-                        setTabTextSize(tab2, (currentFontSizeTabLayout2 + offset));
-                    }
+                    tab.setText("Top Lượt Nghe");
+                } else if (position == 1) {
+                    tab.setText("Tất cả");
                 }
             }
+        }).attach();
+        tabLayout.setSmoothScrollingEnabled(true);
+//        //custom layout cho tabLayout
+//        TabLayout.Tab tab1 = tabLayout.getTabAt(0);
+//        TabLayout.Tab tab2 = tabLayout.getTabAt(1);
 
-            @Override
-            public void onPageSelected(int position) {
-
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-                Log.d(TAG, "onPageScrollStateChanged: " + state);
-            }
-        });
+//        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                Log.d(TAG, "onPageScrolled: positionOffset" + positionOffset);
+//                int offset = (int) (Math.round(Math.ceil(positionOffset * 15)));
+//                Log.d(TAG, "onPageScrolled: " + offset);
+//                assert tab2 != null;
+//                assert tab1 != null;
+//                if (offset <= 0 || offset > 10) {
+//                    //xử lý phần chữ của tablayout
+//                    setTabTextSize(tab1, (currentFontSizeTabLayout1 - 10));
+//                    setTabTextSize(tab2, (currentFontSizeTabLayout2 + 10));
+//                }
+//                if (position == 0) {
+//                    if ((currentFontSizeTabLayout1 - offset) >= 15) {
+////                        Log.d(TAG, "onPageScrolled: " + (currentFontSizeTabLayout1 - offset) + " " + (currentFontSizeTabLayout2 + offset));
+//                        setTabTextSize(tab1, (currentFontSizeTabLayout1 - offset));
+//                        setTabTextSize(tab2, (currentFontSizeTabLayout2 + offset));
+//                    }
+//                }
+//            }
+//
+//            @Override
+//            public void onPageSelected(int position) {
+//
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//                Log.d(TAG, "onPageScrollStateChanged: " + state);
+//            }
+//        });
 
         // set item cho tablayout
-        assert tab1 != null;
-        tab1.setCustomView(createCustomTabView("Top Lượt Nghe", currentFontSizeTabLayout1));
-        assert tab2 != null;
-        tab2.setCustomView(createCustomTabView("Tất cả", currentFontSizeTabLayout2));
+//        assert tab1 != null;
+//        tab1.setCustomView(createCustomTabView("Top Lượt Nghe", currentFontSizeTabLayout1));
+//        assert tab2 != null;
+//        tab2.setCustomView(createCustomTabView("Tất cả", currentFontSizeTabLayout2));
+
 
         //xử lý nút back cho activity
         btnBack.setOnClickListener(new View.OnClickListener() {
