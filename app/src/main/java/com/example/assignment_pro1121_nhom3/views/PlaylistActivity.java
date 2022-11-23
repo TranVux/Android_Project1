@@ -9,10 +9,11 @@ import android.widget.TableLayout;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.PlaylistViewPagerAdapter;
+import com.google.android.material.tabs.TabLayout;
 
 public class PlaylistActivity extends AppCompatActivity {
 
-    private TableLayout mTableLayout;
+    private TabLayout mTableLayout;
     private PlaylistViewPagerAdapter mPlaylistViewPager;
     ViewPager viewPager;
 
@@ -24,7 +25,7 @@ public class PlaylistActivity extends AppCompatActivity {
         mTableLayout = findViewById(R.id.tab_layout);
         viewPager = findViewById(R.id.view_pager);
 
-        PlaylistViewPagerAdapter playlistViewPagerAdapter = new PlaylistViewPagerAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        viewPager.setAdapter(playlistViewPagerAdapter);
+        mPlaylistViewPager = new PlaylistViewPagerAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        viewPager.setAdapter(mPlaylistViewPager);
     }
 }
