@@ -255,7 +255,6 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         LocalBroadcastManager.getInstance(requireContext()).unregisterReceiver(musicPlayerReceiver);
     }
 
-
     @Override
     public void onStart() {
         super.onStart();

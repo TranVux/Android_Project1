@@ -3,6 +3,7 @@ package com.example.assignment_pro1121_nhom3.fragments;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -16,9 +17,12 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
+import org.checkerframework.common.subtyping.qual.Bottom;
+
 public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
 
     TextView btnClose;
+    public static final String TAG = BottomSheetDialogLogin.class.getSimpleName();
 
     public static BottomSheetDialogLogin newInstance() {
         BottomSheetDialogLogin bottomSheetDialogLogin = new BottomSheetDialogLogin();
@@ -71,4 +75,27 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart: ");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+    }
 }

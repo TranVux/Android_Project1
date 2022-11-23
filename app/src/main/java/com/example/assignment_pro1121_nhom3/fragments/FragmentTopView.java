@@ -28,12 +28,18 @@ import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
 
 
 public class FragmentTopView extends Fragment {
 
     public static String TAG = AllSingerFragment.class.getSimpleName();
     private ArrayList<Singer> listSinger = new ArrayList<>();
+    private Map<Long, Singer> mapSinger = new HashMap<>();
     private RecyclerView rclSinger;
     private SingerAdapter singerAdapter;
     private SingerDAO singerDAO;
@@ -79,11 +85,15 @@ public class FragmentTopView extends Fragment {
     public void getData() {
         singerDAO.getTopSinger(new SingerDAO.GetTopSinger() {
             @Override
-            public void onGetTopSingersSuccess(ArrayList<Singer> list) {
-                listSinger = list;
-                for (Singer singer : list) {
-                    Log.d(TAG, "onGetTopSingersSuccess: " + singer.getName());
-                }
+            public void onGetTopSingersSuccess(Map<Long, Singer> mapSingerFetch) {
+                mapSinger = mapSingerFetch;
+//                for (Singer singer : mapSinger) {
+//                    Log.d(TAG, "onGetTopSingersSuccess: " + singer.getName());
+//                }
+                TreeMap<Long, Singer> sortMap = new TreeMap<>(mapSinger);
+                Log.d(TAG, "onGetTopSingersSuccess: " + sortMap);
+                listSinger = new ArrayList<>(sortMap.values());
+                Collections.reverse(listSinger);
                 singerAdapter.setListSinger(listSinger);
             }
         }, new IOnProgressBarStatusListener() {

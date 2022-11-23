@@ -49,4 +49,6 @@ public class Singer implements Serializable {
     public void setDesc(String desc) {
         this.desc = desc;
     }
+
+
 }
