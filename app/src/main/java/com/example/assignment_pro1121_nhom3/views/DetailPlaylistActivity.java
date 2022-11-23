@@ -1,6 +1,8 @@
 package com.example.assignment_pro1121_nhom3.views;
 
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_IS_DECREASE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_LIMIT;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MUSIC;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_CREATION_DATE;
@@ -15,6 +17,7 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_UPDA
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_DEFAULT;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_GENRES;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,14 +50,17 @@ import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.MyPlaylistAdapter;
+import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.dao.PlaylistDAO;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
+import com.example.assignment_pro1121_nhom3.models.Genres;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -70,12 +76,18 @@ public class DetailPlaylistActivity extends AppCompatActivity {
     private MyPlaylistAdapter adapter;
     ImageView imageForeground, thumbnailPlaylist, btnBack;
     NestedScrollView nestedScrollView;
+
     Playlist tempPlaylist;
+    Genres tempGenres;
+    boolean isGenres = false;
     private PlaylistDAO playlistDAO = new PlaylistDAO();
+    private MusicDAO musicDAO = new MusicDAO();
+
     ProgressBar progressBar;
-    TextView tvPlaylistName, topBarPlaylistName, tvCreatorName, amountOfSong;
+    TextView tvPlaylistName, topBarPlaylistName, tvCreatorName, amountOfSong, keyword;
     CircleImageView avtCreator;
-    LinearLayout btnPlayAll;
+    LinearLayout btnPlayAll, emptyLayout;
+
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
     SharedPreferences sharedPreferences;
 
@@ -90,6 +102,10 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             tempPlaylist = (Playlist) bundle.getSerializable("playlist");
+            if (tempPlaylist == null) {
+                tempGenres = (Genres) bundle.getSerializable("genres");
+                isGenres = true;
+            }
         }
 
         //setup sharedPreference
@@ -108,6 +124,8 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         amountOfSong = findViewById(R.id.amountOfSong);
         btnBack = findViewById(R.id.backBtn);
         btnPlayAll = findViewById(R.id.buttonPlayAll);
+        emptyLayout = findViewById(R.id.emptyLayout);
+        keyword = findViewById(R.id.keyword);
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,62 +163,125 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         });
 
         if (tempPlaylist != null) {
-            playlistDAO.getMusicInPlaylist(tempPlaylist.getId(), new IOnProgressBarStatusListener() {
-                @Override
-                public void beforeGetData() {
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void afterGetData() {
-                    progressBar.setVisibility(View.GONE);
-                }
-            }, new PlaylistDAO.ReadMusicInPlaylist() {
-                @SuppressLint("SetTextI18n")
-                @Override
-                public void onReadSuccess(ArrayList<Music> listMusic) {
-                    Log.d(TAG, "onReadSuccess: " + listMusic.size());
-                    adapter.setData(listMusic);
-                    amountOfSong.setText(listMusic.size() + " bài");
-                }
-
-                @Override
-                public void onReadFailure(Exception e) {
-                    Log.d(TAG, "onReadFailure: lỗi nè ba");
-                }
-            });
-
-            // gắn ảnh cho playlist
-            Glide.with(DetailPlaylistActivity.this).asBitmap().load(tempPlaylist.getUrlThumbnail()).into(new CustomTarget<Bitmap>() {
-                @Override
-                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                    Blurry.with(DetailPlaylistActivity.this)
-                            .sampling(8)
-                            .radius(30)
-                            .async()
-                            .from(resource).into(imageForeground);
-                }
-
-                @Override
-                public void onLoadCleared(@Nullable Drawable placeholder) {
-                    Blurry.with(DetailPlaylistActivity.this)
-                            .sampling(8)
-                            .radius(30)
-                            .async()
-                            .from(BitmapFactory.decodeResource(getResources(), R.drawable.fallback_img)).into(imageForeground);
-                }
-            });
-            //gắn ảnh thumbnail cho playlist
-            Glide.with(DetailPlaylistActivity.this)
-                    .load(tempPlaylist.getUrlThumbnail())
-                    .apply(new RequestOptions().override(140, 140))
-                    .into(thumbnailPlaylist);
-
-            //gán tên playlist, người tạo,...
-            tvPlaylistName.setText(CapitalizeWord.CapitalizeWords(tempPlaylist.getName()));
-            tvCreatorName.setText(CapitalizeWord.CapitalizeWords(tempPlaylist.getCreatorName()));
-            topBarPlaylistName.setText(CapitalizeWord.CapitalizeWords(tempPlaylist.getName()));
+            getDataPlaylist();
+        } else {
+            getDataGenres();
         }
+    }
+
+    public void getDataGenres() {
+        musicDAO.getTopMusicByGenres(new IOnProgressBarStatusListener() {
+            @Override
+            public void beforeGetData() {
+                progressBar.setVisibility(View.VISIBLE);
+                emptyLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void afterGetData() {
+                progressBar.setVisibility(View.GONE);
+            }
+        }, 100, false, tempGenres.getId(), new MusicDAO.GetTopMusicByGenres() {
+            @Override
+            public void onGetTopByGenresCallBack(ArrayList<Music> list) {
+                adapter.setData(list);
+                amountOfSong.setText(list.size() + " bài");
+                if (list.size() <= 0) {
+                    emptyLayout.setVisibility(View.VISIBLE);
+                    recyclerView.setVisibility(View.GONE);
+                    keyword.setText(tempGenres.getName());
+                }
+            }
+        });
+
+        // gắn ảnh cho playlist
+        Glide.with(DetailPlaylistActivity.this).asBitmap().load(tempGenres.getUrlThumbnail()).into(new CustomTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                Blurry.with(DetailPlaylistActivity.this)
+                        .sampling(8)
+                        .radius(30)
+                        .async()
+                        .from(resource).into(imageForeground);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+                Blurry.with(DetailPlaylistActivity.this)
+                        .sampling(8)
+                        .radius(30)
+                        .async()
+                        .from(BitmapFactory.decodeResource(getResources(), R.drawable.fallback_img)).into(imageForeground);
+            }
+        });
+        //gắn ảnh thumbnail cho playlist
+        Glide.with(DetailPlaylistActivity.this)
+                .load(tempGenres.getUrlThumbnail())
+                .apply(new RequestOptions().override(140, 140))
+                .into(thumbnailPlaylist);
+
+        //gán tên playlist, người tạo,...
+        tvPlaylistName.setText(CapitalizeWord.CapitalizeWords(tempGenres.getName()));
+        topBarPlaylistName.setText(CapitalizeWord.CapitalizeWords(tempGenres.getName()));
+        tvCreatorName.setVisibility(View.GONE);
+    }
+
+    public void getDataPlaylist() {
+        playlistDAO.getMusicInPlaylist(tempPlaylist.getId(), new IOnProgressBarStatusListener() {
+            @Override
+            public void beforeGetData() {
+                progressBar.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void afterGetData() {
+                progressBar.setVisibility(View.GONE);
+            }
+        }, new PlaylistDAO.ReadMusicInPlaylist() {
+            @SuppressLint("SetTextI18n")
+            @Override
+            public void onReadSuccess(ArrayList<Music> listMusic) {
+                Log.d(TAG, "onReadSuccess: " + listMusic.size());
+                adapter.setData(listMusic);
+                amountOfSong.setText(listMusic.size() + " bài");
+            }
+
+            @Override
+            public void onReadFailure(Exception e) {
+                Log.d(TAG, "onReadFailure: lỗi nè ba");
+            }
+        });
+
+        // gắn ảnh cho playlist
+        Glide.with(DetailPlaylistActivity.this).asBitmap().load(tempPlaylist.getUrlThumbnail()).into(new CustomTarget<Bitmap>() {
+            @Override
+            public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                Blurry.with(DetailPlaylistActivity.this)
+                        .sampling(8)
+                        .radius(30)
+                        .async()
+                        .from(resource).into(imageForeground);
+            }
+
+            @Override
+            public void onLoadCleared(@Nullable Drawable placeholder) {
+                Blurry.with(DetailPlaylistActivity.this)
+                        .sampling(8)
+                        .radius(30)
+                        .async()
+                        .from(BitmapFactory.decodeResource(getResources(), R.drawable.fallback_img)).into(imageForeground);
+            }
+        });
+        //gắn ảnh thumbnail cho playlist
+        Glide.with(DetailPlaylistActivity.this)
+                .load(tempPlaylist.getUrlThumbnail())
+                .apply(new RequestOptions().override(140, 140))
+                .into(thumbnailPlaylist);
+
+        //gán tên playlist, người tạo,...
+        tvPlaylistName.setText(CapitalizeWord.CapitalizeWords(tempPlaylist.getName()));
+        tvCreatorName.setText(CapitalizeWord.CapitalizeWords(tempPlaylist.getCreatorName()));
+        topBarPlaylistName.setText(CapitalizeWord.CapitalizeWords(tempPlaylist.getName()));
     }
 
     public void navigateToPLayer(int position) {
@@ -214,7 +295,17 @@ public class DetailPlaylistActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            saveCurrentMusic(musicPlayer, tempPlaylist.getId(), PLAYLIST_TYPE_DEFAULT);
+            String tempId;
+            String playlistType;
+            if (isGenres) {
+                tempId = tempGenres.getId();
+                playlistType = PLAYLIST_TYPE_GENRES;
+            } else {
+                tempId = tempPlaylist.getId();
+                playlistType = PLAYLIST_TYPE_DEFAULT;
+            }
+
+            saveCurrentMusic(musicPlayer, tempId, playlistType);
             Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
             startActivity(new Intent(DetailPlaylistActivity.this, MainActivity.class));
             startServiceMusic(musicPlayer.getCurrentSong(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_SONG);
@@ -253,6 +344,10 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
         Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
         Log.d(TAG, "saveCurrentMusic: " + typePlayList);
+        if (isGenres) {
+            editor.putBoolean(KEY_IS_DECREASE, false);
+            editor.putInt(KEY_LIMIT, 100);
+        }
         editor.putString(KEY_PLAYLIST_TYPE, typePlayList);
         editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
         editor.apply();

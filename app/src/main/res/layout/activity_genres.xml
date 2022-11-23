@@ -17,7 +17,7 @@
         android:background="@color/bg_activity"
         android:fontFamily="@font/roboto_medium"
         android:gravity="center"
-        android:text="Nghệ Sĩ"
+        android:text="Thể Loại"
         android:textColor="@color/white"
         android:textSize="20sp" />
 
@@ -32,46 +32,22 @@
         android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_back" />
 
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabBar"
-        android:layout_width="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rclGenres"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/textTopBar"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginHorizontal="25dp"
-        android:layout_marginBottom="8dp"
-        android:animateLayoutChanges="true"
-        android:background="@color/bg_activity"
-        android:elevation="0dp"
-        android:transitionGroup="true"
-        app:tabBackground="@color/bg_activity"
-        app:tabIndicator="@drawable/tab_indicator_custom"
-        app:tabIndicatorAnimationMode="elastic"
-        app:tabIndicatorColor="@color/bg_btn"
-        app:tabIndicatorHeight="3dp"
-        app:tabMode="scrollable"
-        app:tabRippleColor="@null"
-        app:tabTextAppearance="@style/TabLayoutStyle"
-        app:tabTextColor="@color/white">
+        android:layout_alignParentBottom="true"
+        android:layout_marginHorizontal="16dp"
+        android:paddingBottom="10dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager" />
 
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/topView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <com.google.android.material.tabs.TabItem
-            android:id="@+id/all"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-    </com.google.android.material.tabs.TabLayout>
-
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/tabBar" />
-
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_centerInParent="true"
+        android:indeterminateDrawable="@drawable/style_progress_bar" />
 </RelativeLayout>

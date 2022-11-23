@@ -70,6 +70,7 @@ import com.example.assignment_pro1121_nhom3.utils.GridSpacingItemDecoration;
 import com.example.assignment_pro1121_nhom3.views.ChartActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailPlaylistActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
+import com.example.assignment_pro1121_nhom3.views.GenresActivity;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.example.assignment_pro1121_nhom3.views.MorePlaylistActivity;
 import com.example.assignment_pro1121_nhom3.views.SearchActivity;
@@ -461,7 +462,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 break;
             }
             case R.id.btnCategory: {
-                Toast.makeText(requireContext(), "Tới activity thể loại", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(requireContext(), "Tới activity thể loại", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(requireContext(), GenresActivity.class));
                 break;
             }
             case R.id.search_bar: {

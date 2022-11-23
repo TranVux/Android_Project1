@@ -21,7 +21,8 @@ public class GenreDAO {
     private static final String TAG = GenreDAO.class.getName();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public void getAllDataGenre(ReadAllDataGenre readAllDataGenre){
+    public void getAllDataGenre(IOnProgressBarStatusListener iOnProgressBarStatusListener, ReadAllDataGenre readAllDataGenre) {
+        iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Genres> list = new ArrayList<>();
         db.collection("genres")
                 .get()
@@ -37,19 +38,21 @@ public class GenreDAO {
                                 Long modifyDate = (Long) map.get("modifyDate");
                                 Long creationDate = (Long) map.get("creationDate");
                                 String urlThumbnail = (String) map.get("urlThumbnail");
-                                Genres genres = new Genres(id,name,modifyDate,creationDate,urlThumbnail);
+                                Genres genres = new Genres(id, name, modifyDate, creationDate, urlThumbnail);
                                 list.add(genres);
                             }
-                            Log.d("finish getting documents",list.size()+"");
+                            Log.d("finish getting documents", list.size() + "");
                             readAllDataGenre.onReadAllDataGenreCallback(list);
+                            iOnProgressBarStatusListener.afterGetData();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
+                            iOnProgressBarStatusListener.afterGetData();
                         }
                     }
                 });
     }
 
-    public void getGenre(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id, ReadItemGenre readItemGenre){
+    public void getGenre(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id, ReadItemGenre readItemGenre) {
         iOnProgressBarStatusListener.beforeGetData();
         Genres genres = new Genres();
         DocumentReference docRef = db.collection("genres").document(id);
@@ -72,7 +75,7 @@ public class GenreDAO {
                             genres.setUrlThumbnail(urlThumbnail);
                             genres.setCreationDate(creationDate);
                             iOnProgressBarStatusListener.afterGetData();
-                            if(genres.getId()!=null){
+                            if (genres.getId() != null) {
                                 readItemGenre.onReadItemGenreCallback(genres);
                             }
                         }
@@ -87,10 +90,11 @@ public class GenreDAO {
         });
     }
 
-    public interface ReadAllDataGenre{
+    public interface ReadAllDataGenre {
         void onReadAllDataGenreCallback(ArrayList<Genres> list);
     }
-    public interface ReadItemGenre{
+
+    public interface ReadItemGenre {
         void onReadItemGenreCallback(Genres genres);
     }
 }

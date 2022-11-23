@@ -100,7 +100,17 @@ public class MoreMusicActivity extends AppCompatActivity {
 
     private void setDataForChip() {
         GenreDAO genreDAO = new GenreDAO();
-        genreDAO.getAllDataGenre(new GenreDAO.ReadAllDataGenre() {
+        genreDAO.getAllDataGenre(new IOnProgressBarStatusListener() {
+            @Override
+            public void beforeGetData() {
+
+            }
+
+            @Override
+            public void afterGetData() {
+
+            }
+        }, new GenreDAO.ReadAllDataGenre() {
             @Override
             public void onReadAllDataGenreCallback(ArrayList<Genres> list) {
                 listGenres = list;
