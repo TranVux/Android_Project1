@@ -23,6 +23,7 @@ public class NewMusicFragment extends Fragment {
     private ArrayList<Music> musicArrayList;
     private RecyclerView mRecyclerView;
     private MusicInPlaylistAdapter musicInPlaylistAdapter;
+
     public NewMusicFragment() {
         // Required empty public constructor
     }
@@ -66,7 +67,7 @@ public class NewMusicFragment extends Fragment {
 
             @Override
             public void onMoreClick(Music music) {
-                Toast.makeText(requireContext(), "btnMore" + music.getName() , Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), "btnMore" + music.getName(), Toast.LENGTH_SHORT).show();
             }
         });
         mRecyclerView.setAdapter(musicInPlaylistAdapter);
