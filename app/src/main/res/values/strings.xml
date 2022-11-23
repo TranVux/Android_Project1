@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">Assignment_PRO1121_Nhom3</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="Danh_Sach_Phat">Danh Sách Phát </string>
+    <string name="Goi_Y">Gợi Ý</string>
+    <string name="Cua_Toi">Của Tôi</string>
 </resources>
