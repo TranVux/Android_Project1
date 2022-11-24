@@ -25,4 +25,5 @@
     <color name="text_color_item_charts">#25B9ED</color>
     <color name="bg_chip_dark_gray">#494949</color>
     <color name="border_chip">#E0E0E0</color>
+    <color name="bg_login_button">#2F2F2F</color>
 </resources>
