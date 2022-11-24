@@ -64,6 +64,9 @@ public class SplashScreen extends AppCompatActivity {
         // lấy dữ liệu mẫu
         MusicDAO musicDAO = new MusicDAO();
 
+        if (recentIdPlaylist.isEmpty()) {
+            recentIdPlaylist = KEY_TOP_10;
+        }
 
         if (!playlistType.equals(KEY_TOP_10)) {
             if (playlistType.equals(PLAYLIST_TYPE_DEFAULT)) {

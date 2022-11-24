@@ -107,7 +107,12 @@ public class MyPlaylistFragment extends Fragment implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnLogin: {
-                BottomSheetDialogLogin bottomSheetDialogLogin = BottomSheetDialogLogin.newInstance();
+                BottomSheetDialogLogin bottomSheetDialogLogin = BottomSheetDialogLogin.newInstance(new BottomSheetDialogLogin.IOnUpdateUiUserFragmentListener() {
+                    @Override
+                    public void onUpdateUiCallback() {
+
+                    }
+                });
                 bottomSheetDialogLogin.show(getParentFragmentManager(), "BottomSheetLogin");
                 break;
             }

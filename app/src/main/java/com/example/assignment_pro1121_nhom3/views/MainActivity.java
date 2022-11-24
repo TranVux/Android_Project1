@@ -545,6 +545,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        recentIdPlaylist = sharedPreferencesMusicList.getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10);
         saveCurrentMusic(musicPlayer, recentIdPlaylist);
         Log.d(TAG, "onDestroy: Caching");
     }
