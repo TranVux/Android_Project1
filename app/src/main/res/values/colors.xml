@@ -24,4 +24,5 @@
     <color name="bg_bottom_sheet">#292929</color>
     <color name="bg_btn_close_bottom_sheet">#323232</color>
     <color name="text_color_item_charts">#25B9ED</color>
+    <color name="bg_login_button">#2F2F2F</color>
 </resources>

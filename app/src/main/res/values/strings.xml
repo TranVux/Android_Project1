@@ -5,4 +5,8 @@
     <string name="text_bxh">#BXH</string>
     <string name="text_notify_non_login">Chưa đăng nhập \n Đăng nhập để tạo và lưu các playlist yêu thích của bạn</string>
     <string name="text_empty_list">Hãy khám phá và tạo ra cho bản thân những playlist yêu thích nào</string>
+
+    <string name="facebook_app_id">805979187173970</string>
+    <string name="fb_login_protocol_scheme">fb805979187173970</string>
+    <string name="facebook_client_token">00b5f2744cfd2955faa82e6f86b65f9d</string>
 </resources>

@@ -17,7 +17,14 @@
             android:layout_height="wrap_content"
             android:layout_margin="6dp"
             android:background="@drawable/ic_close" />
-
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:elevation="2dp"
+            android:visibility="gone"
+            android:indeterminateDrawable="@drawable/style_progress_bar" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,16 +46,16 @@
                 android:textColor="#fff"
                 android:textSize="35dp" />
         </LinearLayout>
-
         <RelativeLayout
+            android:id="@+id/layoutLoginGoogle"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
+            android:layout_height="40dp"
             android:layout_marginHorizontal="30dp"
             android:layout_marginTop="340dp"
+            android:clickable="true"
             android:background="@drawable/login_bg_button"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
@@ -66,14 +73,15 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/layoutLoginFacebook"
             android:layout_width="match_parent"
-            android:layout_height="32dp"
+            android:layout_height="40dp"
+            android:clickable="true"
             android:layout_marginHorizontal="30dp"
-            android:layout_marginTop="385dp"
+            android:layout_marginTop="390dp"
             android:background="@drawable/login_bg_button"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-
             <ImageView
                 android:layout_width="20dp"
                 android:layout_height="20dp"
