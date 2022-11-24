@@ -74,7 +74,7 @@ public class DetailSingerActivity extends AppCompatActivity {
     private int amountOfQuery = 0;
     private long maxOfData = 0;
     private int currentQuery = 0;
-    private int limitOfQuery = 5;
+    private int limitOfQuery = 20;
     private boolean isLoading = false;
     public MusicPlayer musicPlayer = SplashScreen.musicPlayer;
 

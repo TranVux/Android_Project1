@@ -217,7 +217,7 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         //gắn ảnh thumbnail cho playlist
         Glide.with(DetailPlaylistActivity.this)
                 .load(tempGenres.getUrlThumbnail())
-                .apply(new RequestOptions().override(140, 140))
+                .apply(new RequestOptions().override(200, 200))
                 .into(thumbnailPlaylist);
 
         //gán tên playlist, người tạo,...

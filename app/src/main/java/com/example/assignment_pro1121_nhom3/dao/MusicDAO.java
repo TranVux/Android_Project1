@@ -272,7 +272,7 @@ public class MusicDAO {
         ArrayList<Music> list = new ArrayList<>();
         Query dataQuery;
         if (query == null) {
-            dataQuery = db.collection("musics").whereEqualTo("singerID", singerID).limit(5);
+            dataQuery = db.collection("musics").whereEqualTo("singerID", singerID).limit(20);
         } else {
             dataQuery = query;
         }
@@ -286,7 +286,7 @@ public class MusicDAO {
                     Query next = db.collection("musics")
                             .whereEqualTo("singerID", singerID)
                             .startAfter(lastVisible)
-                            .limit(5);
+                            .limit(20);
                     getSingerByID.getNextQuery(next);
 
                     for (QueryDocumentSnapshot document : task.getResult()) {
