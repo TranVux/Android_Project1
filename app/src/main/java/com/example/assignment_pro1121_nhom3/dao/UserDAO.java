@@ -5,7 +5,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
-import com.example.assignment_pro1121_nhom3.models.Genres;
 import com.example.assignment_pro1121_nhom3.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,7 +23,7 @@ public class UserDAO {
     private static final String TAG = UserDAO.class.getName();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public void addUserToFirebase(IOnProgressBarStatusListener iOnProgressBarStatusListener,User user, AddUserToFirebaseListener addUserToFirebaseListener){
+    public void addUserToFirebase(IOnProgressBarStatusListener iOnProgressBarStatusListener, User user, AddUserToFirebaseListener addUserToFirebaseListener) {
         if (user != null) {
             iOnProgressBarStatusListener.beforeGetData();
             Map<String, Object> data = new HashMap<>();
@@ -55,7 +54,7 @@ public class UserDAO {
         }
     }
 
-    public void getUser(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id, ReadItemUserListener readItemUser){
+    public void getUser(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id, ReadItemUserListener readItemUser) {
         iOnProgressBarStatusListener.beforeGetData();
         User user = new User();
         Source source = Source.DEFAULT;
@@ -70,11 +69,11 @@ public class UserDAO {
                         Map<String, Object> map = document.getData();
                         if (map != null) {
                             String name = (String) map.get("name");
-                            String email = (String) map.getOrDefault("email",null);
-                            String token = (String) map.getOrDefault("token",null);
+                            String email = (String) map.getOrDefault("email", null);
+                            String token = (String) map.getOrDefault("token", null);
                             Long creationDate = (Long) map.get("creationDate");
-                            ArrayList<String> playlistsID = (ArrayList<String>) map.getOrDefault("playlistsID",null);
-                            String bio = (String) map.getOrDefault("bio",null);
+                            ArrayList<String> playlistsID = (ArrayList<String>) map.getOrDefault("playlistsID", null);
+                            String bio = (String) map.getOrDefault("bio", null);
                             user.setId(id);
                             user.setCreationDate(creationDate);
                             user.setEmail(email);
@@ -95,12 +94,14 @@ public class UserDAO {
 
         });
     }
-    public interface ReadItemUserListener{
+
+    public interface ReadItemUserListener {
         void onReadItemUserCallback(User user);
     }
 
-    public interface AddUserToFirebaseListener{
+    public interface AddUserToFirebaseListener {
         void onAddUserToFirebaseSuccessCallback();
+
         void onAddUserToFirebaseFailureCallback(Exception e);
     }
 }
