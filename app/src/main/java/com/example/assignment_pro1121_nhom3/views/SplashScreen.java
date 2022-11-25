@@ -18,16 +18,22 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_TOP_10;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_DEFAULT;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_DEVICE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_RECENT_PUBLISH;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_SINGER;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 
+import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -40,6 +46,7 @@ import com.example.assignment_pro1121_nhom3.fragments.PlayerFragment;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
+import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
@@ -147,6 +154,13 @@ public class SplashScreen extends AppCompatActivity {
 
                     }
                 });
+            } else if (playlistType.equals(PLAYLIST_TYPE_DEVICE)) {
+                getSongList();
+                musicPlayer = MusicPlayer.getInstance(listMusicRecent);
+                Log.d(TAG, "onCreate: " + listMusicRecent);
+                musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+                startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                finish();
             } else {
                 musicDAO.getTopMusicByGenres(new IOnProgressBarStatusListener() {
                     @Override
@@ -182,12 +196,46 @@ public class SplashScreen extends AppCompatActivity {
             }, 10, new MusicDAO.GetTopMusicListener() {
                 @Override
                 public void onGetTopMusicCallback(ArrayList<Music> list) {
-                    musicPlayer = MusicPlayer.getInstance(list);
+                    if (list.size() != 0) {
+                        musicPlayer = MusicPlayer.getInstance(list);
+                    } else {
+                        getSongList();
+                        musicPlayer = MusicPlayer.getInstance(listMusicRecent);
+                    }
                     musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
                     startActivity(new Intent(SplashScreen.this, MainActivity.class));
                     finish();
                 }
             });
         }
+    }
+
+    public void getSongList() {
+        // Query external audio resources
+        ArrayList<Music> list = new ArrayList<>();
+        ContentResolver musicResolver = getContentResolver();
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        @SuppressLint("Recycle") Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+        // Iterate over results if valid
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            // Get columns
+            int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int albumArtColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+            int uriSongColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+
+            do {
+                Long thisId = musicCursor.getLong(idColumn);
+                String thisTitle = musicCursor.getString(titleColumn);
+                String thisArtist = musicCursor.getString(artistColumn);
+                String thumbnailArt = Uri.withAppendedPath(Uri.parse("content://media/external/audio/albumart"), String.valueOf(musicCursor.getLong(albumArtColumn))).toString();
+                String uriSong = musicCursor.getString(uriSongColumn);
+                list.add(new Music(String.valueOf(thisId), thisTitle, uriSong, thumbnailArt, System.currentTimeMillis(), System.currentTimeMillis(), thisArtist, thisArtist, 1000, thisArtist));
+            }
+            while (musicCursor.moveToNext());
+        }
+        Log.d(TAG, "getSongList: " + list);
+        listMusicRecent.addAll(list);
     }
 }

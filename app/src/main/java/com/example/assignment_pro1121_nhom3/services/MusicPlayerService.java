@@ -17,6 +17,7 @@ import android.media.MediaMetadata;
 import android.media.MediaPlayer;
 import android.media.session.MediaSessionManager;
 import android.media.session.PlaybackState;
+import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
@@ -64,6 +65,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     MediaControllerCompat mediaControllerCompat;
     private String stateServiceMusicPlayer = CHANGE_TO_SERVICE;
     private boolean isLoadSuccess = false;
+    private String playMode;
 
 
     @Nullable
@@ -82,6 +84,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             int action = intent.getIntExtra("action", -1);
+            playMode = intent.getStringExtra(KEY_MODE_MUSIC_PLAYER);
             handleActionMusicPlayer(intent, action);
         }
         return START_STICKY;
@@ -268,7 +271,12 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     public void setMusicUrl(String url) {
         try {
             isLoadSuccess = false;
-            mediaPlayer.setDataSource(url);
+            if (playMode.equals(MUSIC_PLAYER_MODE_ONLINE)) {
+                mediaPlayer.setDataSource(url);
+            } else if (playMode.equals(MUSIC_PLAYER_MODE_LOCAL)) {
+                mediaPlayer.setDataSource(MusicPlayerService.this, Uri.parse(url));
+            }
+
             Log.d(TAG, "onPrepared: Setup");
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override

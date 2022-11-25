@@ -57,7 +57,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:ellipsize="end"
                         android:gravity="center"
+                        android:lines="1"
                         android:text="Vũ"
                         android:textColor="#fff"
                         android:textSize="24dp" />
@@ -161,6 +163,7 @@
                             android:textColor="#fff" />
 
                         <TextView
+                            android:id="@+id/amountRecentSong"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:gravity="start"
@@ -210,6 +213,7 @@
                             android:textColor="#fff" />
 
                         <TextView
+                            android:id="@+id/amountLocalSong"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:lines="1"

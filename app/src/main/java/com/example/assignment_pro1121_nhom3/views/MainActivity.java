@@ -336,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESET_SONG);
+                        startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESET_SONG, musicPlayer.getCurrentMode());
                     }
                 }, 500);
                 break;
@@ -360,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESET_SONG);
+                        startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESET_SONG, musicPlayer.getCurrentMode());
                     }
                 }, 500);
                 break;
@@ -384,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESET_SONG);
+                        startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESET_SONG, musicPlayer.getCurrentMode());
                     }
                 }, 500);
                 break;
@@ -412,17 +412,17 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     public void playMusicPlayer() {
         if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_IDLE)
                 && isMyServiceRunning(MusicPlayerService.class)) {
-            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESUME);
+            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESUME, musicPlayer.getCurrentMode());
         } else if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_PLAYING)) {
-            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESUME);
+            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESUME, musicPlayer.getCurrentMode());
         } else {
-            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_START);
+            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_START, musicPlayer.getCurrentMode());
         }
     }
 
     public void stopMusicPlayer() {
         if (Objects.equals(musicPlayer.getStateMusicPlayer(), MUSIC_PLAYER_STATE_PLAYING)) {
-            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_PAUSE);
+            startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_PAUSE, musicPlayer.getCurrentMode());
         }
     }
 
@@ -479,10 +479,11 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 .into(imageThumbnailCurrentMusic);
     }
 
-    public void startServiceMusic(Music music, int action) {
+    public void startServiceMusic(Music music, int action,String mode) {
         Intent serviceMusic = new Intent(MainActivity.this, MusicPlayerService.class);
         serviceMusic.putExtra("action", action);
         serviceMusic.putExtra(KEY_MUSIC, music);
+        serviceMusic.putExtra(KEY_MODE_MUSIC_PLAYER, mode);
         startService(serviceMusic);
     }
 

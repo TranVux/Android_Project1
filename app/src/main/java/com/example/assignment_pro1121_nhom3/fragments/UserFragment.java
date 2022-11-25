@@ -1,14 +1,23 @@
 package com.example.assignment_pro1121_nhom3.fragments;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -28,6 +37,8 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.dao.UserDAO;
 import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
+import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.views.MusicInDeviceActivity;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -51,11 +62,11 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     CircleImageView layoutLoginUserAvt;
     TextView layoutLoginUserName;
     TextView textNotifyNonLogin;
-    LinearLayout notifEmptyList;
+    LinearLayout notifyEmptyList, recentButton, deviceButton;
     ImageView btnSetting;
     // xử lý đổi màu bottom navigation
     HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
-    TextView btnLogin;
+    TextView btnLogin, amountLocalSong;
     UserDAO userDAO;
     FirebaseUser currentUser;
 
@@ -105,6 +116,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         mAuth = FirebaseAuth.getInstance();
         userDAO = new UserDAO();
         init(view);
+
+        if (!checkPermission()) {
+            amountLocalSong.setText("");
+        } else {
+            getSongList();
+        }
+
         setOnClick();
     }
 
@@ -160,9 +178,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void onGetPlaylistSuccess(ArrayList<String> result) {
                     if (result == null || result.size() == 0) {
-                        notifEmptyList.setVisibility(View.VISIBLE);
+                        notifyEmptyList.setVisibility(View.VISIBLE);
                     } else {
-                        notifEmptyList.setVisibility(View.GONE);
+                        notifyEmptyList.setVisibility(View.GONE);
                     }
                 }
 
@@ -182,12 +200,17 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         layoutLoginUserName = view.findViewById(R.id.layoutLoginUserName);
         btnSetting = view.findViewById(R.id.btnSetting);
         textNotifyNonLogin = view.findViewById(R.id.textNotifyNonLogin);
-        notifEmptyList = view.findViewById(R.id.notify_empty_list);
+        notifyEmptyList = view.findViewById(R.id.notify_empty_list);
+        recentButton = view.findViewById(R.id.recentButton);
+        deviceButton = view.findViewById(R.id.deviceButton);
+        amountLocalSong = view.findViewById(R.id.amountLocalSong);
     }
 
     public void setOnClick() {
         btnLogin.setOnClickListener(this);
         btnSetting.setOnClickListener(this);
+        recentButton.setOnClickListener(this);
+        deviceButton.setOnClickListener(this);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -206,6 +229,14 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             }
             case R.id.btnSetting:
                 showPopupMenuSetting(btnSetting);
+                break;
+            case R.id.deviceButton: {
+                startActivity(new Intent(requireContext(), MusicInDeviceActivity.class));
+                break;
+            }
+            case R.id.recentButton: {
+                break;
+            }
             default:
                 break;
         }
@@ -237,7 +268,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         signOutUserFacebook();
         signOutUserFirebase();
         checkLogin();
-        notifEmptyList.setVisibility(View.GONE);
+        notifyEmptyList.setVisibility(View.GONE);
     }
 
     private void signOutUserFirebase() {
@@ -270,6 +301,44 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         }
                     });
             mGoogleSignInClient.revokeAccess();
+        }
+    }
+
+    public void getSongList() {
+        // Query external audio resources
+        ArrayList<Music> list = new ArrayList<>();
+        ContentResolver musicResolver = requireContext().getContentResolver();
+        Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        @SuppressLint("Recycle") Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
+        // Iterate over results if valid
+        if (musicCursor != null && musicCursor.moveToFirst()) {
+            // Get columns
+            int titleColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            int idColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media._ID);
+            int artistColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
+            int albumArtColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+            int uriSongColumn = musicCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
+
+            do {
+                Long thisId = musicCursor.getLong(idColumn);
+                String thisTitle = musicCursor.getString(titleColumn);
+                String thisArtist = musicCursor.getString(artistColumn);
+                String thumbnailArt = Uri.withAppendedPath(Uri.parse("content://media/external/audio/albumart"), String.valueOf(musicCursor.getLong(albumArtColumn))).toString();
+                String uriSong = musicCursor.getString(uriSongColumn);
+                list.add(new Music(String.valueOf(thisId), thisTitle, uriSong, thumbnailArt, System.currentTimeMillis(), System.currentTimeMillis(), thisArtist, thisArtist, 1000, thisArtist));
+            }
+            while (musicCursor.moveToNext());
+        }
+        Log.d(TAG, "getSongList: " + list);
+        amountLocalSong.setText(list.size() + " bài hát");
+    }
+
+    public boolean checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return Environment.isExternalStorageEmulated();
+        } else {
+            int readCheck = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+            return readCheck == PackageManager.PERMISSION_GRANTED;
         }
     }
 }

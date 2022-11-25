@@ -1,6 +1,7 @@
 package com.example.assignment_pro1121_nhom3.views;
 
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MODE_MUSIC_PLAYER;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MUSIC;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_RECENT_KEY_WORDS;
@@ -193,10 +194,11 @@ public class SearchActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                    musicPlayer.setCurrentMode(MusicPlayer.MUSIC_PLAYER_MODE_ONLINE);
                     saveCurrentMusic(musicPlayer, music.getSingerId(), PLAYLIST_TYPE_SINGER);
                     Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
                     startActivity(new Intent(SearchActivity.this, MainActivity.class));
-                    startServiceMusic(musicPlayer.getCurrentSong(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_SONG);
+                    startServiceMusic(musicPlayer.getCurrentSong(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_SONG, musicPlayer.getCurrentMode());
                 }
             }
 
@@ -252,10 +254,11 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
-    public void startServiceMusic(Music music, int action) {
+    public void startServiceMusic(Music music, int action, String mode) {
         Intent serviceMusic = new Intent(SearchActivity.this, MusicPlayerService.class);
         serviceMusic.putExtra("action", action);
         serviceMusic.putExtra(KEY_MUSIC, music);
+        serviceMusic.putExtra(KEY_MODE_MUSIC_PLAYER, mode);
         startService(serviceMusic);
     }
 
