@@ -13,9 +13,9 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="right"
-        android:padding="5dp"
         android:background="?selectableItemBackgroundBorderless"
         android:clickable="true"
+        android:padding="5dp"
         android:src="@drawable/ic_setting"
         tools:ignore="RtlHardcoded" />
 
@@ -44,8 +44,7 @@
                     android:layout_width="82dp"
                     android:layout_height="82dp"
                     android:layout_gravity="center_horizontal"
-                    android:background="@drawable/default_avt"
-                    />
+                    android:background="@drawable/default_avt" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -265,7 +264,9 @@
                 android:id="@+id/textNotifyNonLogin"
                 android:layout_width="280dp"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
+                android:layout_below="@id/titleLayout"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="25dp"
                 android:fontFamily="@font/roboto"
                 android:text="@string/text_notify_non_login"
                 android:textAlignment="center"
@@ -273,43 +274,38 @@
                 android:textSize="15sp"
                 android:visibility="visible" />
 
-            <RelativeLayout
+            <LinearLayout
+                android:id="@+id/notify_empty_list"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/titleLayout"
-                android:layout_centerInParent="true">
+                android:layout_height="wrap_content"
+                android:layout_below="@id/titleLayout"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="25dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-                <LinearLayout
-                    android:id="@+id/notify_empty_list"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:gravity="center_horizontal"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                    android:src="@drawable/ic_empty_list" />
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_empty_list" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:text="Danh sách trống!"
+                    android:textColor="@color/white" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto_medium"
-                        android:text="Danh sách trống!"
-                        android:textColor="@color/white" />
+                <TextView
+                    android:layout_width="280dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto"
+                    android:text="@string/text_empty_list"
+                    android:textAlignment="center"
+                    android:textColor="@color/white" />
 
-                    <TextView
-                        android:layout_width="280dp"
-                        android:layout_height="wrap_content"
-                        android:fontFamily="@font/roboto"
-                        android:text="@string/text_empty_list"
-                        android:textAlignment="center"
-                        android:textColor="@color/white" />
-
-                </LinearLayout>
-            </RelativeLayout>
+            </LinearLayout>
         </RelativeLayout>
 
     </FrameLayout>

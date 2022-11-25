@@ -25,7 +25,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
+import com.example.assignment_pro1121_nhom3.dao.UserDAO;
 import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
+import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -38,6 +40,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.ArrayList;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserFragment extends Fragment implements View.OnClickListener {
@@ -46,10 +50,15 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     LinearLayout layoutNonLogin, layoutLogin;
     CircleImageView layoutLoginUserAvt;
     TextView layoutLoginUserName;
+    TextView textNotifyNonLogin;
+    LinearLayout notifEmptyList;
     ImageView btnSetting;
     // xử lý đổi màu bottom navigation
     HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
     TextView btnLogin;
+    UserDAO userDAO;
+    FirebaseUser currentUser;
+
 
     public UserFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
         this.handleChangeColorBottomNavigation = handleChangeColorBottomNavigation;
@@ -94,6 +103,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
+        userDAO = new UserDAO();
         init(view);
         setOnClick();
     }
@@ -102,20 +112,22 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     public void onStart() {
         super.onStart();
         checkLogin();
+        checkPlaylist();
     }
 
-     public void checkLogin() {
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
-//            Toast.makeText(getContext(), "FirebaseUser Đã đăng nhập " + currentUser.getDisplayName()+" - " +currentUser.getUid(), Toast.LENGTH_SHORT).show();
-            if(layoutNonLogin.getVisibility() == View.VISIBLE){
+    public void checkLogin() {
+        currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            if (layoutNonLogin.getVisibility() == View.VISIBLE) {
                 layoutNonLogin.setVisibility(View.GONE);
                 layoutLogin.setVisibility(View.VISIBLE);
+                textNotifyNonLogin.setVisibility(View.GONE);
             }
             if (layoutLogin.getVisibility() == View.VISIBLE) {
                 if (getContext() != null) {
+                    Log.d(TAG, "checkLogin: " + currentUser.getPhotoUrl());
                     Glide.with(getContext())
-                            .load(currentUser.getPhotoUrl().toString())
+                            .load(currentUser.getPhotoUrl())
                             .centerCrop()
                             .error(R.drawable.default_avt)
                             .into(layoutLoginUserAvt);
@@ -124,9 +136,41 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 }
                 layoutLoginUserName.setText(currentUser.getDisplayName());
             }
-        }else if(layoutNonLogin.getVisibility() == View.GONE){
+        } else if (layoutNonLogin.getVisibility() == View.GONE) {
             layoutNonLogin.setVisibility(View.VISIBLE);
             layoutLogin.setVisibility(View.GONE);
+            textNotifyNonLogin.setVisibility(View.VISIBLE);
+        }
+        checkPlaylist();
+    }
+
+    public void checkPlaylist() {
+        if (currentUser != null) {
+            userDAO.getPlaylist(currentUser.getUid(), new IOnProgressBarStatusListener() {
+                @Override
+                public void beforeGetData() {
+
+                }
+
+                @Override
+                public void afterGetData() {
+
+                }
+            }, new UserDAO.GetPlayList() {
+                @Override
+                public void onGetPlaylistSuccess(ArrayList<String> result) {
+                    if (result == null || result.size() == 0) {
+                        notifEmptyList.setVisibility(View.VISIBLE);
+                    } else {
+                        notifEmptyList.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onGetPlaylistFailure() {
+
+                }
+            });
         }
     }
 
@@ -137,6 +181,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         layoutLoginUserAvt = view.findViewById(R.id.layoutLoginUserAvt);
         layoutLoginUserName = view.findViewById(R.id.layoutLoginUserName);
         btnSetting = view.findViewById(R.id.btnSetting);
+        textNotifyNonLogin = view.findViewById(R.id.textNotifyNonLogin);
+        notifEmptyList = view.findViewById(R.id.notify_empty_list);
     }
 
     public void setOnClick() {
@@ -172,7 +218,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                if(item.getItemId()==R.id.menuSettingLogout){
+                if (item.getItemId() == R.id.menuSettingLogout) {
                     logoutUser();
                 }
                 return false;
@@ -180,8 +226,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         });
         popup.setGravity(Gravity.END);
         Menu menu = popup.getMenu();
-        if(mAuth.getCurrentUser()==null){
-            menu.setGroupVisible(R.id.groupAccount,false);
+        if (mAuth.getCurrentUser() == null) {
+            menu.setGroupVisible(R.id.groupAccount, false);
         }
         popup.show();
     }
@@ -191,6 +237,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         signOutUserFacebook();
         signOutUserFirebase();
         checkLogin();
+        notifEmptyList.setVisibility(View.GONE);
     }
 
     private void signOutUserFirebase() {
@@ -203,7 +250,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     private void signOutUserGoogle() {
         GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(requireContext());
-        if(acct != null){
+        if (acct != null) {
             GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                     .requestIdToken(getString(R.string.default_web_client_id))
                     .requestEmail()
@@ -213,13 +260,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            Log.d(TAG,"signOutUserGoogle onComplete");
+                            Log.d(TAG, "signOutUserGoogle onComplete");
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Log.d(TAG,"signOutUserGoogle onFailure " + e.getMessage());
+                            Log.d(TAG, "signOutUserGoogle onFailure " + e.getMessage());
                         }
                     });
             mGoogleSignInClient.revokeAccess();

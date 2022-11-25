@@ -61,6 +61,13 @@ public class GenresActivity extends AppCompatActivity {
         genreDAO = new GenreDAO();
         musicDAO = new MusicDAO();
 
+        btnBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(GenresActivity.this, 2);
         rclGenresList.setLayoutManager(gridLayoutManager);
 

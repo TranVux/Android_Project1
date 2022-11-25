@@ -87,7 +87,6 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
                 View layoutAddPlaylist = LayoutInflater.from(requireContext()).inflate(R.layout.layout_add_playlist, null);
                 dialogBuilder.setView(layoutAddPlaylist);
 
-
                 // ánh xạ view
                 TextView btnSave, btnClose;
                 EditText edtName = layoutAddPlaylist.findViewById(R.id.edtName);

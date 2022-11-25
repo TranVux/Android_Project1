@@ -39,4 +39,7 @@ public class Constants {
     public static final String PLAYLIST_TYPE_GENRES = "PLAYLIST_TYPE_GENRES";
 
     public static final String KEY_RECENT_KEY_WORDS = "KEY_RECENT_KEY_WORDS";
+
+    public static final String KEY_SHARE_PREFERENCES_USER = "KEY_SHARE_PREFERENCES_USER";
+    public static final String kEY_IS_LOGIN = "kEY_IS_LOGIN";
 }
