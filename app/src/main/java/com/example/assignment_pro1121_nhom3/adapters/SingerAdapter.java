@@ -72,7 +72,7 @@ public class SingerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (tempSinger == null) return;
             viewHolder.singerName.setText(CapitalizeWord.CapitalizeWords(tempSinger.getName()));
             Glide.with(context)
-                    .load(tempSinger.getAvtUrl()).apply(new RequestOptions().override(60, 60))
+                    .load(tempSinger.getAvtUrl()).apply(new RequestOptions().override(100, 100))
                     .centerCrop()
                     .error(R.drawable.fallback_img)
                     .into(viewHolder.singerImage);

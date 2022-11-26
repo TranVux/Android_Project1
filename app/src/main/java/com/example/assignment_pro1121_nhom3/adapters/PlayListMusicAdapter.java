@@ -56,7 +56,7 @@ public class PlayListMusicAdapter extends RecyclerView.Adapter<PlayListMusicAdap
         holder.creatorName.setText(CapitalizeWord.CapitalizeWords(playlistTemp.getCreatorName()));
         holder.playlistName.setText(CapitalizeWord.CapitalizeWords(playlistTemp.getName()));
         Glide.with(context).load(playlistTemp.getUrlThumbnail())
-                .apply(new RequestOptions().override(92, 92))
+                .apply(new RequestOptions().override(180, 180))
                 .error(R.drawable.fallback_img)
                 .centerCrop()
                 .into(holder.thumbnail);

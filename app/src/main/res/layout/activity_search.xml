@@ -22,80 +22,91 @@
         android:textColor="@color/white"
         android:textColorHint="@color/edt_hint_color"
         android:textCursorDrawable="@drawable/text_cursor_edt"
-        android:transitionName="searchBarTransition"
         android:textSize="13sp"
+        android:transitionName="searchBarTransition"
         tools:ignore="RtlSymmetry" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="25dp"
-        android:fontFamily="@font/roboto_medium"
-        android:text="Từ Khóa Gần Đây"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
-
-
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chipGroupRecentSearchValue"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:singleSelection="true"
-        app:chipSpacingVertical="-10dp">
+        android:layout_height="wrap_content">
 
-        <com.google.android.material.chip.Chip
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_medium"
-            android:text="Chắc có yêu là đây"
-            android:textColor="@color/white"
-            android:textSize="11sp"
-            app:chipBackgroundColor="@color/bg_search_bar" />
+            android:orientation="vertical">
 
-        <com.google.android.material.chip.Chip
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_medium"
-            android:text="Muộn rồi mà sao còn"
-            android:textColor="@color/white"
-            android:textSize="11sp"
-            app:chipBackgroundColor="@color/bg_search_bar" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Từ Khóa Gần Đây"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
-        <com.google.android.material.chip.Chip
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_medium"
-            android:text="3107 - 2"
-            android:textColor="@color/white"
-            android:textSize="11sp"
-            app:chipBackgroundColor="@color/bg_search_bar" />
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupRecentSearchValue"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:chipSpacingVertical="-10dp"
+                app:singleSelection="true" />
 
-        <com.google.android.material.chip.Chip
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_medium"
-            android:text="Stay"
-            android:textColor="@color/white"
-            android:textSize="11sp"
-            app:chipBackgroundColor="@color/bg_search_bar" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:fontFamily="@font/roboto_medium"
+                android:text="Kết Quả Tìm Kiếm"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
 
-        <com.google.android.material.chip.Chip
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_medium"
-            android:text="Đường tôi chở em về"
-            android:textColor="@color/white"
-            android:textSize="11sp"
-            app:chipBackgroundColor="@color/bg_search_bar" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/searchResultRcl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" />
 
-    </com.google.android.material.chip.ChipGroup>
+            <LinearLayout
+                android:id="@+id/emptyLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="25dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:visibility="gone">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/roboto_medium"
-        android:text="Kết Quả Tìm Kiếm"
-        android:textColor="@color/white"
-        android:textSize="16sp" />
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_empty_list" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto"
+                    android:text="Không có kết quả cho"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/keyword"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:text="'Kết thúc bắt đầu'"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:indeterminateDrawable="@drawable/style_progress_bar" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

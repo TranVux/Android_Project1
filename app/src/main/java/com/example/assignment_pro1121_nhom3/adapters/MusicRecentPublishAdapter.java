@@ -45,6 +45,10 @@ public class MusicRecentPublishAdapter extends RecyclerView.Adapter<RecyclerView
         result.dispatchUpdatesTo(this);
     }
 
+    public ArrayList<Music> getList() {
+        return list;
+    }
+
     @Override
     public int getItemViewType(int position) {
         if (list != null && position == list.size() - 1 && isLoadingAdd) {
@@ -73,7 +77,7 @@ public class MusicRecentPublishAdapter extends RecyclerView.Adapter<RecyclerView
             Music musicTemp = list.get(position);
             if (musicTemp == null) return;
             Glide.with(context).load(musicTemp.getThumbnailUrl())
-                    .apply(new RequestOptions().override(105, 105))
+                    .apply(new RequestOptions().override(200, 200))
                     .centerCrop()
                     .error(R.drawable.fallback_img).into(publishViewHolder.thumbnail);
             publishViewHolder.musicName.setText(CapitalizeWord.CapitalizeWords(musicTemp.getName()));
@@ -81,7 +85,7 @@ public class MusicRecentPublishAdapter extends RecyclerView.Adapter<RecyclerView
             publishViewHolder.itemMusic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    itemEvent.onItemClick(musicTemp);
+                    itemEvent.onItemClick(musicTemp, position);
                 }
             });
 

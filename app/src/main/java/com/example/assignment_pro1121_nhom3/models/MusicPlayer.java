@@ -33,6 +33,9 @@ public class MusicPlayer implements Serializable {
     public static final int MUSIC_PLAYER_ACTION_GO_TO_SONG = 999;
     public static final int MUSIC_PLAYER_ACTION_SEEK_TO_POSITION = 101010;
 
+    public static final String MUSIC_PLAYER_MODE_ONLINE = "MUSIC_PLAYER_MODE_ONLINE";
+    public static final String MUSIC_PLAYER_MODE_LOCAL = "MUSIC_PLAYER_MODE_LOCAL";
+
     private static MusicPlayer musicPlayer;
     private ArrayList<Music> playListMusic;
     private Music currentSong;
@@ -40,6 +43,7 @@ public class MusicPlayer implements Serializable {
     private int durationCurrentSong;
     private String playerState;
     private MusicPlayerCallback musicPlayerCallback;
+    private String currentMode;
 
     public static MusicPlayer getInstance(MusicPlayerCallback musicPlayerCallback) {
         if (musicPlayer == null)
@@ -83,6 +87,7 @@ public class MusicPlayer implements Serializable {
 
     private void initState() {
         playerState = MUSIC_PLAYER_STATE_CREATED;
+        currentMode = MUSIC_PLAYER_MODE_ONLINE;
         currentSong = null;
         currentPositionSong = 0;
         durationCurrentSong = 0;
@@ -92,6 +97,14 @@ public class MusicPlayer implements Serializable {
         ArrayList<Music> listTemp = this.playListMusic;
         listTemp.addAll(playListMusic);
         this.playListMusic = RemoveDuplicateArrayItem.getList(listTemp);
+    }
+
+    public String getCurrentMode() {
+        return currentMode;
+    }
+
+    public void setCurrentMode(String currentMode) {
+        this.currentMode = currentMode;
     }
 
     public void setMusicAtPosition(int index) {

@@ -24,9 +24,25 @@ public class Constants {
     public static final String KEY_SONG_CREATION_DATE = "KEY_SONG_CREATION_DATE";
     public static final String KEY_SONG_UPDATE_DATE = "KEY_SONG_UPDATE_DATE";
     public static final String KEY_SONG_INDEX = "KEY_SONG_INDEX";
+    public static final String KEY_PLAYLIST_TYPE = "KEY_PLAYLIST_TYPE";
     public static final String KEY_SONG_PLAYLIST_NAME = "KEY_SONG_PLAYLIST_NAME";
     public static final String KEY_ID_OF_PLAYLIST = "KEY_ID_OF_PLAYLIST";
     public static final String KEY_TOP_10 = "KEY_TOP_10";
     public static final String CHANGE_TO_FOREGROUND_SERVICE = "CHANGE_TO_FOREGROUND_SERVICE";
     public static final String CHANGE_TO_SERVICE = "CHANGE_TO_SERVICE";
+    public static final String KEY_IS_DECREASE = "KEY_IS_DECREASE";
+    public static final String KEY_LIMIT = "KEY_LIMIT";
+
+    public static final String PLAYLIST_TYPE_SINGER = "PLAYLIST_TYPE_SINGER";
+    public static final String PLAYLIST_TYPE_DEFAULT = "PLAYLIST_TYPE_DEFAULT";
+    public static final String PLAYLIST_TYPE_RECENT_PUBLISH = "PLAYLIST_TYPE_RECENT_PUBLISH";
+    public static final String PLAYLIST_TYPE_GENRES = "PLAYLIST_TYPE_GENRES";
+    public static final String PLAYLIST_TYPE_DEVICE = "PLAYLIST_TYPE_DEVICE";
+
+    public static final String KEY_MODE_MUSIC_PLAYER = "KEY_MODE_MUSIC_PLAYER";
+
+    public static final String KEY_RECENT_KEY_WORDS = "KEY_RECENT_KEY_WORDS";
+
+    public static final String KEY_SHARE_PREFERENCES_USER = "KEY_SHARE_PREFERENCES_USER";
+    public static final String kEY_IS_LOGIN = "kEY_IS_LOGIN";
 }

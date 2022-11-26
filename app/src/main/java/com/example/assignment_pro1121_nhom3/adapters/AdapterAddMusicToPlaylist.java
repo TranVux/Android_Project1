@@ -54,7 +54,7 @@ public class AdapterAddMusicToPlaylist extends RecyclerView.Adapter<AdapterAddMu
         holder.amountOfSong.setText(tempPlaylist.getMusics().size() + " bài");
         Glide.with(context)
                 .load(tempPlaylist.getUrlThumbnail())
-                .apply(new RequestOptions().override(63, 63))
+                .apply(new RequestOptions().override(100, 100))
                 .into(holder.playlistThumbnail);
 
         holder.btnAdd.setOnClickListener(new View.OnClickListener() {

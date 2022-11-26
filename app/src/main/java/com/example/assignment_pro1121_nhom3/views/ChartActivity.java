@@ -1,21 +1,47 @@
 package com.example.assignment_pro1121_nhom3.views;
 
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MODE_MUSIC_PLAYER;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MUSIC;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_CREATION_DATE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_GENRES_ID;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_ID;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_INDEX;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_NAME;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_SINGER_ID;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_SINGER_NAME;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_THUMBNAIL_URL;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_UPDATE_DATE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_TOP_10;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_SINGER;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextPaint;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,18 +49,33 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.ChartPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
+import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
+import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.utils.RoundedBarChart;
+import com.github.mikephil.charting.animation.Easing;
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ChartActivity extends AppCompatActivity {
 
     public static final String TAG = ChartActivity.class.getSimpleName();
 
     private RecyclerView recyclerView;
+    private RelativeLayout topBarLayout;
     private ChartPlaylistAdapter adapter;
     private MusicDAO musicDAO;
+    private RoundedBarChart barChart;
+    public MusicPlayer musicPlayer = SplashScreen.musicPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,11 +86,30 @@ public class ChartActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
 
+        //bỏ hiệu ứng fade của transition
+        Transition transition = TransitionInflater.from(getApplicationContext()).inflateTransition(android.R.transition.no_transition);
+        getWindow().setEnterTransition(transition);
+        getWindow().setExitTransition(transition);
+
         musicDAO = new MusicDAO();
 
         setContentView(R.layout.activity_charts);
         recyclerView = findViewById(R.id.recyclerview);
         NestedScrollView nestedScrollView = findViewById(R.id.scrollView);
+        barChart = findViewById(R.id.barChart);
+        topBarLayout = findViewById(R.id.topBarLayout);
+
+        //set click cho top bar layout
+        topBarLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent searchIntent = new Intent(ChartActivity.this, SearchActivity.class);
+                ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                        ChartActivity.this, topBarLayout,
+                        Objects.requireNonNull(ViewCompat.getTransitionName(topBarLayout)));
+                startActivity(searchIntent, optionsCompat.toBundle());
+            }
+        });
 
         //set margin cho nestedScrollview
 
@@ -77,8 +137,23 @@ public class ChartActivity extends AppCompatActivity {
         //adapter cho top
         adapter = new ChartPlaylistAdapter(this, new ChartPlaylistAdapter.ItemChartEvent() {
             @Override
-            public void onItemClick(Music music) {
-                Toast.makeText(ChartActivity.this, "Tới activity player", Toast.LENGTH_SHORT).show();
+            public void onItemClick(Music music, int position) {
+                if (adapter.getItemCount() > 0) {
+                    musicPlayer.pauseSong(musicPlayer.getCurrentPositionSong());
+                    musicPlayer.clearPlaylist();
+                    musicPlayer.setPlayList((ArrayList<Music>) adapter.getList());
+                    musicPlayer.setMusicAtPosition(position);
+                    try {
+                        musicPlayer.setStateMusicPlayer(MusicPlayer.MUSIC_PLAYER_STATE_PLAYING);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    musicPlayer.setCurrentMode(MusicPlayer.MUSIC_PLAYER_MODE_ONLINE);
+                    saveCurrentMusic(musicPlayer, KEY_TOP_10, KEY_TOP_10);
+                    Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
+                    startActivity(new Intent(ChartActivity.this, MainActivity.class));
+                    startServiceMusic(musicPlayer.getCurrentSong(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_SONG, musicPlayer.getCurrentMode());
+                }
             }
 
             @Override
@@ -93,16 +168,73 @@ public class ChartActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
 
-        musicDAO.getTopMusic10(new MusicDAO.GetTop10Listener() {
+        musicDAO.getTopMusicListen(new IOnProgressBarStatusListener() {
             @Override
-            public void onGetTop10Callback(ArrayList<Music> list) {
+            public void beforeGetData() {
+
+            }
+
+            @Override
+            public void afterGetData() {
+
+            }
+        }, 10, new MusicDAO.GetTopMusicListener() {
+            @Override
+            public void onGetTopMusicCallback(ArrayList<Music> list) {
                 adapter.setData(list);
             }
         });
 
         //chart
+        setUpBarChart();
         //
 
+    }
+
+    public void setUpBarChart() {
+        ArrayList<BarEntry> barChartEntry = new ArrayList<>();
+        barChartEntry.add(new BarEntry(1f, 5, R.drawable.img));
+        barChartEntry.add(new BarEntry(2f, 4, R.drawable.img));
+        barChartEntry.add(new BarEntry(3f, 6, R.drawable.img));
+        barChartEntry.add(new BarEntry(4f, 2, R.drawable.img));
+        barChartEntry.add(new BarEntry(5f, 8, R.drawable.img));
+        barChartEntry.add(new BarEntry(6f, 9, R.drawable.img));
+
+        BarDataSet barDataSet = new BarDataSet(barChartEntry, "");
+        barDataSet.setValueTextSize(13f);
+
+        BarData barData = new BarData(barDataSet);
+        barData.setBarWidth(.3f);
+        barData.setDrawValues(false);
+        barData.setValueTextColor(Color.WHITE);
+
+        barChart.setData(barData);
+        barChart.animateY(1000, Easing.EaseInOutCirc);
+
+        barChart.getXAxis().setDrawAxisLine(false);
+        barChart.setDrawGridBackground(false);
+        barChart.getXAxis().setDrawGridLines(false);
+        barChart.getAxisLeft().setDrawGridLines(false);
+        barChart.getAxisRight().setDrawGridLines(false);
+        barChart.getAxisLeft().setEnabled(false);
+        barChart.getAxisRight().setEnabled(false);
+        barChart.getLegend().setEnabled(false);
+        barChart.setPinchZoom(false);
+        barChart.setDescription(null);
+        barChart.setTouchEnabled(false);
+        barChart.setDoubleTapToZoomEnabled(false);
+        barChart.setRadius(25);
+
+        XAxis xAxis = barChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextSize(13f);
+        xAxis.setTextColor(Color.WHITE);
+        xAxis.setYOffset(5);
+        xAxis.setDrawLabels(true);
+        xAxis.setGranularityEnabled(true);
+        xAxis.setGranularity(1f);
+
+        barChart.invalidate();
     }
 
     private void setMargins(View view, int left, int top, int right, int bottom) {
@@ -120,5 +252,33 @@ public class ChartActivity extends AppCompatActivity {
             return getResources().getDimensionPixelSize(resourceId);
         }
         return 0;
+    }
+
+    public void startServiceMusic(Music music, int action, String mode) {
+        Intent serviceMusic = new Intent(ChartActivity.this, MusicPlayerService.class);
+        serviceMusic.putExtra("action", action);
+        serviceMusic.putExtra(KEY_MUSIC, music);
+        serviceMusic.putExtra(KEY_MODE_MUSIC_PLAYER, mode);
+        startService(serviceMusic);
+    }
+
+    public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlaylist) {
+        SharedPreferences sharedPreferencesMusicList = getSharedPreferences("music_player", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferencesMusicList.edit();
+        editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
+        editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
+        editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());
+        editor.putString(KEY_SONG_ID, musicPlayer.getCurrentSong().getId());
+        editor.putLong(KEY_SONG_VIEWS, musicPlayer.getCurrentSong().getViews());
+        editor.putString(KEY_SONG_SINGER_ID, musicPlayer.getCurrentSong().getSingerId());
+        editor.putString(KEY_SONG_SINGER_NAME, musicPlayer.getCurrentSong().getSingerName());
+        editor.putString(KEY_SONG_GENRES_ID, musicPlayer.getCurrentSong().getGenresId());
+        editor.putLong(KEY_SONG_CREATION_DATE, musicPlayer.getCurrentSong().getCreationDate());
+        editor.putLong(KEY_SONG_UPDATE_DATE, musicPlayer.getCurrentSong().getUpdateDate());
+        editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
+        Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
+        editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
+        editor.putString(KEY_PLAYLIST_TYPE, typePlaylist);
+        editor.apply();
     }
 }

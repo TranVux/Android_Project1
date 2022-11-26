@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.dao.UserDAO;
 import com.example.assignment_pro1121_nhom3.models.User;
+import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookAuthorizationException;
@@ -56,6 +57,8 @@ import org.json.JSONObject;
 
 import java.util.Arrays;
 
+import org.checkerframework.common.subtyping.qual.Bottom;
+
 public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
     private static final String TAG = BottomSheetDialogLogin.class.getSimpleName();
 
@@ -65,7 +68,7 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
 
     CallbackManager callbackManager;
     TextView btnClose;
-    RelativeLayout signInButtonGG,signInButtonFB;
+    RelativeLayout signInButtonGG, signInButtonFB;
     BottomSheetDialog bottomSheetDialog;
     IOnUpdateUiUserFragmentListener iOnUpdateUiUserFragmentListener;
     UserDAO userDAO;
@@ -75,11 +78,12 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
         return new BottomSheetDialogLogin(iOnUpdateUiUserFragmentListener);
     }
 
-    private BottomSheetDialogLogin(IOnUpdateUiUserFragmentListener iOnUpdateUiUserFragmentListener){
+    private BottomSheetDialogLogin(IOnUpdateUiUserFragmentListener iOnUpdateUiUserFragmentListener) {
         this.iOnUpdateUiUserFragmentListener = iOnUpdateUiUserFragmentListener;
     }
 
-    ActivityResultLauncher<Intent> mIntentActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+    ActivityResultLauncher<Intent> mIntentActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
@@ -99,10 +103,10 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-        if(getActivity()!=null){
+        if (getActivity() != null) {
             mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
-        }else {
-            Log.e(TAG,"getActivity is null");
+        } else {
+            Log.e(TAG, "getActivity is null");
         }
 
     }
@@ -114,7 +118,8 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
         View view = LayoutInflater.from(requireContext()).inflate(R.layout.layout_bottom_sheet_fragment, null);
         bottomSheetDialog.setContentView(view);
         bottomSheetDialog.setOnShowListener(dialogInterface -> {
-            FrameLayout bottomSheet = bottomSheetDialog.findViewById(com.google.android.material.R.id.design_bottom_sheet);
+            FrameLayout bottomSheet = bottomSheetDialog
+                    .findViewById(com.google.android.material.R.id.design_bottom_sheet);
 
             assert bottomSheet != null;
             BottomSheetBehavior<FrameLayout> bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
@@ -166,6 +171,24 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
         });
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause: ");
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+    }
+
     private void signInFB() {
         callbackManager = CallbackManager.Factory.create();
         mProgressBar.setVisibility(View.VISIBLE);
@@ -177,14 +200,14 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG,"signInFB onSuccess");
+                Log.d(TAG, "signInFB onSuccess");
                 handleFacebookAccessToken(loginResult.getAccessToken());
 
             }
 
             @Override
             public void onCancel() {
-                Log.d(TAG,"signInFB onCancel");
+                Log.d(TAG, "signInFB onCancel");
             }
 
             @Override
@@ -272,10 +295,11 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
             GoogleSignInAccount account = completedTask.getResult(ApiException.class);
             firebaseAuthWithGoogleAccount(account);
             // Signed in successfully, show authenticated UI.
-            //updateUI(account);
+            // updateUI(account);
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            // Please refer to the GoogleSignInStatusCodes class reference for more
+            // information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
         }
     }
@@ -287,15 +311,15 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
             String email = currentUser.getEmail();
             String uid = currentUser.getUid();
 
-            long tsLong = System.currentTimeMillis()/1000;
-            User user = new User(uid,name,email,null,tsLong,null,null);
+            long tsLong = System.currentTimeMillis() / 1000;
+            User user = new User(uid, name, email, null, tsLong, null, null);
             userDAO = new UserDAO();
             userDAO.addUserToFirestore(user);
         }
     }
 
     private void firebaseAuthWithGoogleAccount(GoogleSignInAccount account) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(),null);
+        AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -303,11 +327,11 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
-                            if(user != null){
+                            if (user != null) {
                                 Log.d(TAG, "signInWithCredential:success  " + user.getDisplayName());
                                 iOnUpdateUiUserFragmentListener.onUpdateUiCallback();
                                 addAccountToFirestore();
-                            }else {
+                            } else {
                                 Log.d(TAG, "signInWithCredential:success but cant get account ");
                             }
                             bottomSheetDialog.dismiss();
@@ -320,7 +344,6 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
                     }
                 });
     }
-
 
     public interface IOnUpdateUiUserFragmentListener {
         void onUpdateUiCallback();

@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,13 +58,13 @@ public class MyPlaylistAdapter extends RecyclerView.Adapter<MyPlaylistAdapter.My
             return;
         }
         Glide.with(context).load(list.get(position).getThumbnailUrl()).into(holder.imgSong1);
-        holder.txtSong.setText(music.getName());
-        holder.txtSinger.setText(music.getSingerName());
+        holder.txtSong.setText(CapitalizeWord.CapitalizeWords(music.getName()));
+        holder.txtSinger.setText(CapitalizeWord.CapitalizeWords(music.getSingerName()));
         holder.txtView.setText(music.getViews().toString());
         holder.MyPlaylistItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                itemChartEvent.onItemClick(music);
+                itemChartEvent.onItemClick(music, position);
             }
         });
         holder.btnMore.setOnClickListener(new View.OnClickListener() {
@@ -105,7 +106,7 @@ public class MyPlaylistAdapter extends RecyclerView.Adapter<MyPlaylistAdapter.My
     }
 
     public interface ItemChartEvent {
-        void onItemClick(Music music);
+        void onItemClick(Music music, int position);
 
         void onMoreButtonClick(Music music);
     }

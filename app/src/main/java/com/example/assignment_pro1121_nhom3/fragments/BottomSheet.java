@@ -50,6 +50,7 @@ public class BottomSheet extends BottomSheetDialogFragment implements View.OnCli
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
         Bundle data = getArguments();
         singerDAO = new SingerDAO();
         if (data != null) {

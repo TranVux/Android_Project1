@@ -44,6 +44,10 @@ public class MusicInPlaylistAdapter extends RecyclerView.Adapter<MusicInPlaylist
         notifyItemChanged(initPosition, listMusic.size());
     }
 
+    public ArrayList<Music> getListMusic() {
+        return listMusic;
+    }
+
     @NonNull
     @Override
     public MusicInPlaylistViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -59,7 +63,7 @@ public class MusicInPlaylistAdapter extends RecyclerView.Adapter<MusicInPlaylist
         holder.views.setText(String.valueOf(tempMusic.getViews()));
         holder.musicName.setText(CapitalizeWord.CapitalizeWords(tempMusic.getName()));
         Glide.with(context).load(tempMusic.getThumbnailUrl())
-                .apply(new RequestOptions().override(63, 63))
+                .apply(new RequestOptions().override(150, 150))
                 .error(R.drawable.fallback_img)
                 .into(holder.musicThumbnail);
 
@@ -92,7 +96,6 @@ public class MusicInPlaylistAdapter extends RecyclerView.Adapter<MusicInPlaylist
 
         public MusicInPlaylistViewHolder(@NonNull View itemView) {
             super(itemView);
-
             itemMusic = itemView.findViewById(R.id.itemMusic);
             musicName = itemView.findViewById(R.id.musicName);
             singerName = itemView.findViewById(R.id.singerName);

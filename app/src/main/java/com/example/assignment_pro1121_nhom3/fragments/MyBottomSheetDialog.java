@@ -45,6 +45,7 @@ public class MyBottomSheetDialog extends BottomSheetDialogFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
         Bundle data = getArguments();
         if (data != null) {
             listMusic = (ArrayList<Music>) data.get(KEY_DATA_BOTTOM_SHEET_DIALOG);
@@ -86,7 +87,8 @@ public class MyBottomSheetDialog extends BottomSheetDialogFragment {
 
             @Override
             public void onMoreClick(Music music) {
-
+                BottomSheet bottomSheet = BottomSheet.newInstance(music);
+                bottomSheet.show(getParentFragmentManager(), "TAG");
             }
         });
 

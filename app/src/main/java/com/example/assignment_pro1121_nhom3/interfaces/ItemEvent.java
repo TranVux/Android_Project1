@@ -6,7 +6,7 @@ import com.example.assignment_pro1121_nhom3.models.Singer;
 
 public interface ItemEvent {
     interface MusicItemEvent {
-        void onItemClick(Music music);
+        void onItemClick(Music music, int position);
 
         void onSingerNameClick(String singerID);
     }

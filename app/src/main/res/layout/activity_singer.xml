@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/status_bar"
+    android:background="@color/bg_activity"
     android:orientation="vertical"
     tools:context=".views.SingerActivity">
 
@@ -14,10 +14,10 @@
         android:layout_height="65dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
-        android:background="@color/status_bar"
+        android:background="@color/bg_activity"
         android:fontFamily="@font/roboto_medium"
         android:gravity="center"
-        android:text="Nghệ sĩ"
+        android:text="Nghệ Sĩ"
         android:textColor="@color/white"
         android:textSize="20sp" />
 
@@ -29,6 +29,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="15dp"
         android:layout_marginTop="20dp"
+        android:background="?selectableItemBackgroundBorderless"
         android:src="@drawable/ic_back" />
 
 
@@ -39,14 +40,20 @@
         android:layout_below="@id/textTopBar"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginHorizontal="15dp"
-        android:background="@color/status_bar"
+        android:layout_marginHorizontal="25dp"
+        android:layout_marginBottom="8dp"
+        android:animateLayoutChanges="true"
+        android:background="@color/bg_activity"
         android:elevation="0dp"
         android:transitionGroup="true"
-        android:animateLayoutChanges="true"
-        app:tabBackground="@color/status_bar"
-        app:tabIndicatorHeight="0dp"
+        app:tabBackground="@color/bg_activity"
+        app:tabIndicator="@drawable/tab_indicator_custom"
+        app:tabIndicatorAnimationMode="elastic"
+        app:tabIndicatorColor="@color/bg_btn"
+        app:tabIndicatorHeight="3dp"
         app:tabMode="scrollable"
+        app:tabRippleColor="@null"
+        app:tabTextAppearance="@style/TabLayoutStyle"
         app:tabTextColor="@color/white">
 
         <com.google.android.material.tabs.TabItem
@@ -61,7 +68,7 @@
 
     </com.google.android.material.tabs.TabLayout>
 
-    <androidx.viewpager.widget.ViewPager
+    <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

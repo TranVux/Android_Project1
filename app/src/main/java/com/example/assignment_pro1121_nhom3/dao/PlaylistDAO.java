@@ -17,6 +17,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -29,7 +30,8 @@ public class PlaylistDAO {
     private static final String TAG = PlaylistDAO.class.getName();
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public void getAllDataPlaylist(ReadAllDataPlaylistListener readAllDataPlaylistListener) {
+    public void getAllDataPlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener, ReadAllDataPlaylistListener readAllDataPlaylistListener) {
+        iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Playlist> list = new ArrayList<>();
         db.collection("playlists")
                 .get()
@@ -52,8 +54,45 @@ public class PlaylistDAO {
                             }
                             Log.d("finish getting documents", list.size() + "");
                             readAllDataPlaylistListener.onReadAllDataPlaylistCallback(list);
+                            iOnProgressBarStatusListener.afterGetData();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
+    }
+
+    public void getRecentPublishPlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener, GetRecentPublishPlaylist getRecentPublishPlaylist) {
+        iOnProgressBarStatusListener.beforeGetData();
+        ArrayList<Playlist> list = new ArrayList<>();
+        db.collection("playlists")
+                .whereEqualTo("isPublic", true)
+                .limit(30)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                Log.d(TAG, document.getId() + " => " + document.getData());
+                                Map<String, Object> map = document.getData();
+                                String id = document.getId();
+                                String name = (String) map.get("name");
+                                ArrayList<String> emptyList = new ArrayList<>();
+                                ArrayList<String> musicsID = (ArrayList<String>) map.getOrDefault("musics", emptyList);
+                                Long modifyDate = (Long) map.getOrDefault("modifyDate", 0L);
+                                Long creationDate = (Long) map.get("creationDate");
+                                String urlThumbnail = (String) map.get("urlThumbnail");
+                                String creatorName = (String) map.get("creatorName");
+                                Playlist playlist = new Playlist(id, name, musicsID, modifyDate, creationDate, urlThumbnail, creatorName);
+                                list.add(playlist);
+                            }
+                            Log.d("finish getting documents", list.size() + "");
+                            getRecentPublishPlaylist.onGetRecentPublishPlaylistSuccess(list);
+                            iOnProgressBarStatusListener.afterGetData();
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                            iOnProgressBarStatusListener.afterGetData();
                         }
                     }
                 });
@@ -63,6 +102,7 @@ public class PlaylistDAO {
         ArrayList<Playlist> list = new ArrayList<>();
         iOnProgressBarStatusListener.beforeGetData();
         db.collection("playlists")
+                .whereEqualTo("isPublic", true)
                 .limit(limit)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -88,6 +128,7 @@ public class PlaylistDAO {
                             iOnProgressBarStatusListener.afterGetData();
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
+                            iOnProgressBarStatusListener.afterGetData();
                         }
                     }
                 });
@@ -133,8 +174,9 @@ public class PlaylistDAO {
         });
     }
 
-    public void addPlaylist(Playlist playlist, AddPlaylistListener addPlaylistListener) {
+    public void addPlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener, Playlist playlist, AddPlaylistListener addPlaylistListener) {
         if (playlist != null) {
+            iOnProgressBarStatusListener.beforeGetData();
             Map<String, Object> data = new HashMap<>();
             data.put("name", playlist.getName());
             data.put("creationDate", playlist.getCreationDate());
@@ -160,10 +202,12 @@ public class PlaylistDAO {
                             addPlaylistListener.onAddPlaylistFailureCallback(e);
                         }
                     });
+            iOnProgressBarStatusListener.afterGetData();
         }
     }
 
-    public void deletePlaylist(String id, DeletePlaylistListener deletePlaylistListener) {
+    public void deletePlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id, DeletePlaylistListener deletePlaylistListener) {
+        iOnProgressBarStatusListener.beforeGetData();
         db.collection("playlists").document(id)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -180,9 +224,11 @@ public class PlaylistDAO {
                         deletePlaylistListener.onDeletePlaylistFailureCallback(e);
                     }
                 });
+        iOnProgressBarStatusListener.afterGetData();
     }
 
-    public void addItemMusicInPlaylist(String idPlaylist, String idMusicToAdd, AddItemMusicInPlaylistListener addItemMusicInPlaylistListener) {
+    public void addItemMusicInPlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener, String idPlaylist, String idMusicToAdd, AddItemMusicInPlaylistListener addItemMusicInPlaylistListener) {
+        iOnProgressBarStatusListener.beforeGetData();
         DocumentReference documentReference = db.collection("playlists").document(idPlaylist);
         documentReference.update("musics", FieldValue.arrayUnion(idMusicToAdd))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -197,9 +243,11 @@ public class PlaylistDAO {
                         addItemMusicInPlaylistListener.onAddItemMusicInPlaylistFailureCallback(e);
                     }
                 });
+        iOnProgressBarStatusListener.afterGetData();
     }
 
-    public void deleteItemMusicInPlaylist(String idPlaylist, String idMusicToRemove, DeleteItemMusicInPlaylistListener deleteItemMusicInPlaylistListener) {
+    public void deleteItemMusicInPlaylist(IOnProgressBarStatusListener iOnProgressBarStatusListener, String idPlaylist, String idMusicToRemove, DeleteItemMusicInPlaylistListener deleteItemMusicInPlaylistListener) {
+        iOnProgressBarStatusListener.beforeGetData();
         DocumentReference documentReference = db.collection("playlists").document(idPlaylist);
         documentReference.update("musics", FieldValue.arrayRemove(idMusicToRemove))
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -214,6 +262,7 @@ public class PlaylistDAO {
                         deleteItemMusicInPlaylistListener.onDeleteItemMusicInPlaylistFailureCallback(e);
                     }
                 });
+        iOnProgressBarStatusListener.afterGetData();
     }
 
     public void getMusicInPlaylist(String idPlaylist, IOnProgressBarStatusListener iOnProgressBarStatusListener, ReadMusicInPlaylist readMusicInPlaylist) {
@@ -274,6 +323,12 @@ public class PlaylistDAO {
                         renamePlaylistListener.onRenamePlaylistFailureCallback(e);
                     }
                 });
+    }
+
+    public interface GetRecentPublishPlaylist {
+        void onGetRecentPublishPlaylistSuccess(ArrayList<Playlist> result);
+
+        void onGetRecentPublishPlaylistFailure();
     }
 
     public interface AddItemMusicInPlaylistListener {

@@ -171,16 +171,17 @@ public class SingerDAO {
         MusicDAO musicDAO = new MusicDAO();
         // danh sách ID đã lấy dữ liệu
         ArrayList<String> hadFetch = new ArrayList<>();
+        Map<Long, Singer> mapSinger = new HashMap<>();
         iOnProgressBarStatusListener.beforeGetData();
         musicDAO.getMusicDecreaseByView(new MusicDAO.GetMusicDecreaseByView() {
             @Override
             public void onGetSuccess(ArrayList<Music> list) {
                 for (int i = 0; i < list.size(); i++) {
-                    int positionTemp = i;
-                    String singerID = list.get(positionTemp).getSingerId();
+                    String singerID = list.get(i).getSingerId();
                     if (!hadFetch.contains(singerID)) {
-                        Log.d(TAG, "onGetSuccess: " + list.get(positionTemp).getViews() + " SingerName: " + list.get(positionTemp).getSingerName());
+                        Log.d(TAG, "onGetSuccess: " + list.get(i).getViews() + " SingerName: " + list.get(i).getSingerName());
                         hadFetch.add(singerID);
+                        int finalI = i;
                         getSinger(new IOnProgressBarStatusListener() {
                             @Override
                             public void beforeGetData() {
@@ -191,12 +192,14 @@ public class SingerDAO {
                             public void afterGetData() {
 
                             }
-                        }, list.get(positionTemp).getSingerId(), new ReadItemSinger() {
+                        }, list.get(i).getSingerId(), new ReadItemSinger() {
                             @Override
                             public void onReadItemSingerCallback(Singer singer) {
+                                mapSinger.put(list.get(finalI).getViews(), singer);
                                 listSinger.add(singer);
                                 if (listSinger.size() == 10) {
-                                    getTopSinger.onGetTopSingersSuccess(listSinger);
+                                    Log.d(TAG, "onReadItemSingerCallback: " + mapSinger.size() + " " + mapSinger.values());
+                                    getTopSinger.onGetTopSingersSuccess(mapSinger);
                                     iOnProgressBarStatusListener.afterGetData();
                                 }
                             }
@@ -208,7 +211,7 @@ public class SingerDAO {
     }
 
     public interface GetTopSinger {
-        void onGetTopSingersSuccess(ArrayList<Singer> list);
+        void onGetTopSingersSuccess(Map<Long, Singer> mapSinger);
     }
 
     public interface ReadAllDataSinger {
