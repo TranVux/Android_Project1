@@ -84,7 +84,4 @@ public class UserDAO {
 //
 //        });
 //    }
-//    public interface ReadItemUser{
-//        void onReadItemUserCallback(User user);
-//    }
 }

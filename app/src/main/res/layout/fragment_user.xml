@@ -60,6 +60,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="Vũ"
+                        android:maxLines="1"
                         android:textColor="#fff"
                         android:textSize="24dp" />
                 </LinearLayout>

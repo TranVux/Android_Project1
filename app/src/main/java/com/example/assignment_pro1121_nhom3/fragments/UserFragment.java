@@ -1,7 +1,6 @@
 package com.example.assignment_pro1121_nhom3.fragments;
 
 import android.annotation.SuppressLint;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,10 +19,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
 import com.facebook.AccessToken;
@@ -104,18 +101,21 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         checkLogin();
     }
 
+
      public void checkLogin() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
+
 //            Toast.makeText(getContext(), "FirebaseUser Đã đăng nhập " + currentUser.getDisplayName()+" - " +currentUser.getUid(), Toast.LENGTH_SHORT).show();
             if(layoutNonLogin.getVisibility() == View.VISIBLE){
                 layoutNonLogin.setVisibility(View.GONE);
                 layoutLogin.setVisibility(View.VISIBLE);
             }
+            Log.d(TAG,currentUser.getPhotoUrl()+"");
             if (layoutLogin.getVisibility() == View.VISIBLE) {
                 if (getContext() != null) {
                     Glide.with(getContext())
-                            .load(currentUser.getPhotoUrl().toString())
+                            .load(currentUser.getPhotoUrl())
                             .centerCrop()
                             .error(R.drawable.default_avt)
                             .into(layoutLoginUserAvt);
