@@ -44,6 +44,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
@@ -67,6 +68,7 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
     PlaylistInDeviceAdapter myPlaylistAdapter;
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
     ImageView btnBack;
+    TextView amountOfSong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +84,7 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
         buttonPlayAll = findViewById(R.id.buttonPlayAll);
         rclMusicInDevice = findViewById(R.id.recyclerView);
         btnBack = findViewById(R.id.backBtn);
+        amountOfSong = findViewById(R.id.amountOfSong);
 
         myPlaylistAdapter = new PlaylistInDeviceAdapter(MusicInDeviceActivity.this, new PlaylistInDeviceAdapter.ItemChartEvent() {
             @Override
@@ -180,6 +183,7 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
             while (musicCursor.moveToNext());
         }
         Log.d(TAG, "getSongList: " + list);
+        amountOfSong.setText(list.size() + " bài");
         myPlaylistAdapter.setData(list);
     }
 

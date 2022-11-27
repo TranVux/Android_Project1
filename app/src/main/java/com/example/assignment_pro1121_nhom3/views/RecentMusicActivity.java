@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.PlaylistInDeviceAdapter;
@@ -46,6 +47,7 @@ public class RecentMusicActivity extends AppCompatActivity implements View.OnCli
     PlaylistInDeviceAdapter myPlaylistAdapter;
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
     ImageView btnBack;
+    TextView amountOfSong;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,7 @@ public class RecentMusicActivity extends AppCompatActivity implements View.OnCli
         rclRecentSong = findViewById(R.id.recyclerView);
         btnBack = findViewById(R.id.backBtn);
         buttonPlayAll = findViewById(R.id.buttonPlayAll);
+        amountOfSong = findViewById(R.id.amountOfSong);
 
         myPlaylistAdapter = new PlaylistInDeviceAdapter(RecentMusicActivity.this, new PlaylistInDeviceAdapter.ItemChartEvent() {
             @Override
@@ -72,6 +75,7 @@ public class RecentMusicActivity extends AppCompatActivity implements View.OnCli
             }
         });
         ArrayList<Music> recentSongList = (ArrayList<Music>) SongRecentDatabase.getInstance(RecentMusicActivity.this).musicRecentDAO().getListSongRecent();
+        amountOfSong.setText(recentSongList.size() + " bài");
         myPlaylistAdapter.setData(recentSongList);
         rclRecentSong.setAdapter(myPlaylistAdapter);
     }
