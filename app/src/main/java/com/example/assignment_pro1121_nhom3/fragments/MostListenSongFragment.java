@@ -46,6 +46,7 @@ import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.example.assignment_pro1121_nhom3.views.MoreMusicActivity;
 import com.example.assignment_pro1121_nhom3.views.SearchActivity;
@@ -184,7 +185,15 @@ public class MostListenSongFragment extends Fragment {
         }
     }
 
+    public boolean checkUniqueSong(String songName) {
+        ArrayList<Music> list = (ArrayList<Music>) SongRecentDatabase.getInstance(requireContext()).musicRecentDAO().checkSong(songName);
+        return list.size() <= 0;
+    }
+
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlayList) {
+        if (checkUniqueSong(musicPlayer.getCurrentSong().getName())) {
+            SongRecentDatabase.getInstance(requireContext()).musicRecentDAO().insertSong(musicPlayer.getCurrentSong());
+        }
         SharedPreferences sharedPreferences = requireContext().getSharedPreferences("music_player", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());

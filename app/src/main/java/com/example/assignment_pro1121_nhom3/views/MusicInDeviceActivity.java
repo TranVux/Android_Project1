@@ -1,8 +1,6 @@
 package com.example.assignment_pro1121_nhom3.views;
 
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_IS_DECREASE;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_LIMIT;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MODE_MUSIC_PLAYER;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MUSIC;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
@@ -17,8 +15,6 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_THUM
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_UPDATE_DATE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_DEFAULT;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_GENRES;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -28,14 +24,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -48,17 +42,19 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
-import com.example.assignment_pro1121_nhom3.adapters.MyPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.adapters.PlaylistInDeviceAdapter;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.utils.Constants;
 
+import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 
 public class MusicInDeviceActivity extends AppCompatActivity implements View.OnClickListener {
@@ -70,7 +66,7 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
     LinearLayout buttonPlayAll;
     PlaylistInDeviceAdapter myPlaylistAdapter;
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
-
+    ImageView btnBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +81,7 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
     public void init() {
         buttonPlayAll = findViewById(R.id.buttonPlayAll);
         rclMusicInDevice = findViewById(R.id.recyclerView);
+        btnBack = findViewById(R.id.backBtn);
 
         myPlaylistAdapter = new PlaylistInDeviceAdapter(MusicInDeviceActivity.this, new PlaylistInDeviceAdapter.ItemChartEvent() {
             @Override
@@ -104,6 +101,7 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
 
     public void setClick() {
         buttonPlayAll.setOnClickListener(this);
+        btnBack.setOnClickListener(this);
     }
 
     public void navigateToPLayer(int position) {
@@ -185,6 +183,21 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
         myPlaylistAdapter.setData(list);
     }
 
+    public void getSongListAPI30() {
+        File directory = new File(String.valueOf(Environment.getExternalStoragePublicDirectory("Music")));
+        File[] mp3File = directory.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return file.getName().endsWith(".mp3");
+            }
+        });
+        if (mp3File != null) {
+            for (File file : mp3File) {
+                Log.d(TAG, "getSongListAPI30: " + file.getAbsolutePath() + " " + file.getName());
+            }
+        }
+    }
+
     public boolean checkPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             return Environment.isExternalStorageEmulated();
@@ -216,7 +229,11 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
         isGrantedPermission = checkPermission();
         Log.d(TAG, "getPermission: " + isGrantedPermission);
         if (isGrantedPermission) {
-            getSongList();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                getSongListAPI30();
+            } else {
+                getSongList();
+            }
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 try {
@@ -246,11 +263,16 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
         }
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.buttonPlayAll: {
                 navigateToPLayer(0);
+                break;
+            }
+            case R.id.backBtn: {
+                onBackPressed();
                 break;
             }
             default:

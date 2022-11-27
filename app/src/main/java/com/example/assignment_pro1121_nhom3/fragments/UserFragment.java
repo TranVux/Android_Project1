@@ -34,11 +34,14 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
+import com.example.assignment_pro1121_nhom3.dao.PlaylistDAO;
 import com.example.assignment_pro1121_nhom3.dao.UserDAO;
 import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.views.MusicInDeviceActivity;
+import com.example.assignment_pro1121_nhom3.views.RecentMusicActivity;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -60,13 +63,11 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     FirebaseAuth mAuth;
     LinearLayout layoutNonLogin, layoutLogin;
     CircleImageView layoutLoginUserAvt;
-    TextView layoutLoginUserName;
-    TextView textNotifyNonLogin;
     LinearLayout notifyEmptyList, recentButton, deviceButton;
     ImageView btnSetting;
     // xử lý đổi màu bottom navigation
     HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
-    TextView btnLogin, amountLocalSong;
+    TextView btnLogin, amountLocalSong, layoutLoginUserName, textNotifyNonLogin, amountRecentSong;
     UserDAO userDAO;
     FirebaseUser currentUser;
 
@@ -97,6 +98,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         super.onResume();
         Log.d(TAG, "onResume: ");
         handleChangeColorBottomNavigation.toColor();
+        getSongList();
     }
 
     @Override
@@ -122,8 +124,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         } else {
             getSongList();
         }
-
         setOnClick();
+        ArrayList<Music> listRecentSong = (ArrayList<Music>) SongRecentDatabase.getInstance(requireContext()).musicRecentDAO().getListSongRecent();
+        if (listRecentSong == null) {
+            listRecentSong = new ArrayList<>();
+        }
+        amountRecentSong.setText(listRecentSong.size() + " bài hát");
     }
 
     @Override
@@ -204,6 +210,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         recentButton = view.findViewById(R.id.recentButton);
         deviceButton = view.findViewById(R.id.deviceButton);
         amountLocalSong = view.findViewById(R.id.amountLocalSong);
+        amountRecentSong = view.findViewById(R.id.amountRecentSong);
     }
 
     public void setOnClick() {
@@ -235,6 +242,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 break;
             }
             case R.id.recentButton: {
+                startActivity(new Intent(requireContext(), RecentMusicActivity.class));
                 break;
             }
             default:

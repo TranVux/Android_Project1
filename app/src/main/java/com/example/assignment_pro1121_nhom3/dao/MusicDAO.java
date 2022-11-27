@@ -177,7 +177,7 @@ public class MusicDAO {
     public void getMusic(IOnProgressBarStatusListener iOnProgressBarStatusListener, String id,
                          ReadItemMusic readItemMusic) {
         iOnProgressBarStatusListener.beforeGetData();
-        Music music = new Music();
+//        Music music = new Music();
         DocumentReference docRef = db.collection("musics").document(id);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -207,18 +207,8 @@ public class MusicDAO {
                                 views = 0L;
                             }
                             String genresId = (String) map.get("genresID");
-                            music.setId(id);
-                            music.setName(name);
-                            music.setUrl(url);
-                            music.setThumbnailUrl(thumbnailUrl);
-                            music.setCreationDate(creationDate);
-                            music.setUpdateDate(updateDate);
-                            music.setSingerName(singerName);
-                            music.setSingerId(singerId);
-                            music.setViews(views);
-                            music.setGenresId(genresId);
                             iOnProgressBarStatusListener.afterGetData();
-                            readItemMusic.onReadItemMusicCallback(music);
+                            readItemMusic.onReadItemMusicCallback(new Music(id, name, url, thumbnailUrl, creationDate, updateDate, singerName, singerId, views, genresId));
                         }
                     } else {
                         Log.d(TAG, "No such document");

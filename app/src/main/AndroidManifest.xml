@@ -8,7 +8,6 @@
     <uses-permission
         android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
-
     <uses-permission
         android:name="android.permission.MEDIA_CONTENT_CONTROL"
         tools:ignore="ProtectedPermissions" />
@@ -24,22 +23,24 @@
         android:theme="@style/Theme.Assignment_PRO1121_Nhom3"
         tools:targetApi="31">
         <activity
-            android:name=".views.MusicInDeviceActivity"
-            android:exported="true"
-            android:theme="@style/ThemeSubActivity">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
+            android:name=".views.RecentMusicActivity"
+            android:theme="@style/ThemeSubActivity"
+            android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".views.RecentActivity"
-            android:exported="false"
+            android:name=".views.MusicInDeviceActivity"
+            android:exported="true"
             android:theme="@style/ThemeSubActivity">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -117,7 +118,6 @@
             android:exported="true"
             android:theme="@style/Splash"
             android:windowSoftInputMode="adjustResize">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

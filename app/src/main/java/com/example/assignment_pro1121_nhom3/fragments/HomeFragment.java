@@ -67,6 +67,7 @@ import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.models.Singer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.utils.GridSpacingItemDecoration;
 import com.example.assignment_pro1121_nhom3.views.ChartActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailPlaylistActivity;
@@ -390,7 +391,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         requireContext().startService(serviceMusic);
     }
 
+    public boolean checkUniqueSong(String songName) {
+        ArrayList<Music> list = (ArrayList<Music>) SongRecentDatabase.getInstance(requireContext()).musicRecentDAO().checkSong(songName);
+        return list.size() <= 0;
+    }
+
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlaylist) {
+        if (checkUniqueSong(musicPlayer.getCurrentSong().getName())) {
+            SongRecentDatabase.getInstance(requireContext()).musicRecentDAO().insertSong(musicPlayer.getCurrentSong());
+        }
         SharedPreferences sharedPreferencesMusicList = requireContext().getSharedPreferences("music_player",
                 MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferencesMusicList.edit();

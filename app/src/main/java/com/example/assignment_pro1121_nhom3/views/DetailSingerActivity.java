@@ -49,6 +49,7 @@ import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.models.Singer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.firestore.Query;
@@ -272,7 +273,7 @@ public class DetailSingerActivity extends AppCompatActivity {
     }
 
 
-    public void startServiceMusic(Music music, int action,String mode) {
+    public void startServiceMusic(Music music, int action, String mode) {
         Intent serviceMusic = new Intent(DetailSingerActivity.this, MusicPlayerService.class);
         serviceMusic.putExtra("action", action);
         serviceMusic.putExtra(KEY_MUSIC, music);
@@ -280,7 +281,16 @@ public class DetailSingerActivity extends AppCompatActivity {
         startService(serviceMusic);
     }
 
+    public boolean checkUniqueSong(String songName) {
+        ArrayList<Music> list = (ArrayList<Music>) SongRecentDatabase.getInstance(getApplicationContext()).musicRecentDAO().checkSong(songName);
+        return list.size() <= 0;
+    }
+
+
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlayList) {
+        if (checkUniqueSong(musicPlayer.getCurrentSong().getName())) {
+            SongRecentDatabase.getInstance(getApplicationContext()).musicRecentDAO().insertSong(musicPlayer.getCurrentSong());
+        }
         SharedPreferences sharedPreferences = getSharedPreferences("music_player", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());

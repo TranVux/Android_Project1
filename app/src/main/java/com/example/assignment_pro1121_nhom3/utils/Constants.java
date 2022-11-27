@@ -38,6 +38,7 @@ public class Constants {
     public static final String PLAYLIST_TYPE_RECENT_PUBLISH = "PLAYLIST_TYPE_RECENT_PUBLISH";
     public static final String PLAYLIST_TYPE_GENRES = "PLAYLIST_TYPE_GENRES";
     public static final String PLAYLIST_TYPE_DEVICE = "PLAYLIST_TYPE_DEVICE";
+    public static final String PLAYLIST_TYPE_RECENT_PLAYLIST = "PLAYLIST_TYPE_RECENT_PLAYLIST";
 
     public static final String KEY_MODE_MUSIC_PLAYER = "KEY_MODE_MUSIC_PLAYER";
 

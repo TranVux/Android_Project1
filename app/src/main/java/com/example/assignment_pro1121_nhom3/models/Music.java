@@ -1,9 +1,18 @@
 package com.example.assignment_pro1121_nhom3.models;
 
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
+@Entity(tableName = "recent_songs_tb")
 public class Music implements Serializable {
+
+    @PrimaryKey(autoGenerate = true)
+    private int idColumn;
+
     private String id;
     private String name;
     private String url;
@@ -14,9 +23,6 @@ public class Music implements Serializable {
     private String singerId;
     private Long views;
     private String genresId;
-
-    public Music() {
-    }
 
     public Music(String id, String name, String url, String thumbnailUrl, long creationDate, long updateDate, String singerName, String singerId, long views, String genresId) {
         this.id = id;
@@ -29,6 +35,14 @@ public class Music implements Serializable {
         this.singerId = singerId;
         this.views = views;
         this.genresId = genresId;
+    }
+
+    public int getIdColumn() {
+        return idColumn;
+    }
+
+    public void setIdColumn(int idColumn) {
+        this.idColumn = idColumn;
     }
 
     public String getId() {

@@ -45,6 +45,7 @@ import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListe
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationMenuView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -479,7 +480,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 .into(imageThumbnailCurrentMusic);
     }
 
-    public void startServiceMusic(Music music, int action,String mode) {
+    public void startServiceMusic(Music music, int action, String mode) {
         Intent serviceMusic = new Intent(MainActivity.this, MusicPlayerService.class);
         serviceMusic.putExtra("action", action);
         serviceMusic.putExtra(KEY_MUSIC, music);
@@ -487,7 +488,15 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         startService(serviceMusic);
     }
 
+    public boolean checkUniqueSong(String songName) {
+        ArrayList<Music> list = (ArrayList<Music>) SongRecentDatabase.getInstance(getApplicationContext()).musicRecentDAO().checkSong(songName);
+        return list.size() <= 0;
+    }
+
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist) {
+        if (checkUniqueSong(musicPlayer.getCurrentSong().getName())) {
+            SongRecentDatabase.getInstance(getApplicationContext()).musicRecentDAO().insertSong(musicPlayer.getCurrentSong());
+        }
         SharedPreferences.Editor editor = sharedPreferencesMusicList.edit();
         editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
         editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());

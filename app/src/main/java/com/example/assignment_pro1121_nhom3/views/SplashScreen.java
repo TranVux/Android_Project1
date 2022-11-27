@@ -19,6 +19,7 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEW
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_TOP_10;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_DEFAULT;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_DEVICE;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_RECENT_PLAYLIST;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_RECENT_PUBLISH;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_SINGER;
 
@@ -46,6 +47,7 @@ import com.example.assignment_pro1121_nhom3.fragments.PlayerFragment;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
+import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.google.firebase.firestore.Query;
 
@@ -157,6 +159,14 @@ public class SplashScreen extends AppCompatActivity {
             } else if (playlistType.equals(PLAYLIST_TYPE_DEVICE)) {
                 getSongList();
                 musicPlayer = MusicPlayer.getInstance(listMusicRecent);
+                Log.d(TAG, "onCreate: " + listMusicRecent);
+                musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+                startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                finish();
+            } else if (playlistType.equals(PLAYLIST_TYPE_RECENT_PLAYLIST)) {
+                musicPlayer = MusicPlayer.getInstance(
+                        (ArrayList<Music>) SongRecentDatabase.getInstance(SplashScreen.this).musicRecentDAO().getListSongRecent()
+                );
                 Log.d(TAG, "onCreate: " + listMusicRecent);
                 musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
                 startActivity(new Intent(SplashScreen.this, MainActivity.class));
