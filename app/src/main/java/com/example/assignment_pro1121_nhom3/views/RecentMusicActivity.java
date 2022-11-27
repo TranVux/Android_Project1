@@ -31,6 +31,7 @@ import android.widget.TextView;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.PlaylistInDeviceAdapter;
+import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
@@ -71,7 +72,8 @@ public class RecentMusicActivity extends AppCompatActivity implements View.OnCli
 
             @Override
             public void onMoreButtonClick(Music music) {
-
+                BottomSheet bottomSheet = BottomSheet.newInstance(music);
+                bottomSheet.show(getSupportFragmentManager(), "TAG");
             }
         });
         ArrayList<Music> recentSongList = (ArrayList<Music>) SongRecentDatabase.getInstance(RecentMusicActivity.this).musicRecentDAO().getListSongRecent();
