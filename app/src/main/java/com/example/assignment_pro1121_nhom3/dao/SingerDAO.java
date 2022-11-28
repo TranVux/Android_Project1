@@ -1,20 +1,12 @@
 package com.example.assignment_pro1121_nhom3.dao;
 
-import static java.util.Comparator.comparing;
-import static java.util.Comparator.comparingInt;
-import static java.util.stream.Collectors.collectingAndThen;
-import static java.util.stream.Collectors.toCollection;
-
-import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Singer;
-import com.example.assignment_pro1121_nhom3.utils.RemoveDuplicateArrayItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -25,7 +17,6 @@ import com.google.firebase.firestore.AggregateSource;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -33,12 +24,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class SingerDAO {
     private static final String TAG = SingerDAO.class.getName();
@@ -165,7 +151,7 @@ public class SingerDAO {
 
     }
 
-    public void getTopSinger(GetTopSinger getTopSinger, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
+    public synchronized void getTopSinger(GetTopSinger getTopSinger, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
         // viết tạm @@
         ArrayList<Singer> listSinger = new ArrayList<>();
         MusicDAO musicDAO = new MusicDAO();

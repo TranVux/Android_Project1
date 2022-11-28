@@ -13,7 +13,7 @@ public interface MusicRecentDAO {
     @Insert
     void insertSong(Music... music);
 
-    @Query("SELECT * FROM recent_songs_tb GROUP BY ID LIMIT 50")
+    @Query("SELECT * FROM recent_songs_tb GROUP BY ID LIMIT 100")
     List<Music> getListSongRecent();
 
     @Query("SELECT * FROM recent_songs_tb WHERE NAME LIKE :songName")
