@@ -275,7 +275,7 @@
                 android:layout_centerHorizontal="true"
                 android:elevation="2dp"
                 android:indeterminateDrawable="@drawable/style_progress_bar"
-                android:visibility="visible" />
+                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/textNotifyNonLogin"
