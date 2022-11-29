@@ -2,10 +2,8 @@ package com.example.assignment_pro1121_nhom3.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,8 +27,11 @@ import com.example.assignment_pro1121_nhom3.models.User;
 import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
+import com.facebook.FacebookAuthorizationException;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -49,7 +50,12 @@ import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.checkerframework.common.subtyping.qual.Bottom;
@@ -86,7 +92,6 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
                         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
                         handleSignInGGResult(task);
                     }
-                    mProgressBar.setVisibility(View.GONE);
                 }
             });
 
@@ -187,13 +192,18 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
 
     private void signInFB() {
         callbackManager = CallbackManager.Factory.create();
-        LoginManager.getInstance().logInWithReadPermissions(BottomSheetDialogLogin.this, callbackManager,
-                Arrays.asList("email", "public_profile"));
+        mProgressBar.setVisibility(View.VISIBLE);
+        if (AccessToken.getCurrentAccessToken() != null) {
+            LoginManager.getInstance().logOut();
+        }
+        LoginManager.getInstance().logInWithReadPermissions(BottomSheetDialogLogin.this,callbackManager,
+                Arrays.asList("email","public_profile"));
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "signInFB onSuccess");
                 handleFacebookAccessToken(loginResult.getAccessToken());
+
             }
 
             @Override
@@ -203,9 +213,49 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
 
             @Override
             public void onError(@NonNull FacebookException e) {
-                Log.d(TAG, e.getMessage());
+                Log.d(TAG,"signInFB onError" + e.getMessage());
+                if (e instanceof FacebookAuthorizationException) {
+                    if (AccessToken.getCurrentAccessToken() != null) {
+                        LoginManager.getInstance().logOut();
+                    }
+                }
             }
         });
+    }
+
+    private void getUserFacebookImageProfile(AccessToken accessToken) {
+        GraphRequest request = GraphRequest.newMeRequest(accessToken, new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+                try {
+                    String image = object.getJSONObject("picture").getJSONObject("data").getString("url");
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                            .setPhotoUri(Uri.parse(image))
+                            .build();
+                    if (user != null) {
+                        user.updateProfile(profileUpdates)
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Log.d(TAG, "User profile updated.");
+                                        }
+                                    }
+                                });
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "picture.width(200)");
+        request.setParameters(parameters);
+        request.executeAsync();
     }
 
     private void handleFacebookAccessToken(AccessToken token) {
@@ -218,11 +268,11 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            if (user != null) {
-                                // Toast.makeText(requireContext(), user.getDisplayName()+"",
-                                // Toast.LENGTH_SHORT).show();
+                            if(user!=null){
+//                                Toast.makeText(requireContext(), user.getDisplayName()+"", Toast.LENGTH_SHORT).show();
+                                getUserFacebookImageProfile(token);
                                 iOnUpdateUiUserFragmentListener.onUpdateUiCallback();
-                                addAccountToFirestore();
+                                //addAccountToFirestore();
                             }
                             bottomSheetDialog.dismiss();
                         } else {
@@ -255,20 +305,6 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
         }
     }
 
-    private void addAccountToFirestore() {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            String name = currentUser.getDisplayName();
-            String email = currentUser.getEmail();
-            String uid = currentUser.getUid();
-
-            long tsLong = System.currentTimeMillis() / 1000;
-            User user = new User(uid, name, email, null, tsLong, null, null);
-            userDAO = new UserDAO();
-            userDAO.addUserToFirestore(user);
-        }
-    }
-
     private void firebaseAuthWithGoogleAccount(GoogleSignInAccount account) {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -281,7 +317,7 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
                             if (user != null) {
                                 Log.d(TAG, "signInWithCredential:success  " + user.getDisplayName());
                                 iOnUpdateUiUserFragmentListener.onUpdateUiCallback();
-                                addAccountToFirestore();
+                                //addAccountToFirestore();
                             } else {
                                 Log.d(TAG, "signInWithCredential:success but cant get account ");
                             }
