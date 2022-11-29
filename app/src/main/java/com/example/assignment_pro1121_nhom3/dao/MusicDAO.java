@@ -1,5 +1,6 @@
 package com.example.assignment_pro1121_nhom3.dao;
 
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -9,6 +10,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.Query.Direction;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
