@@ -39,7 +39,7 @@
         android:layout_height="260dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/bg_temp_singer"
+        android:src="@drawable/placeholder_img"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -50,7 +50,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="36dp"
         android:fontFamily="@font/roboto_bold"
-        android:text="Sơn Tùng M-TP"
         android:textColor="@color/white"
         android:textSize="23sp"
         app:layout_constraintBottom_toBottomOf="@+id/singerThumbnail"

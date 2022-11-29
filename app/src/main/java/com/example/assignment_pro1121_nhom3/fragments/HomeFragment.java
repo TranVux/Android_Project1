@@ -277,7 +277,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
                     @Override
                     public void onSingerNameClick(String singerID) {
-                        Toast.makeText(requireContext(), singerID, Toast.LENGTH_SHORT).show();
+                        Intent singerDetailIntent = new Intent(requireContext(), DetailSingerActivity.class);
+                        singerDetailIntent.putExtra("singerID", singerID);
+                        startActivity(singerDetailIntent);
                     }
                 });
 

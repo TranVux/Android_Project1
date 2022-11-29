@@ -42,6 +42,7 @@ import com.bumptech.glide.Glide;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.MusicInPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
+import com.example.assignment_pro1121_nhom3.dao.SingerDAO;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
@@ -72,12 +73,14 @@ public class DetailSingerActivity extends AppCompatActivity {
     private MusicInPlaylistAdapter musicInPlaylistAdapter;
     private ArrayList<Music> listMusicOfSinger;
     private MusicDAO musicDAO;
+    private SingerDAO singerDAO;
     private Query nextQuery = null;
     private int amountOfQuery = 0;
     private long maxOfData = 0;
     private int currentQuery = 0;
     private int limitOfQuery = 20;
     private boolean isLoading = false;
+    Singer receiverSinger;
     public MusicPlayer musicPlayer = SplashScreen.musicPlayer;
 
 
@@ -104,103 +107,131 @@ public class DetailSingerActivity extends AppCompatActivity {
             }
         });
 
-        Singer receiverSinger = (Singer) getIntent().getSerializableExtra("singer");
-        if (receiverSinger != null) {
-            singerNameMain.setText(CapitalizeWord.CapitalizeWords(receiverSinger.getName()));
-            singerNameTopBar.setText(CapitalizeWord.CapitalizeWords(receiverSinger.getName()));
-            Glide.with(getApplicationContext())
-                    .load(receiverSinger.getAvtUrl())
-                    .centerCrop()
-                    .into(singerBg);
-            String tempDesc = receiverSinger.getDesc();
-            if (Objects.equals(tempDesc, "null")) {
-                tempDesc = "";
-            }
-            info.setText(tempDesc);
+        receiverSinger = (Singer) getIntent().getSerializableExtra("singer");
 
-            // lấy dữ liệu danh sách bài hát của ca sĩ hiện tại
-            musicDAO = new MusicDAO();
-            musicDAO.getCountDocumentMusic(new MusicDAO.GetCountDocument() {
+        if (receiverSinger == null) {
+            String receiverSingerID = getIntent().getStringExtra("singerID");
+            singerDAO = new SingerDAO();
+            singerDAO.getSinger(new IOnProgressBarStatusListener() {
                 @Override
-                public void onGetCountSuccess(long count) {
-                    maxOfData = count;
-                    Log.d(TAG, "onGetCountSuccess: " + count);
-                    if (maxOfData % limitOfQuery != 0) {
-                        amountOfQuery = (int) Math.round(Math.ceil(maxOfData / limitOfQuery)) + 1;
-                    } else {
-                        amountOfQuery = (int) (maxOfData / limitOfQuery);
-                    }
-                    Log.d(TAG, "onGetCountSuccess: " + " count: " + count + " limitQuery: " + limitOfQuery + " amount of query: " + amountOfQuery);
-                    getData(receiverSinger.getId());
+                public void beforeGetData() {
+
                 }
-            }, receiverSinger.getId());
 
-
-            playAll.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    navigateToPlayer(receiverSinger, 0);
+                public void afterGetData() {
+
+                }
+            }, receiverSingerID, new SingerDAO.ReadItemSinger() {
+                @Override
+                public void onReadItemSingerCallback(Singer singer) {
+                    receiverSinger = singer;
+                    handleLayoutSingerDetail();
                 }
             });
-
-            String finalTempDesc = tempDesc;
-            info.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    View dialogLayout = LayoutInflater.from(DetailSingerActivity.this).inflate(R.layout.layout_detail_desc_singer, null);
-                    MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(DetailSingerActivity.this);
-                    dialogBuilder.setView(dialogLayout);
-                    ImageView imageBlur, imageAvtSinger;
-                    TextView singerName, contentDesc;
-                    BlurView blurView;
-
-                    blurView = dialogLayout.findViewById(R.id.blurView);
-                    imageBlur = dialogLayout.findViewById(R.id.blurImage);
-                    imageAvtSinger = dialogLayout.findViewById(R.id.imageSinger);
-                    singerName = dialogLayout.findViewById(R.id.singerName);
-                    contentDesc = dialogLayout.findViewById(R.id.contentDesc);
-
-                    blurBackgroundFragment(blurView);
-                    Glide.with(DetailSingerActivity.this).load(receiverSinger.getAvtUrl()).error(R.drawable.fallback_img)
-                            .into(imageBlur);
-                    Glide.with(DetailSingerActivity.this).load(receiverSinger.getAvtUrl()).error(R.drawable.fallback_img)
-                            .into(imageAvtSinger);
-                    singerName.setText(receiverSinger.getName());
-                    contentDesc.setText(finalTempDesc);
-                    Dialog dialog = dialogBuilder.create();
-                    dialog.show();
-                }
-            });
-
-            // xử lý danh sách nhạc của ca sĩ
-            musicInPlaylistAdapter = new MusicInPlaylistAdapter(listMusicOfSinger, DetailSingerActivity.this, new ItemEvent.MusicItemInPlayListEvent() {
-                @Override
-                public void onItemClick(int index) {
-                    navigateToPlayer(receiverSinger, index);
-                }
-
-                @Override
-                public void onMoreClick(Music music) {
-                    BottomSheet bottomSheet = BottomSheet.newInstance(music);
-                    bottomSheet.show(getSupportFragmentManager(), "TAG");
-                }
-            });
-            LinearLayoutManager manager = new LinearLayoutManager(DetailSingerActivity.this);
-            rclMusicSuggest.setLayoutManager(manager);
-            rclMusicSuggest.setAdapter(musicInPlaylistAdapter);
-
-            // xử lý load more cho recyclerview
-            btnLoadMore.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (!isLoading) {
-                        getData(receiverSinger.getId());
-                        isLoading = true;
-                    }
-                }
-            });
+        } else {
+            handleLayoutSingerDetail();
         }
 
+
+    }
+
+    public void handleLayoutSingerDetail() {
+        singerNameMain.setText(CapitalizeWord.CapitalizeWords(receiverSinger.getName()));
+        singerNameTopBar.setText(CapitalizeWord.CapitalizeWords(receiverSinger.getName()));
+        Glide.with(getApplicationContext())
+                .load(receiverSinger.getAvtUrl())
+                .centerCrop()
+                .into(singerBg);
+        String tempDesc = receiverSinger.getDesc();
+        if (Objects.equals(tempDesc, "null")) {
+            tempDesc = "";
+        } else {
+
+        }
+        info.setText(tempDesc);
+
+        // lấy dữ liệu danh sách bài hát của ca sĩ hiện tại
+        musicDAO = new MusicDAO();
+        musicDAO.getCountDocumentMusic(new MusicDAO.GetCountDocument() {
+            @Override
+            public void onGetCountSuccess(long count) {
+                maxOfData = count;
+                Log.d(TAG, "onGetCountSuccess: " + count);
+                if (maxOfData % limitOfQuery != 0) {
+                    amountOfQuery = (int) Math.round(Math.ceil(maxOfData / limitOfQuery)) + 1;
+                } else {
+                    amountOfQuery = (int) (maxOfData / limitOfQuery);
+                }
+                Log.d(TAG, "onGetCountSuccess: " + " count: " + count + " limitQuery: " + limitOfQuery + " amount of query: " + amountOfQuery);
+                getData(receiverSinger.getId());
+            }
+        }, receiverSinger.getId());
+
+
+        playAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                navigateToPlayer(receiverSinger, 0);
+            }
+        });
+
+        String finalTempDesc = tempDesc;
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View dialogLayout = LayoutInflater.from(DetailSingerActivity.this).inflate(R.layout.layout_detail_desc_singer, null);
+                MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(DetailSingerActivity.this);
+                dialogBuilder.setView(dialogLayout);
+                ImageView imageBlur, imageAvtSinger;
+                TextView singerName, contentDesc;
+                BlurView blurView;
+
+                blurView = dialogLayout.findViewById(R.id.blurView);
+                imageBlur = dialogLayout.findViewById(R.id.blurImage);
+                imageAvtSinger = dialogLayout.findViewById(R.id.imageSinger);
+                singerName = dialogLayout.findViewById(R.id.singerName);
+                contentDesc = dialogLayout.findViewById(R.id.contentDesc);
+
+                blurBackgroundFragment(blurView);
+                Glide.with(DetailSingerActivity.this).load(receiverSinger.getAvtUrl()).placeholder(R.drawable.placeholder_img).error(R.drawable.fallback_img)
+                        .into(imageBlur);
+                Glide.with(DetailSingerActivity.this).load(receiverSinger.getAvtUrl()).placeholder(R.drawable.placeholder_img).error(R.drawable.fallback_img)
+                        .into(imageAvtSinger);
+                singerName.setText(receiverSinger.getName());
+                contentDesc.setText(finalTempDesc);
+                Dialog dialog = dialogBuilder.create();
+                dialog.show();
+            }
+        });
+
+        // xử lý danh sách nhạc của ca sĩ
+        musicInPlaylistAdapter = new MusicInPlaylistAdapter(listMusicOfSinger, DetailSingerActivity.this, new ItemEvent.MusicItemInPlayListEvent() {
+            @Override
+            public void onItemClick(int index) {
+                navigateToPlayer(receiverSinger, index);
+            }
+
+            @Override
+            public void onMoreClick(Music music) {
+                BottomSheet bottomSheet = BottomSheet.newInstance(music);
+                bottomSheet.show(getSupportFragmentManager(), "TAG");
+            }
+        });
+        LinearLayoutManager manager = new LinearLayoutManager(DetailSingerActivity.this);
+        rclMusicSuggest.setLayoutManager(manager);
+        rclMusicSuggest.setAdapter(musicInPlaylistAdapter);
+
+        // xử lý load more cho recyclerview
+        btnLoadMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!isLoading) {
+                    getData(receiverSinger.getId());
+                    isLoading = true;
+                }
+            }
+        });
     }
 
     public void navigateToPlayer(Singer receiverSinger, int position) {
