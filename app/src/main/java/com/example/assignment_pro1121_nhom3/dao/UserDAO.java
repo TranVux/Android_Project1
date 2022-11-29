@@ -3,16 +3,20 @@ package com.example.assignment_pro1121_nhom3.dao;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
+import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldPath;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +26,17 @@ public class UserDAO {
     private static final String TAG = UserDAO.class.getName();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    public void checkUserAlreadyHaveOnFirebase(String uid,IsAlreadyLoginOnFirebase isAlreadyLoginOnFirebase){
+        db.collection("users").document(uid)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        DocumentSnapshot documentSnapshot = task.getResult();
+                        isAlreadyLoginOnFirebase.onAlreadyLoginResult(documentSnapshot.exists());
+                    }
+                });
+    }
+
     public void addUserToFirestore(User user) {
         if (user != null) {
             Map<String, Object> data = new HashMap<>();
@@ -30,7 +45,7 @@ public class UserDAO {
             data.put("email", user.getEmail());
             data.put("isDelete", user.isDelete());
             data.put("token", user.getToken());
-
+            data.put("playlistsID",user.getPlaylistsID());
             db.collection("users").document(user.getId())
                     .set(data)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -70,10 +85,14 @@ public class UserDAO {
             }
         });
     }
-
+    
     public interface GetPlayList {
         void onGetPlaylistSuccess(ArrayList<String> result);
 
         void onGetPlaylistFailure();
+    }
+
+    public interface IsAlreadyLoginOnFirebase {
+        void onAlreadyLoginResult(boolean result);
     }
 }

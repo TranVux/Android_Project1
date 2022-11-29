@@ -262,8 +262,20 @@
                 android:layout_below="@id/titleLayout"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginTop="10dp"
-                android:visibility="gone" />
+                android:visibility="visible" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignTop="@+id/playlistMusic"
+                android:layout_centerVertical="true"
+                android:layout_alignBottom="@+id/playlistMusic"
+                android:layout_marginBottom="70dp"
+                android:layout_centerHorizontal="true"
+                android:elevation="2dp"
+                android:indeterminateDrawable="@drawable/style_progress_bar"
+                android:visibility="visible" />
 
             <TextView
                 android:id="@+id/textNotifyNonLogin"

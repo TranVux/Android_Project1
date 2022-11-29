@@ -55,6 +55,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.checkerframework.common.subtyping.qual.Bottom;
@@ -271,7 +272,7 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
 //                                Toast.makeText(requireContext(), user.getDisplayName()+"", Toast.LENGTH_SHORT).show();
                                 getUserFacebookImageProfile(token);
                                 iOnUpdateUiUserFragmentListener.onUpdateUiCallback();
-                                addAccountToFirestore();
+                                //addAccountToFirestore();
                             }
                             bottomSheetDialog.dismiss();
                         } else {
@@ -304,20 +305,6 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
         }
     }
 
-    private void addAccountToFirestore() {
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            String name = currentUser.getDisplayName();
-            String email = currentUser.getEmail();
-            String uid = currentUser.getUid();
-
-            long tsLong = System.currentTimeMillis() / 1000;
-            User user = new User(uid, name, email, null, tsLong, null, null);
-            userDAO = new UserDAO();
-            userDAO.addUserToFirestore(user);
-        }
-    }
-
     private void firebaseAuthWithGoogleAccount(GoogleSignInAccount account) {
         AuthCredential credential = GoogleAuthProvider.getCredential(account.getIdToken(), null);
         mAuth.signInWithCredential(credential)
@@ -330,7 +317,7 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
                             if (user != null) {
                                 Log.d(TAG, "signInWithCredential:success  " + user.getDisplayName());
                                 iOnUpdateUiUserFragmentListener.onUpdateUiCallback();
-                                addAccountToFirestore();
+                                //addAccountToFirestore();
                             } else {
                                 Log.d(TAG, "signInWithCredential:success but cant get account ");
                             }

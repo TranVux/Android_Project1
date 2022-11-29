@@ -16,6 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -29,14 +31,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.assignment_pro1121_nhom3.R;
+import com.example.assignment_pro1121_nhom3.adapters.UserPlayListAdapter;
+import com.example.assignment_pro1121_nhom3.dao.PlaylistDAO;
 import com.example.assignment_pro1121_nhom3.dao.UserDAO;
 import com.example.assignment_pro1121_nhom3.interfaces.HandleChangeColorBottomNavigation;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.models.Playlist;
+import com.example.assignment_pro1121_nhom3.models.User;
 import com.example.assignment_pro1121_nhom3.views.MusicInDeviceActivity;
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
@@ -67,8 +74,10 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
     TextView btnLogin, amountLocalSong;
     UserDAO userDAO;
+    PlaylistDAO playlistDAO;
     FirebaseUser currentUser;
-
+    RecyclerView mRecyclerView;
+    ProgressBar mProgressBar;
 
     public UserFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
         this.handleChangeColorBottomNavigation = handleChangeColorBottomNavigation;
@@ -114,6 +123,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
         userDAO = new UserDAO();
+        playlistDAO = new PlaylistDAO();
         init(view);
 
         if (!checkPermission()) {
@@ -129,12 +139,23 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     public void onStart() {
         super.onStart();
         checkLogin();
-        checkPlaylist();
     }
+
 
     public void checkLogin() {
         currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
+            userDAO.checkUserAlreadyHaveOnFirebase(currentUser.getUid(), new UserDAO.IsAlreadyLoginOnFirebase() {
+                @Override
+                public void onAlreadyLoginResult(boolean result) {
+                    if(!result){
+                        addAccountToFirestore();
+                        notifyEmptyList.setVisibility(View.VISIBLE);
+                    }else {
+                        checkPlaylist();
+                    }
+                }
+            });
             if (layoutNonLogin.getVisibility() == View.VISIBLE) {
                 layoutNonLogin.setVisibility(View.GONE);
                 layoutLogin.setVisibility(View.VISIBLE);
@@ -153,40 +174,56 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                     Log.e(TAG, "onStart getContext is null");
                 }
                 layoutLoginUserName.setText(currentUser.getDisplayName());
+
             }
         } else if (layoutNonLogin.getVisibility() == View.GONE) {
             layoutNonLogin.setVisibility(View.VISIBLE);
             layoutLogin.setVisibility(View.GONE);
             textNotifyNonLogin.setVisibility(View.VISIBLE);
         }
-        checkPlaylist();
+
+    }
+
+    private void addAccountToFirestore() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String name = currentUser.getDisplayName();
+            String email = currentUser.getEmail();
+            String uid = currentUser.getUid();
+            long tsLong = System.currentTimeMillis() / 1000;
+            User user = new User(uid, name, email, null, tsLong, new ArrayList<>(), null);
+            userDAO = new UserDAO();
+            userDAO.addUserToFirestore(user);
+        }
     }
 
     public void checkPlaylist() {
         if (currentUser != null) {
-            userDAO.getPlaylist(currentUser.getUid(), new IOnProgressBarStatusListener() {
+            playlistDAO.getAllDataPlaylist(currentUser.getUid(), new IOnProgressBarStatusListener() {
                 @Override
                 public void beforeGetData() {
-
+                    mProgressBar.setVisibility(View.VISIBLE);
                 }
 
                 @Override
                 public void afterGetData() {
-
+                    mProgressBar.setVisibility(View.GONE);
                 }
-            }, new UserDAO.GetPlayList() {
+            }, new PlaylistDAO.ReadAllDataPlaylistListener() {
                 @Override
-                public void onGetPlaylistSuccess(ArrayList<String> result) {
-                    if (result == null || result.size() == 0) {
+                public void onReadAllDataPlaylistCallback(ArrayList<Playlist> list) {
+                    Log.d(TAG,"onReadAllDataPlaylistCallback: " + list.size()+"");
+                    if (list.size() == 0) {
                         notifyEmptyList.setVisibility(View.VISIBLE);
                     } else {
                         notifyEmptyList.setVisibility(View.GONE);
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        UserPlayListAdapter userPlayListAdapter = new UserPlayListAdapter(list);
+                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
+                        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                        mRecyclerView.setLayoutManager(linearLayoutManager);
+                        mRecyclerView.setAdapter(userPlayListAdapter);
                     }
-                }
-
-                @Override
-                public void onGetPlaylistFailure() {
-
                 }
             });
         }
@@ -204,6 +241,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         recentButton = view.findViewById(R.id.recentButton);
         deviceButton = view.findViewById(R.id.deviceButton);
         amountLocalSong = view.findViewById(R.id.amountLocalSong);
+        mRecyclerView = view.findViewById(R.id.playlistMusic);
+        mProgressBar = view.findViewById(R.id.progressBar);
     }
 
     public void setOnClick() {
@@ -268,6 +307,11 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         signOutUserFacebook();
         signOutUserFirebase();
         checkLogin();
+        updateUiLogout();
+    }
+
+    private void updateUiLogout() {
+        mRecyclerView.setVisibility(View.GONE);
         notifyEmptyList.setVisibility(View.GONE);
     }
 
