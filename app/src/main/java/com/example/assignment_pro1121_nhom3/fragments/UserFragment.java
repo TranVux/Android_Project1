@@ -145,17 +145,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     public void checkLogin() {
         currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            userDAO.checkUserAlreadyHaveOnFirebase(currentUser.getUid(), new UserDAO.IsAlreadyLoginOnFirebase() {
-                @Override
-                public void onAlreadyLoginResult(boolean result) {
-                    if(!result){
-                        addAccountToFirestore();
-                        notifyEmptyList.setVisibility(View.VISIBLE);
-                    }else {
-                        checkPlaylist();
-                    }
-                }
-            });
             if (layoutNonLogin.getVisibility() == View.VISIBLE) {
                 layoutNonLogin.setVisibility(View.GONE);
                 layoutLogin.setVisibility(View.VISIBLE);
@@ -174,7 +163,17 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                     Log.e(TAG, "onStart getContext is null");
                 }
                 layoutLoginUserName.setText(currentUser.getDisplayName());
-
+                userDAO.checkUserAlreadyHaveOnFirebase(currentUser.getUid(), new UserDAO.IsAlreadyLoginOnFirebase() {
+                    @Override
+                    public void onAlreadyLoginResult(boolean result) {
+                        if(!result){
+                            addAccountToFirestore();
+                            notifyEmptyList.setVisibility(View.VISIBLE);
+                        }else {
+                            checkPlaylist();
+                        }
+                    }
+                });
             }
         } else if (layoutNonLogin.getVisibility() == View.GONE) {
             layoutNonLogin.setVisibility(View.VISIBLE);

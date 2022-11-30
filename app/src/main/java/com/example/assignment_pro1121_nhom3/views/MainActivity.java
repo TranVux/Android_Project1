@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         db = FirebaseFirestore.getInstance();
         FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true)
+                .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
                 .build();
         db.setFirestoreSettings(settings);
 
