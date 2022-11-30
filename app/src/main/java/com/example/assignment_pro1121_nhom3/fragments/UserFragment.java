@@ -49,6 +49,7 @@ import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.models.User;
+import com.example.assignment_pro1121_nhom3.views.DetailPlaylistActivity;
 import com.example.assignment_pro1121_nhom3.views.MusicInDeviceActivity;
 import com.example.assignment_pro1121_nhom3.views.RecentMusicActivity;
 import com.facebook.login.LoginManager;
@@ -259,7 +260,10 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         userPlayListAdapter = new UserPlayListAdapter(tempPlaylist, new UserPlayListAdapter.PlaylistEvent() {
             @Override
             public void onItemClick(Playlist playlist) {
-                Toast.makeText(requireContext(), playlist.getName(), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(requireContext(), playlist.getName(), Toast.LENGTH_SHORT).show();
+                Intent detailPlaylistActivity = new Intent(requireContext(), DetailPlaylistActivity.class);
+                detailPlaylistActivity.putExtra("playlist", playlist);
+                startActivity(detailPlaylistActivity);
             }
         });
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());

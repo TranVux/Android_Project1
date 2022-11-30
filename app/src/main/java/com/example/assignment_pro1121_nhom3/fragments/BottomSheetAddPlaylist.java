@@ -194,10 +194,7 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
                         @Override
                         public void onAddItemMusicInPlaylistSuccessCallback() {
                             Toast.makeText(requireContext(), "Thêm thành công", Toast.LENGTH_SHORT).show();
-//                            ArrayList<String> lisMusicsIdTemp = playlist.getMusics();
-//                            lisMusicsIdTemp.add(currentMusic.getId());
-
-                            listItemPlaylist.get(listItemPlaylist.indexOf(playlist)).getMusics().add(currentMusic.getId());
+//                            listItemPlaylist.get(listItemPlaylist.indexOf(playlist)).getMusics().add(currentMusic.getId());
 
                             if (listItemPlaylist.get(listItemPlaylist.indexOf(playlist)).getMusics().size() == 1) {
                                 musicDAO.getMusic(new IOnProgressBarStatusListener() {
@@ -217,9 +214,23 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
                                     }
                                 });
                             }
+                            playlistDAO.getAllDataPlaylist(user.getUid(), new IOnProgressBarStatusListener() {
+                                @Override
+                                public void beforeGetData() {
+                                }
+
+                                @Override
+                                public void afterGetData() {
+                                }
+                            }, new PlaylistDAO.ReadAllDataPlaylistListener() {
+                                @Override
+                                public void onReadAllDataPlaylistCallback(ArrayList<Playlist> list) {
+                                    adapterAddMusicToPlaylist.setList(list);
+                                }
+                            });
 //                            playlist.setMusics(lisMusicsIdTemp);
 //                            adapterAddMusicToPlaylist.setList(listItemPlaylist);
-                            adapterAddMusicToPlaylist.notifyDataSetChanged();
+//                            adapterAddMusicToPlaylist.notifyDataSetChanged();
                         }
 
                         @Override
