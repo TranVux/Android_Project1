@@ -281,7 +281,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
             }
             case R.id.btnAddToPlaylist: {
                 BottomSheet bottomSheet = BottomSheet.newInstance(musicPlayer.getCurrentSong());
-                bottomSheet.show(getParentFragmentManager(), TAG);
+                bottomSheet.show(getParentFragmentManager(), "BottomSheetFragmentPlayer");
                 break;
             }
             case R.id.btnSkipToNext:

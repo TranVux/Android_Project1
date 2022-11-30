@@ -2,7 +2,9 @@ package com.example.assignment_pro1121_nhom3.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -72,8 +74,8 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
     RelativeLayout signInButtonGG, signInButtonFB;
     BottomSheetDialog bottomSheetDialog;
     IOnUpdateUiUserFragmentListener iOnUpdateUiUserFragmentListener;
-    UserDAO userDAO;
     ProgressBar mProgressBar;
+    SharedPreferences userSharePreferences;
 
     public static BottomSheetDialogLogin newInstance(IOnUpdateUiUserFragmentListener iOnUpdateUiUserFragmentListener) {
         return new BottomSheetDialogLogin(iOnUpdateUiUserFragmentListener);
@@ -99,6 +101,8 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStyle(BottomSheetDialogFragment.STYLE_NORMAL, R.style.CustomBottomSheetDialogTheme);
+
+        userSharePreferences = requireContext().getSharedPreferences(Constants.KEY_SHARE_PREFERENCES_USER, Context.MODE_PRIVATE);
         mAuth = FirebaseAuth.getInstance();
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -196,8 +200,8 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
         if (AccessToken.getCurrentAccessToken() != null) {
             LoginManager.getInstance().logOut();
         }
-        LoginManager.getInstance().logInWithReadPermissions(BottomSheetDialogLogin.this,callbackManager,
-                Arrays.asList("email","public_profile"));
+        LoginManager.getInstance().logInWithReadPermissions(BottomSheetDialogLogin.this, callbackManager,
+                Arrays.asList("email", "public_profile"));
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -213,7 +217,7 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
 
             @Override
             public void onError(@NonNull FacebookException e) {
-                Log.d(TAG,"signInFB onError" + e.getMessage());
+                Log.d(TAG, "signInFB onError" + e.getMessage());
                 if (e instanceof FacebookAuthorizationException) {
                     if (AccessToken.getCurrentAccessToken() != null) {
                         LoginManager.getInstance().logOut();
@@ -268,10 +272,16 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            if(user!=null){
+                            if (user != null) {
 //                                Toast.makeText(requireContext(), user.getDisplayName()+"", Toast.LENGTH_SHORT).show();
                                 getUserFacebookImageProfile(token);
                                 iOnUpdateUiUserFragmentListener.onUpdateUiCallback();
+
+                                SharedPreferences.Editor editor = userSharePreferences.edit();
+                                editor.putString(Constants.KEY_CURRENT_USER_NAME, user.getDisplayName());
+                                editor.putString(Constants.KEY_CURRENT_USER_ID, user.getUid());
+                                editor.putBoolean(Constants.kEY_IS_LOGIN, true);
+                                editor.apply();
                                 //addAccountToFirestore();
                             }
                             bottomSheetDialog.dismiss();
@@ -317,7 +327,14 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
                             if (user != null) {
                                 Log.d(TAG, "signInWithCredential:success  " + user.getDisplayName());
                                 iOnUpdateUiUserFragmentListener.onUpdateUiCallback();
-                                //addAccountToFirestore();
+
+                                // Lưu vào sharePerference
+                                SharedPreferences.Editor editor = userSharePreferences.edit();
+                                editor.putString(Constants.KEY_CURRENT_USER_NAME, user.getDisplayName());
+                                editor.putString(Constants.KEY_CURRENT_USER_ID, user.getUid());
+                                editor.putBoolean(Constants.kEY_IS_LOGIN, true);
+                                editor.apply();
+
                             } else {
                                 Log.d(TAG, "signInWithCredential:success but cant get account ");
                             }

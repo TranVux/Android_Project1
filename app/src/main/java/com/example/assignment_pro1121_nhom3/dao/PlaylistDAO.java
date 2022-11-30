@@ -38,7 +38,7 @@ public class PlaylistDAO {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                           // Log.d(TAG, document.getId() + " => " + document.getData());
+                            // Log.d(TAG, document.getId() + " => " + document.getData());
                             Map<String, Object> map = document.getData();
                             String id = document.getId();
                             String name = (String) map.get("name");
@@ -50,7 +50,7 @@ public class PlaylistDAO {
                             Playlist playlist = new Playlist(id, name, musicsID, modifyDate, creationDate, urlThumbnail, creatorName);
                             list.add(playlist);
                         }
-                     //   Log.d("finish getting documents", list.size() + "");
+                        //   Log.d("finish getting documents", list.size() + "");
                         readAllDataPlaylistListener.onReadAllDataPlaylistCallback(list);
                         iOnProgressBarStatusListener.afterGetData();
                     } else {
@@ -71,7 +71,7 @@ public class PlaylistDAO {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                               // Log.d(TAG, document.getId() + " => " + document.getData());
+                                // Log.d(TAG, document.getId() + " => " + document.getData());
                                 Map<String, Object> map = document.getData();
                                 String id = document.getId();
                                 String name = (String) map.get("name");
@@ -84,7 +84,7 @@ public class PlaylistDAO {
                                 Playlist playlist = new Playlist(id, name, musicsID, modifyDate, creationDate, urlThumbnail, creatorName);
                                 list.add(playlist);
                             }
-                          //  Log.d("finish getting documents", list.size() + "");
+                            //  Log.d("finish getting documents", list.size() + "");
                             getRecentPublishPlaylist.onGetRecentPublishPlaylistSuccess(list);
                             iOnProgressBarStatusListener.afterGetData();
                         } else {
@@ -107,7 +107,7 @@ public class PlaylistDAO {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                               // Log.d(TAG, document.getId() + " => " + document.getData());
+                                // Log.d(TAG, document.getId() + " => " + document.getData());
                                 Map<String, Object> map = document.getData();
                                 String id = document.getId();
                                 String name = (String) map.get("name");
@@ -120,7 +120,7 @@ public class PlaylistDAO {
                                 Playlist playlist = new Playlist(id, name, musicsID, modifyDate, creationDate, urlThumbnail, creatorName);
                                 list.add(playlist);
                             }
-                           // Log.d("finish getting documents", list.size() + "");
+                            // Log.d("finish getting documents", list.size() + "");
                             getInitMusicPlayList.onSuccessGetInitPlayList(list);
                             iOnProgressBarStatusListener.afterGetData();
                         } else {
@@ -141,12 +141,12 @@ public class PlaylistDAO {
                     DocumentSnapshot snapshot = task.getResult();
                     ArrayList<String> playlistsID = (ArrayList<String>) snapshot.get("playlistsID");
                     if (playlistsID != null) {
-                        if (playlistsID.size()>0) {
+                        if (playlistsID.size() > 0) {
                             final int[] countEvents = {0};
                             for (String playlistId : playlistsID) {
                                 //id có chứa khoảng trắng??
                                 playlistId = playlistId.replaceAll(" ", "");
-                               // Log.d(TAG, "playlistId:" + playlistId);
+                                // Log.d(TAG, "playlistId:" + playlistId);
                                 DocumentReference docRef = db.collection("playlists").document(playlistId);
                                 String finalPlaylistId = playlistId;
                                 docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
@@ -157,7 +157,7 @@ public class PlaylistDAO {
                                             return;
                                         }
                                         if (value != null && value.exists()) {
-                                      //  Log.d(TAG, "Current data: " + value.getData());
+                                            //  Log.d(TAG, "Current data: " + value.getData());
                                             Map<String, Object> map = value.getData();
                                             if (map != null) {
                                                 String name = (String) map.get("name");
@@ -172,7 +172,7 @@ public class PlaylistDAO {
 //                                                Log.d(TAG, "mocreatorNamedifyDate: " + creatorName + "");
 //                                                Log.d(TAG, "musicsID: " + musicsID.size() + "");
                                                 Playlist playlist
-                                                         = new Playlist();
+                                                        = new Playlist();
                                                 playlist.setId(finalPlaylistId);
                                                 playlist.setCreationDate(creationDate);
                                                 playlist.setModifyDate(modifyDate);
@@ -182,11 +182,11 @@ public class PlaylistDAO {
                                                 playlist.setCreatorName(creatorName);
                                                 playlistArrayList.add(playlist);
                                                 countEvents[0]++;
-                                                if(countEvents[0] == playlistsID.size()){
+                                                if (countEvents[0] == playlistsID.size()) {
                                                     iOnProgressBarStatusListener.afterGetData();
                                                     readAllDataPlaylistListener.onReadAllDataPlaylistCallback(playlistArrayList);
                                                 }
-                                              //  Log.d(TAG, "playlistArrayList before size: " + playlistArrayList.size());
+                                                //  Log.d(TAG, "playlistArrayList before size: " + playlistArrayList.size());
                                             } else {
                                                 Log.d(TAG, "Current data:null");
                                             }
@@ -194,7 +194,7 @@ public class PlaylistDAO {
                                     }
                                 });
                             }
-                        }else {
+                        } else {
                             iOnProgressBarStatusListener.afterGetData();
                             readAllDataPlaylistListener.onReadAllDataPlaylistCallback(playlistArrayList);
                         }
@@ -215,7 +215,7 @@ public class PlaylistDAO {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                    //    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        //    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         Map<String, Object> map = document.getData();
                         if (map != null) {
                             String name = (String) map.get("name");
@@ -392,6 +392,22 @@ public class PlaylistDAO {
                     public void onFailure(@NonNull Exception e) {
                         Log.w(TAG, "Error updating document", e);
                         renamePlaylistListener.onRenamePlaylistFailureCallback(e);
+                    }
+                });
+    }
+
+    public void setThumbnailPlaylist(String playlistID, String thumbnailUrl) {
+        db.collection("playlists").document(playlistID)
+                .update("urlThumbnail", thumbnailUrl)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Log.d(TAG, "onFailure: thay ảnh thành công");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d(TAG, "onFailure: thay ảnh thất bại");
                     }
                 });
     }

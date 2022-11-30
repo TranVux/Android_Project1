@@ -46,4 +46,7 @@ public class Constants {
 
     public static final String KEY_SHARE_PREFERENCES_USER = "KEY_SHARE_PREFERENCES_USER";
     public static final String kEY_IS_LOGIN = "kEY_IS_LOGIN";
+    public static final String KEY_CURRENT_USER_NAME = "KEY_CURRENT_USER_NAME";
+    public static final String KEY_CURRENT_USER_ID = "KEY_CURRENT_USER_ID";
+
 }

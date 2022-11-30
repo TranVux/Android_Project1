@@ -3,8 +3,10 @@ package com.example.assignment_pro1121_nhom3.fragments;
 import android.Manifest;
 import android.annotation.SuppressLint;
 
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -29,10 +31,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.assignment_pro1121_nhom3.R;
@@ -47,7 +51,6 @@ import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.models.User;
 import com.example.assignment_pro1121_nhom3.views.MusicInDeviceActivity;
 import com.example.assignment_pro1121_nhom3.views.RecentMusicActivity;
-import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -56,9 +59,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 
+import java.time.Instant;
 import java.util.ArrayList;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -69,7 +75,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     LinearLayout layoutNonLogin, layoutLogin;
     CircleImageView layoutLoginUserAvt;
     LinearLayout notifyEmptyList, recentButton, deviceButton;
-    ImageView btnSetting;
+    ImageView btnSetting, btnAddPlaylist;
     // xử lý đổi màu bottom navigation
     HandleChangeColorBottomNavigation handleChangeColorBottomNavigation;
     TextView btnLogin, amountLocalSong, layoutLoginUserName, textNotifyNonLogin, amountRecentSong;
@@ -78,6 +84,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     FirebaseUser currentUser;
     RecyclerView mRecyclerView;
     ProgressBar mProgressBar;
+    UserPlayListAdapter userPlayListAdapter;
+    ArrayList<Playlist> tempPlaylist;
 
     public UserFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
         this.handleChangeColorBottomNavigation = handleChangeColorBottomNavigation;
@@ -90,7 +98,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_user, container, false);
     }
 
@@ -223,11 +231,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                     } else {
                         notifyEmptyList.setVisibility(View.GONE);
                         mRecyclerView.setVisibility(View.VISIBLE);
-                        UserPlayListAdapter userPlayListAdapter = new UserPlayListAdapter(list);
-                        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
-                        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                        mRecyclerView.setLayoutManager(linearLayoutManager);
-                        mRecyclerView.setAdapter(userPlayListAdapter);
+                        userPlayListAdapter.setPlaylists(list);
                     }
                 }
             });
@@ -249,6 +253,19 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         amountRecentSong = view.findViewById(R.id.amountRecentSong);
         mRecyclerView = view.findViewById(R.id.playlistMusic);
         mProgressBar = view.findViewById(R.id.progressBar);
+        btnAddPlaylist = view.findViewById(R.id.btnAddPlaylist);
+
+        tempPlaylist = new ArrayList<>();
+        userPlayListAdapter = new UserPlayListAdapter(tempPlaylist, new UserPlayListAdapter.PlaylistEvent() {
+            @Override
+            public void onItemClick(Playlist playlist) {
+                Toast.makeText(requireContext(), playlist.getName(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
+        mRecyclerView.setAdapter(userPlayListAdapter);
     }
 
     public void setOnClick() {
@@ -256,6 +273,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         btnSetting.setOnClickListener(this);
         recentButton.setOnClickListener(this);
         deviceButton.setOnClickListener(this);
+        btnAddPlaylist.setOnClickListener(this);
     }
 
     @SuppressLint("NonConstantResourceId")
@@ -284,9 +302,119 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 startActivity(new Intent(requireContext(), RecentMusicActivity.class));
                 break;
             }
+            case R.id.btnAddPlaylist: {
+                FirebaseUser user = mAuth.getCurrentUser();
+                if (user != null) {
+                    addPLayList();
+                } else {
+                    BottomSheetDialogLogin bottomSheetDialogLogin = BottomSheetDialogLogin
+                            .newInstance(new BottomSheetDialogLogin.IOnUpdateUiUserFragmentListener() {
+                                @Override
+                                public void onUpdateUiCallback() {
+                                    checkLogin();
+                                }
+                            });
+                    bottomSheetDialogLogin.show(getParentFragmentManager(), "BottomSheetLogin");
+                    Toast.makeText(requireContext(), "Vui lòng đăng nhập để thêm playlist!", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            }
             default:
                 break;
         }
+    }
+
+    public void addPLayList() {
+        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(requireContext());
+        View layoutAddPlaylist = LayoutInflater.from(requireContext()).inflate(R.layout.layout_add_playlist, null);
+        dialogBuilder.setView(layoutAddPlaylist);
+
+        // ánh xạ view
+        TextView btnSave, btnClose;
+        EditText edtName = layoutAddPlaylist.findViewById(R.id.edtName);
+        btnClose = layoutAddPlaylist.findViewById(R.id.btnClose);
+        btnSave = layoutAddPlaylist.findViewById(R.id.btnSave);
+        //
+
+        // set builder cho dialog
+        Dialog dialog = dialogBuilder.create();
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ArrayList<String> emptyList = new ArrayList<>();
+                Instant instant = Instant.now();
+                //tên của người tạo là lấy tên của tài khoản hiện tại
+                // nếu chưa đăng nhập thì ko đc tạo playlist
+                FirebaseUser user = mAuth.getCurrentUser();
+                assert user != null;
+                Playlist playlistTemp = new Playlist(null, edtName.getText().toString(), emptyList, instant.getEpochSecond(), instant.getEpochSecond(), "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Images%2Fgenres%2Ffallback_img.png?alt=media&token=80e07c67-870a-43ae-aa45-86a62d75d13b", user.getDisplayName());
+
+                if (edtName.getText().toString().isEmpty()) {
+                    Toast.makeText(requireContext(), "Không để trống tên playlist!", Toast.LENGTH_SHORT).show();
+                } else {
+                    playlistDAO.addPlaylist(new IOnProgressBarStatusListener() {
+                        @Override
+                        public void beforeGetData() {
+
+                        }
+
+                        @Override
+                        public void afterGetData() {
+
+                        }
+                    }, playlistTemp, new PlaylistDAO.AddPlaylistListener() {
+                        @Override
+                        public void onAddPlaylistSuccessCallback(DocumentReference documentReference) {
+                            Toast.makeText(requireContext(), "Tạo thành công playlist " + edtName.getText().toString(), Toast.LENGTH_SHORT).show();
+                            playlistTemp.setId(documentReference.getId());
+                            tempPlaylist.add(playlistTemp);
+                            userPlayListAdapter.setPlaylists(tempPlaylist);
+                            if (notifyEmptyList.getVisibility() == View.VISIBLE) {
+                                notifyEmptyList.setVisibility(View.GONE);
+                            }
+                            dialog.dismiss();
+                            userDAO.addPlaylistForUser(currentUser.getUid(), playlistTemp.getId(), new IOnProgressBarStatusListener() {
+                                @Override
+                                public void beforeGetData() {
+
+                                }
+
+                                @Override
+                                public void afterGetData() {
+
+                                }
+                            }, new UserDAO.AddPlaylist() {
+                                @Override
+                                public void onAddPlaylistSuccess() {
+                                    Toast.makeText(requireContext(), "Tạo thành công " + playlistTemp.getName(), Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onAddPlaylistFailure() {
+                                    Log.d(TAG, "onAddPlaylistFailure: lỗi thêm playlist");
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onAddPlaylistFailureCallback(Exception e) {
+                            Log.d(TAG, "onAddPlaylistFailureCallback: có lõi nè ba");
+                        }
+                    });
+                }
+            }
+        });
+
+        // show dialog
+        dialog.show();
     }
 
     private void showPopupMenuSetting(ImageView btnSetting) {
