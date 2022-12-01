@@ -217,6 +217,7 @@ public class ChartActivity extends AppCompatActivity {
         barData.setValueTextColor(Color.WHITE);
 
         barChart.setData(barData);
+        barChart.invalidate();
     }
 
     public void setUpBarChart() {
