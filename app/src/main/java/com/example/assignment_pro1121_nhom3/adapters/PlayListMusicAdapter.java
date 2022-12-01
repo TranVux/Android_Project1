@@ -25,8 +25,8 @@ import java.util.ArrayList;
 
 public class PlayListMusicAdapter extends RecyclerView.Adapter<PlayListMusicAdapter.PlayListMusicAdapterViewHolder> {
     private ArrayList<Playlist> list;
-    private Context context;
-    private ItemEvent.PlaylistItemEvent itemEvent;
+    private final Context context;
+    private final ItemEvent.PlaylistItemEvent itemEvent;
 
     public PlayListMusicAdapter(ArrayList<Playlist> list, Context context, ItemEvent.PlaylistItemEvent itemEvent) {
         this.list = list;
@@ -40,7 +40,6 @@ public class PlayListMusicAdapter extends RecyclerView.Adapter<PlayListMusicAdap
         this.list = list;
         result.dispatchUpdatesTo(this);
     }
-
 
     @NonNull
     @Override

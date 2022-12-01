@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -131,10 +132,10 @@ public class PlaylistDAO {
                 });
     }
 
-    public void getAllDataPlaylist(String userId, IOnProgressBarStatusListener iOnProgressBarStatusListener, ReadAllDataPlaylistListener readAllDataPlaylistListener) {
+    public void getAllDataPlaylist(String userId,ReadAllDataPlaylistListener readAllDataPlaylistListener, IOnProgressBarStatusListener iOnProgressBarStatusListener ) {
         iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Playlist> playlistArrayList = new ArrayList<>();
-        db.collection("users").document(userId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+        db.collection("users").document(userId).get(Source.DEFAULT).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {

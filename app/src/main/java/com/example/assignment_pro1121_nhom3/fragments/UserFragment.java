@@ -99,7 +99,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+            Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_user, container, false);
     }
 
@@ -159,17 +159,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     public void checkLogin() {
         currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            userDAO.checkUserAlreadyHaveOnFirebase(currentUser.getUid(), new UserDAO.IsAlreadyLoginOnFirebase() {
-                @Override
-                public void onAlreadyLoginResult(boolean result) {
-                    if (!result) {
-                        addAccountToFirestore();
-                        notifyEmptyList.setVisibility(View.VISIBLE);
-                    } else {
-                        checkPlaylist();
-                    }
-                }
-            });
             if (layoutNonLogin.getVisibility() == View.VISIBLE) {
                 layoutNonLogin.setVisibility(View.GONE);
                 layoutLogin.setVisibility(View.VISIBLE);
@@ -188,7 +177,17 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                     Log.e(TAG, "onStart getContext is null");
                 }
                 layoutLoginUserName.setText(currentUser.getDisplayName());
-
+                userDAO.checkUserAlreadyHaveOnFirebase(currentUser.getUid(), new UserDAO.IsAlreadyLoginOnFirebase() {
+                    @Override
+                    public void onAlreadyLoginResult(boolean result) {
+                        if (!result) {
+                            addAccountToFirestore();
+                            notifyEmptyList.setVisibility(View.VISIBLE);
+                        } else {
+                            checkPlaylist();
+                        }
+                    }
+                });
             }
         } else if (layoutNonLogin.getVisibility() == View.GONE) {
             layoutNonLogin.setVisibility(View.VISIBLE);
@@ -213,17 +212,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     public void checkPlaylist() {
         if (currentUser != null) {
-            playlistDAO.getAllDataPlaylist(currentUser.getUid(), new IOnProgressBarStatusListener() {
-                @Override
-                public void beforeGetData() {
-                    mProgressBar.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void afterGetData() {
-                    mProgressBar.setVisibility(View.GONE);
-                }
-            }, new PlaylistDAO.ReadAllDataPlaylistListener() {
+            playlistDAO.getAllDataPlaylist(currentUser.getUid(), new PlaylistDAO.ReadAllDataPlaylistListener() {
                 @Override
                 public void onReadAllDataPlaylistCallback(ArrayList<Playlist> list) {
                     Log.d(TAG, "onReadAllDataPlaylistCallback: " + list.size() + "");
@@ -234,6 +223,16 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         mRecyclerView.setVisibility(View.VISIBLE);
                         userPlayListAdapter.setPlaylists(list);
                     }
+                }
+            }, new IOnProgressBarStatusListener() {
+                @Override
+                public void beforeGetData() {
+                    mProgressBar.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void afterGetData() {
+                    mProgressBar.setVisibility(View.GONE);
                 }
             });
         }
@@ -260,7 +259,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         userPlayListAdapter = new UserPlayListAdapter(tempPlaylist, new UserPlayListAdapter.PlaylistEvent() {
             @Override
             public void onItemClick(Playlist playlist) {
-//                Toast.makeText(requireContext(), playlist.getName(), Toast.LENGTH_SHORT).show();
+                // Toast.makeText(requireContext(), playlist.getName(),
+                // Toast.LENGTH_SHORT).show();
                 Intent detailPlaylistActivity = new Intent(requireContext(), DetailPlaylistActivity.class);
                 detailPlaylistActivity.putExtra("playlist", playlist);
                 startActivity(detailPlaylistActivity);
@@ -355,11 +355,14 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             public void onClick(View view) {
                 ArrayList<String> emptyList = new ArrayList<>();
                 Instant instant = Instant.now();
-                //tên của người tạo là lấy tên của tài khoản hiện tại
+                // tên của người tạo là lấy tên của tài khoản hiện tại
                 // nếu chưa đăng nhập thì ko đc tạo playlist
                 FirebaseUser user = mAuth.getCurrentUser();
                 assert user != null;
-                Playlist playlistTemp = new Playlist(null, edtName.getText().toString(), emptyList, instant.getEpochSecond(), instant.getEpochSecond(), "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Images%2Fgenres%2Ffallback_img.png?alt=media&token=80e07c67-870a-43ae-aa45-86a62d75d13b", user.getDisplayName());
+                Playlist playlistTemp = new Playlist(null, edtName.getText().toString(), emptyList,
+                        instant.getEpochSecond(), instant.getEpochSecond(),
+                        "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Images%2Fgenres%2Ffallback_img.png?alt=media&token=80e07c67-870a-43ae-aa45-86a62d75d13b",
+                        user.getDisplayName());
 
                 if (edtName.getText().toString().isEmpty()) {
                     Toast.makeText(requireContext(), "Không để trống tên playlist!", Toast.LENGTH_SHORT).show();
@@ -377,7 +380,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                     }, playlistTemp, new PlaylistDAO.AddPlaylistListener() {
                         @Override
                         public void onAddPlaylistSuccessCallback(DocumentReference documentReference) {
-                            Toast.makeText(requireContext(), "Tạo thành công playlist " + edtName.getText().toString(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(requireContext(), "Tạo thành công playlist " + edtName.getText().toString(),
+                                    Toast.LENGTH_SHORT).show();
                             playlistTemp.setId(documentReference.getId());
                             tempPlaylist.add(playlistTemp);
                             userPlayListAdapter.setPlaylists(tempPlaylist);
@@ -385,27 +389,29 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                                 notifyEmptyList.setVisibility(View.GONE);
                             }
                             dialog.dismiss();
-                            userDAO.addPlaylistForUser(currentUser.getUid(), playlistTemp.getId(), new IOnProgressBarStatusListener() {
-                                @Override
-                                public void beforeGetData() {
+                            userDAO.addPlaylistForUser(currentUser.getUid(), playlistTemp.getId(),
+                                    new IOnProgressBarStatusListener() {
+                                        @Override
+                                        public void beforeGetData() {
 
-                                }
+                                        }
 
-                                @Override
-                                public void afterGetData() {
+                                        @Override
+                                        public void afterGetData() {
 
-                                }
-                            }, new UserDAO.AddPlaylist() {
-                                @Override
-                                public void onAddPlaylistSuccess() {
-                                    Toast.makeText(requireContext(), "Tạo thành công " + playlistTemp.getName(), Toast.LENGTH_SHORT).show();
-                                }
+                                        }
+                                    }, new UserDAO.AddPlaylist() {
+                                        @Override
+                                        public void onAddPlaylistSuccess() {
+                                            Toast.makeText(requireContext(), "Tạo thành công " + playlistTemp.getName(),
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
 
-                                @Override
-                                public void onAddPlaylistFailure() {
-                                    Log.d(TAG, "onAddPlaylistFailure: lỗi thêm playlist");
-                                }
-                            });
+                                        @Override
+                                        public void onAddPlaylistFailure() {
+                                            Log.d(TAG, "onAddPlaylistFailure: lỗi thêm playlist");
+                                        }
+                                    });
                         }
 
                         @Override
