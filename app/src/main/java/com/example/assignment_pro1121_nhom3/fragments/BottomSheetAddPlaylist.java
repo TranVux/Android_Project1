@@ -214,18 +214,20 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
                                     }
                                 });
                             }
-                            playlistDAO.getAllDataPlaylist(user.getUid(), new IOnProgressBarStatusListener() {
+                            playlistDAO.getAllDataPlaylist(user.getUid(), new PlaylistDAO.ReadAllDataPlaylistListener() {
+                                @Override
+                                public void onReadAllDataPlaylistCallback(ArrayList<Playlist> list) {
+                                    adapterAddMusicToPlaylist.setList(list);
+                                }
+                            }, new IOnProgressBarStatusListener() {
                                 @Override
                                 public void beforeGetData() {
+
                                 }
 
                                 @Override
                                 public void afterGetData() {
-                                }
-                            }, new PlaylistDAO.ReadAllDataPlaylistListener() {
-                                @Override
-                                public void onReadAllDataPlaylistCallback(ArrayList<Playlist> list) {
-                                    adapterAddMusicToPlaylist.setList(list);
+
                                 }
                             });
 //                            playlist.setMusics(lisMusicsIdTemp);
@@ -245,7 +247,14 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
         listPlaylist.setLayoutManager(new LinearLayoutManager(requireContext()));
         listPlaylist.setAdapter(adapterAddMusicToPlaylist);
 
-        playlistDAO.getAllDataPlaylist(user.getUid(), new IOnProgressBarStatusListener() {
+        playlistDAO.getAllDataPlaylist(user.getUid(), new PlaylistDAO.ReadAllDataPlaylistListener() {
+            @Override
+            public void onReadAllDataPlaylistCallback(ArrayList<Playlist> list) {
+                listItemPlaylist = list;
+                adapterAddMusicToPlaylist.setList(listItemPlaylist);
+                progressBar.setVisibility(View.GONE);
+            }
+        }, new IOnProgressBarStatusListener() {
             @Override
             public void beforeGetData() {
                 progressBar.setVisibility(View.VISIBLE);
@@ -253,13 +262,6 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
 
             @Override
             public void afterGetData() {
-                progressBar.setVisibility(View.GONE);
-            }
-        }, new PlaylistDAO.ReadAllDataPlaylistListener() {
-            @Override
-            public void onReadAllDataPlaylistCallback(ArrayList<Playlist> list) {
-                listItemPlaylist = list;
-                adapterAddMusicToPlaylist.setList(listItemPlaylist);
                 progressBar.setVisibility(View.GONE);
             }
         });
