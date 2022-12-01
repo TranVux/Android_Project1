@@ -101,13 +101,15 @@
                 android:id="@+id/avtCreator"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                android:src="@drawable/fallback_img" />
+                android:src="@drawable/fallback_img"/>
 
             <TextView
                 android:id="@+id/tvCreatorName"
-                android:layout_width="wrap_content"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
+                android:maxLines="1"
+                android:ellipsize="end"
                 android:fontFamily="@font/roboto_bold"
                 android:text="Trọng"
                 android:textColor="@color/white"

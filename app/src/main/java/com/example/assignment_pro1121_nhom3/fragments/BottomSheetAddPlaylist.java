@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +22,7 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.AdapterAddMusicToPlaylist;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.dao.PlaylistDAO;
+import com.example.assignment_pro1121_nhom3.dao.UserDAO;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
@@ -41,12 +43,14 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
 
     PlaylistDAO playlistDAO;
     MusicDAO musicDAO;
+    UserDAO userDAO;
     Music currentMusic;
     TextView btnClose, btnCreatePlaylist;
     RecyclerView listPlaylist;
     AdapterAddMusicToPlaylist adapterAddMusicToPlaylist;
     ProgressBar progressBar;
     ArrayList<Playlist> listItemPlaylist;
+    LinearLayout notifyEmptyPlaylist;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     public static BottomSheetAddPlaylist newInstace(Music music) {
@@ -62,6 +66,7 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         playlistDAO = new PlaylistDAO();
+        userDAO = new UserDAO();
         musicDAO = new MusicDAO();
         if (bundle != null) {
             currentMusic = (Music) bundle.getSerializable(Constants.KEY_MUSIC);
@@ -119,7 +124,7 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
                             Instant instant = Instant.now();
                             //tên của người tạo là lấy tên của tài khoản hiện tại
                             // nếu chưa đăng nhập thì ko đc tạo playlist
-                            Playlist playlistTemp = new Playlist(null, edtName.getText().toString(), emptyList, instant.getEpochSecond(), instant.getEpochSecond(), "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Images%2Fgenres%2Ffallback_img.png?alt=media&token=80e07c67-870a-43ae-aa45-86a62d75d13b", "Vũ");
+                            Playlist playlistTemp = new Playlist(user.getUid(), edtName.getText().toString(), emptyList, instant.getEpochSecond(), instant.getEpochSecond(), "https://firebasestorage.googleapis.com/v0/b/project1-group3-52e2e.appspot.com/o/Images%2Fgenres%2Ffallback_img.png?alt=media&token=80e07c67-870a-43ae-aa45-86a62d75d13b", user.getDisplayName());
 
                             if (edtName.getText().toString().isEmpty()) {
                                 Toast.makeText(requireContext(), "Không để trống tên playlist!", Toast.LENGTH_SHORT).show();
@@ -141,6 +146,28 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
                                         playlistTemp.setId(documentReference.getId());
                                         listItemPlaylist.add(playlistTemp);
                                         adapterAddMusicToPlaylist.setList(listItemPlaylist);
+                                        notifyEmptyPlaylist.setVisibility(View.GONE);
+                                        userDAO.addPlaylistForUser(user.getUid(), documentReference.getId(), new IOnProgressBarStatusListener() {
+                                            @Override
+                                            public void beforeGetData() {
+
+                                            }
+
+                                            @Override
+                                            public void afterGetData() {
+
+                                            }
+                                        }, new UserDAO.AddPlaylist() {
+                                            @Override
+                                            public void onAddPlaylistSuccess() {
+                                                Log.d(TAG, "onAddPlaylistSuccess: thêm thành công");
+                                            }
+
+                                            @Override
+                                            public void onAddPlaylistFailure() {
+                                                Log.d(TAG, "onAddPlaylistSuccess: thêm thất bại");
+                                            }
+                                        });
                                         dialog.dismiss();
                                     }
 
@@ -253,6 +280,12 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
                 listItemPlaylist = list;
                 adapterAddMusicToPlaylist.setList(listItemPlaylist);
                 progressBar.setVisibility(View.GONE);
+                if (list.size() == 0) {
+                    notifyEmptyPlaylist.setVisibility(View.VISIBLE);
+                } else {
+                    notifyEmptyPlaylist.setVisibility(View.GONE);
+                }
+
             }
         }, new IOnProgressBarStatusListener() {
             @Override
@@ -273,5 +306,6 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
         btnCreatePlaylist = view.findViewById(R.id.btnCreatePlaylist);
         listPlaylist = view.findViewById(R.id.listPlaylist);
         progressBar = view.findViewById(R.id.progressBar);
+        notifyEmptyPlaylist = view.findViewById(R.id.notify_empty_list);
     }
 }

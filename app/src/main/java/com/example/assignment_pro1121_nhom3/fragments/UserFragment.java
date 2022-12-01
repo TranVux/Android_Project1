@@ -403,8 +403,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                                     }, new UserDAO.AddPlaylist() {
                                         @Override
                                         public void onAddPlaylistSuccess() {
-                                            Toast.makeText(requireContext(), "Tạo thành công " + playlistTemp.getName(),
-                                                    Toast.LENGTH_SHORT).show();
+                                            Log.d(TAG, "onAddPlaylistSuccess: tạo thành công");
                                         }
 
                                         @Override

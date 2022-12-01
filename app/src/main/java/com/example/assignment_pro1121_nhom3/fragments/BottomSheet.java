@@ -26,6 +26,8 @@ import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import org.checkerframework.common.subtyping.qual.Bottom;
 
@@ -112,8 +114,21 @@ public class BottomSheet extends BottomSheetDialogFragment implements View.OnCli
     }
 
     private void addToPlaylist() {
-        BottomSheetAddPlaylist bottomSheetAddPlaylist = BottomSheetAddPlaylist.newInstace(currentSong);
-        bottomSheetAddPlaylist.show(getParentFragmentManager(), TAG);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(requireContext(), "Bạn phải đăng nhập trước!", Toast.LENGTH_SHORT).show();
+            BottomSheetDialogLogin bottomSheetDialogLogin = BottomSheetDialogLogin
+                    .newInstance(new BottomSheetDialogLogin.IOnUpdateUiUserFragmentListener() {
+                        @Override
+                        public void onUpdateUiCallback() {
+
+                        }
+                    });
+            bottomSheetDialogLogin.show(getParentFragmentManager(), "BottomSheetLogin");
+        } else {
+            BottomSheetAddPlaylist bottomSheetAddPlaylist = BottomSheetAddPlaylist.newInstace(currentSong);
+            bottomSheetAddPlaylist.show(getParentFragmentManager(), TAG);
+        }
     }
 
     public void goToArtist() {

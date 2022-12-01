@@ -218,10 +218,10 @@ public class ChartActivity extends AppCompatActivity {
 
         barChart.setData(barData);
         barChart.invalidate();
+        barChart.animateY(1000, Easing.EaseInOutCirc);
     }
 
     public void setUpBarChart() {
-        barChart.animateY(1000, Easing.EaseInOutCirc);
         barChart.getXAxis().setDrawAxisLine(false);
         barChart.setDrawGridBackground(false);
         barChart.getXAxis().setDrawGridLines(false);
