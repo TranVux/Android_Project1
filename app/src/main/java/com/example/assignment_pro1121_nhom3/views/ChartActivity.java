@@ -16,7 +16,6 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_UPDA
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_TOP_10;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_SINGER;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityOptionsCompat;
@@ -26,13 +25,11 @@ import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Shader;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.TextPaint;
 import android.transition.Transition;
@@ -43,7 +40,6 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.ChartPlaylistAdapter;
@@ -52,19 +48,20 @@ import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
+import com.example.assignment_pro1121_nhom3.models.TopMusics;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.utils.RoundedBarChart;
 import com.github.mikephil.charting.animation.Easing;
-import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Objects;
 
 public class ChartActivity extends AppCompatActivity {
@@ -76,6 +73,8 @@ public class ChartActivity extends AppCompatActivity {
     private ChartPlaylistAdapter adapter;
     private MusicDAO musicDAO;
     private RoundedBarChart barChart;
+    ArrayList<Music> listMusic;
+    ArrayList<TopMusics> listTopMusic;
     public MusicPlayer musicPlayer = SplashScreen.musicPlayer;
 
     @Override
@@ -183,24 +182,32 @@ public class ChartActivity extends AppCompatActivity {
             @Override
             public void onGetTopMusicCallback(ArrayList<Music> list) {
                 adapter.setData(list);
+                listMusic = list;
+                setDataBarChart();
             }
         });
-
-        //chart
         setUpBarChart();
-        //
-
     }
 
-    public void setUpBarChart() {
-        ArrayList<BarEntry> barChartEntry = new ArrayList<>();
-        barChartEntry.add(new BarEntry(1f, 5, R.drawable.img));
-        barChartEntry.add(new BarEntry(2f, 4, R.drawable.img));
-        barChartEntry.add(new BarEntry(3f, 6, R.drawable.img));
-        barChartEntry.add(new BarEntry(4f, 2, R.drawable.img));
-        barChartEntry.add(new BarEntry(5f, 8, R.drawable.img));
-        barChartEntry.add(new BarEntry(6f, 9, R.drawable.img));
+    public void addMusicIntoListTopMusic(ArrayList<Music> list) {
+        listTopMusic = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            listTopMusic.add(new TopMusics(list.get(i), (i + 1)));
+        }
+    }
 
+    public void setDataBarChart() {
+        ArrayList<BarEntry> barChartEntry = new ArrayList<>();
+
+        addMusicIntoListTopMusic(listMusic);
+
+        Collections.shuffle(listTopMusic);
+
+        for (TopMusics topMusics : listTopMusic) {
+            barChartEntry.add(new BarEntry(topMusics.getRank(), topMusics.getMusic().getViews()));
+            Log.d(TAG, "setDataBarChart: " + topMusics.getRank());
+        }
+        
         BarDataSet barDataSet = new BarDataSet(barChartEntry, "");
         barDataSet.setValueTextSize(13f);
 
@@ -210,8 +217,10 @@ public class ChartActivity extends AppCompatActivity {
         barData.setValueTextColor(Color.WHITE);
 
         barChart.setData(barData);
-        barChart.animateY(1000, Easing.EaseInOutCirc);
+    }
 
+    public void setUpBarChart() {
+        barChart.animateY(1000, Easing.EaseInOutCirc);
         barChart.getXAxis().setDrawAxisLine(false);
         barChart.setDrawGridBackground(false);
         barChart.getXAxis().setDrawGridLines(false);
@@ -225,7 +234,6 @@ public class ChartActivity extends AppCompatActivity {
         barChart.setTouchEnabled(false);
         barChart.setDoubleTapToZoomEnabled(false);
         barChart.setRadius(25);
-
         XAxis xAxis = barChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setTextSize(13f);
@@ -234,8 +242,7 @@ public class ChartActivity extends AppCompatActivity {
         xAxis.setDrawLabels(true);
         xAxis.setGranularityEnabled(true);
         xAxis.setGranularity(1f);
-
-        barChart.invalidate();
+        xAxis.setLabelCount(10);
     }
 
     private void setMargins(View view, int left, int top, int right, int bottom) {
