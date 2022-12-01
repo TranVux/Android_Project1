@@ -89,10 +89,6 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     // Music player
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
     //
-
-    // db
-    FirebaseFirestore db;
-
     // cache
     SharedPreferences sharedPreferences;
     SharedPreferences sharedPreferencesMusicList;
@@ -118,14 +114,6 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 .inflateTransition(android.R.transition.no_transition);
         getWindow().setEnterTransition(transition);
         getWindow().setExitTransition(transition);
-
-        // cài đặt để firebase có thể lấy data trong cache
-        db = FirebaseFirestore.getInstance();
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
-                .build();
-        db.setFirestoreSettings(settings);
 
         // khai báo các fragment
         homeFragment = new HomeFragment(this);

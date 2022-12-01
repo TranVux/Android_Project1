@@ -198,17 +198,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     public void checkPlaylist() {
         if (currentUser != null) {
-            playlistDAO.getAllDataPlaylist(currentUser.getUid(), new IOnProgressBarStatusListener() {
-                @Override
-                public void beforeGetData() {
-                    mProgressBar.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void afterGetData() {
-                    mProgressBar.setVisibility(View.GONE);
-                }
-            }, new PlaylistDAO.ReadAllDataPlaylistListener() {
+            playlistDAO.getAllDataPlaylist(currentUser.getUid(),new PlaylistDAO.ReadAllDataPlaylistListener() {
                 @Override
                 public void onReadAllDataPlaylistCallback(ArrayList<Playlist> list) {
                     Log.d(TAG,"onReadAllDataPlaylistCallback: " + list.size()+"");
@@ -223,6 +213,16 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                         mRecyclerView.setLayoutManager(linearLayoutManager);
                         mRecyclerView.setAdapter(userPlayListAdapter);
                     }
+                }
+            }, new IOnProgressBarStatusListener() {
+                @Override
+                public void beforeGetData() {
+                    mProgressBar.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void afterGetData() {
+                    mProgressBar.setVisibility(View.GONE);
                 }
             });
         }

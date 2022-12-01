@@ -229,11 +229,12 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
             public void onCompleted(JSONObject object, GraphResponse response) {
                 try {
                     String image = object.getJSONObject("picture").getJSONObject("data").getString("url");
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    FirebaseUser user = mAuth.getCurrentUser();
 
                     UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                             .setPhotoUri(Uri.parse(image))
                             .build();
+
                     if (user != null) {
                         user.updateProfile(profileUpdates)
                                 .addOnCompleteListener(new OnCompleteListener<Void>() {

@@ -47,6 +47,8 @@ import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListe
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.utils.Constants;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
@@ -57,7 +59,8 @@ public class SplashScreen extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     private final PlaylistDAO playlistDAO = new PlaylistDAO();
     private ArrayList<Music> listMusicRecent = new ArrayList<>();
-
+    // db
+    FirebaseFirestore db;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +70,14 @@ public class SplashScreen extends AppCompatActivity {
         String playlistType = sharedPreferences.getString(KEY_PLAYLIST_TYPE, KEY_TOP_10);
         Log.d(TAG, "onCreate: recentKey: " + recentIdPlaylist);
         Log.d(TAG, "onCreate: type: " + playlistType);
+
+        // cài đặt để firebase có thể lấy data trong cache
+        db = FirebaseFirestore.getInstance();
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .setCacheSizeBytes(FirebaseFirestoreSettings.CACHE_SIZE_UNLIMITED)
+                .build();
+        db.setFirestoreSettings(settings);
 
         // lấy dữ liệu mẫu
         MusicDAO musicDAO = new MusicDAO();

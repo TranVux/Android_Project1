@@ -85,7 +85,7 @@ public class UserDAO {
             }
         });
     }
-    
+
     public interface GetPlayList {
         void onGetPlaylistSuccess(ArrayList<String> result);
 
