@@ -8,6 +8,14 @@
     android:paddingTop="28dp"
     tools:context=".fragments.UserFragment">
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="25dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        android:indeterminateDrawable="@drawable/style_progress_bar"
+        android:visibility="visible" />
+
     <ImageView
         android:id="@+id/btnSetting"
         android:layout_width="40dp"
@@ -60,8 +68,8 @@
                         android:ellipsize="end"
                         android:gravity="center"
                         android:lines="1"
-                        android:text="Vũ"
                         android:maxLines="1"
+                        android:text="Vũ"
                         android:textColor="#fff"
                         android:textSize="24dp" />
                 </LinearLayout>
@@ -262,17 +270,6 @@
                 android:layout_below="@id/titleLayout"
                 android:layout_alignParentStart="true"
                 android:layout_alignParentEnd="true"
-                android:visibility="gone" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_alignTop="@+id/playlistMusic"
-                android:layout_alignBottom="@+id/playlistMusic"
-                android:layout_centerInParent="true"
-                android:elevation="2dp"
-                android:indeterminateDrawable="@drawable/style_progress_bar"
                 android:visibility="gone" />
 
             <TextView
