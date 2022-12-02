@@ -22,6 +22,7 @@ import android.widget.TextView;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.ViewPagerForSingerAdapter;
+import com.example.assignment_pro1121_nhom3.fragments.MiniPlayerFragment;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -30,6 +31,7 @@ import com.google.android.material.transition.MaterialElevationScale;
 public class SingerActivity extends AppCompatActivity {
     public static final String TAG = SingerActivity.class.getSimpleName();
     ImageView btnBack;
+    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +40,9 @@ public class SingerActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tabBar);
         ViewPager2 viewPager = findViewById(R.id.viewPager);
         btnBack = findViewById(R.id.btnBack);
+
+        //setup music player
+        setUpMiniPlayer();
 
         getWindow().setStatusBarColor(getResources().getColor(R.color.status_bar, null));
         //đổi màu chữ status bar
@@ -125,5 +130,13 @@ public class SingerActivity extends AppCompatActivity {
         tabTextView.setText(tabText);
         tabTextView.setTextSize(tabSizeSp);
         return tabCustomView;
+    }
+
+    public void setUpMiniPlayer() {
+        if (musicPlayer.getCurrentSong() != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .commit();
+        }
     }
 }

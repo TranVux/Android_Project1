@@ -7,6 +7,7 @@
     tools:context=".fragments.MiniPlayerFragment">
 
     <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/playerLayout"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:background="#050505"

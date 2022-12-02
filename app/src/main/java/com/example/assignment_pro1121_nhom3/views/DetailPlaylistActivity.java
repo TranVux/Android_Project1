@@ -54,6 +54,7 @@ import com.example.assignment_pro1121_nhom3.adapters.MyPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.dao.PlaylistDAO;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
+import com.example.assignment_pro1121_nhom3.fragments.MiniPlayerFragment;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Genres;
 import com.example.assignment_pro1121_nhom3.models.Music;
@@ -114,20 +115,9 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         sharedPreferences = getSharedPreferences("music_player", MODE_PRIVATE);
 
         setContentView(R.layout.activity_detail_playlist);
-        recyclerView = findViewById(R.id.recyclerView);
-        imageForeground = findViewById(R.id.imageForeground);
-        nestedScrollView = findViewById(R.id.scrollView);
-        progressBar = findViewById(R.id.progressBar);
-        thumbnailPlaylist = findViewById(R.id.imageView);
-        tvCreatorName = findViewById(R.id.tvCreatorName);
-        tvPlaylistName = findViewById(R.id.tvPlaylistName);
-        topBarPlaylistName = findViewById(R.id.tvNamePlaylistTopBar);
-        avtCreator = findViewById(R.id.avtCreator);
-        amountOfSong = findViewById(R.id.amountOfSong);
-        btnBack = findViewById(R.id.backBtn);
-        btnPlayAll = findViewById(R.id.buttonPlayAll);
-        emptyLayout = findViewById(R.id.emptyLayout);
-        keyword = findViewById(R.id.keyword);
+        init();
+        //setup mini player
+        setUpMiniPlayer();
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -169,6 +159,23 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         } else {
             getDataGenres();
         }
+    }
+
+    public void init() {
+        recyclerView = findViewById(R.id.recyclerView);
+        imageForeground = findViewById(R.id.imageForeground);
+        nestedScrollView = findViewById(R.id.scrollView);
+        progressBar = findViewById(R.id.progressBar);
+        thumbnailPlaylist = findViewById(R.id.imageView);
+        tvCreatorName = findViewById(R.id.tvCreatorName);
+        tvPlaylistName = findViewById(R.id.tvPlaylistName);
+        topBarPlaylistName = findViewById(R.id.tvNamePlaylistTopBar);
+        avtCreator = findViewById(R.id.avtCreator);
+        amountOfSong = findViewById(R.id.amountOfSong);
+        btnBack = findViewById(R.id.backBtn);
+        btnPlayAll = findViewById(R.id.buttonPlayAll);
+        emptyLayout = findViewById(R.id.emptyLayout);
+        keyword = findViewById(R.id.keyword);
     }
 
     public void getDataGenres() {
@@ -370,5 +377,13 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         serviceMusic.putExtra(KEY_MUSIC, music);
         serviceMusic.putExtra(KEY_MODE_MUSIC_PLAYER, mode);
         startService(serviceMusic);
+    }
+
+    public void setUpMiniPlayer() {
+        if (musicPlayer.getCurrentSong() != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .commit();
+        }
     }
 }

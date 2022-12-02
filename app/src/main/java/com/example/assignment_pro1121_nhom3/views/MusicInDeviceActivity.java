@@ -49,6 +49,7 @@ import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.PlaylistInDeviceAdapter;
+import com.example.assignment_pro1121_nhom3.fragments.MiniPlayerFragment;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
@@ -76,6 +77,7 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
         setContentView(R.layout.activity_music_in_device);
         Log.d(TAG, "onCreate: " + isGrantedPermission);
         init();
+        setUpMiniPlayer();
         setClick();
         getPermission();
     }
@@ -281,6 +283,14 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
             }
             default:
                 break;
+        }
+    }
+
+    public void setUpMiniPlayer() {
+        if (musicPlayer.getCurrentSong() != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .commit();
         }
     }
 }

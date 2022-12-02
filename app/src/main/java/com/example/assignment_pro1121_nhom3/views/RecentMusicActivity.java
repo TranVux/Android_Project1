@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.PlaylistInDeviceAdapter;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
+import com.example.assignment_pro1121_nhom3.fragments.MiniPlayerFragment;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
@@ -56,6 +57,7 @@ public class RecentMusicActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.activity_recent_music);
         init();
         setClick();
+        setUpMiniPlayer();
     }
 
     public void init() {
@@ -151,6 +153,14 @@ public class RecentMusicActivity extends AppCompatActivity implements View.OnCli
             }
             default:
                 break;
+        }
+    }
+
+    public void setUpMiniPlayer() {
+        if (musicPlayer.getCurrentSong() != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .commit();
         }
     }
 }

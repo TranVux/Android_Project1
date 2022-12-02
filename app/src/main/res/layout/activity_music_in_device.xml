@@ -169,4 +169,12 @@
 
     </androidx.core.widget.NestedScrollView>
 
+    <FrameLayout
+        android:id="@+id/fragmentMiniPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:elevation="10dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

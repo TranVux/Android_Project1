@@ -44,6 +44,7 @@ import com.example.assignment_pro1121_nhom3.adapters.MusicInPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.dao.SingerDAO;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
+import com.example.assignment_pro1121_nhom3.fragments.MiniPlayerFragment;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Music;
@@ -97,6 +98,10 @@ public class DetailSingerActivity extends AppCompatActivity {
         btnLoadMore = findViewById(R.id.btnLoadMore);
         amountOfSong = findViewById(R.id.amountOfSong);
         progressBar = findViewById(R.id.progressBar);
+
+
+        //setup mini player
+        setUpMiniPlayer();
 
         //
         ImageView btnBack = findViewById(R.id.btnBack);
@@ -340,5 +345,13 @@ public class DetailSingerActivity extends AppCompatActivity {
         Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
         Log.d(TAG, "saveCurrentMusic: " + typePlayList);
         editor.apply();
+    }
+
+    public void setUpMiniPlayer() {
+        if (musicPlayer.getCurrentSong() != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .commit();
+        }
     }
 }

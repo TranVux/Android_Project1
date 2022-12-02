@@ -112,7 +112,7 @@ public class MostListenSongFragment extends Fragment {
                     musicPlayer.pauseSong(musicPlayer.getCurrentPositionSong());
                     musicPlayer.clearPlaylist();
                     musicPlayer.setPlayList(musicInPlaylistAdapter.getListMusic());
-                    musicPlayer.start();
+                    musicPlayer.setMusicAtPosition(index);
                     try {
                         musicPlayer.setStateMusicPlayer(MusicPlayer.MUSIC_PLAYER_STATE_PLAYING);
                     } catch (Exception e) {

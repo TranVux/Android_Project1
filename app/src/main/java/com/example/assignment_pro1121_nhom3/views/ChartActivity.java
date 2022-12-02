@@ -45,6 +45,7 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.ChartPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
+import com.example.assignment_pro1121_nhom3.fragments.MiniPlayerFragment;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
@@ -92,8 +93,11 @@ public class ChartActivity extends AppCompatActivity {
         getWindow().setExitTransition(transition);
 
         musicDAO = new MusicDAO();
-
         setContentView(R.layout.activity_charts);
+
+        //set up mini player
+//        setUpMiniPlayer();
+
         recyclerView = findViewById(R.id.recyclerview);
         NestedScrollView nestedScrollView = findViewById(R.id.scrollView);
         barChart = findViewById(R.id.barChart);
@@ -207,7 +211,7 @@ public class ChartActivity extends AppCompatActivity {
             barChartEntry.add(new BarEntry(topMusics.getRank(), topMusics.getMusic().getViews()));
             Log.d(TAG, "setDataBarChart: " + topMusics.getRank());
         }
-        
+
         BarDataSet barDataSet = new BarDataSet(barChartEntry, "");
         barDataSet.setValueTextSize(13f);
 
@@ -297,5 +301,13 @@ public class ChartActivity extends AppCompatActivity {
         editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
         editor.putString(KEY_PLAYLIST_TYPE, typePlaylist);
         editor.apply();
+    }
+
+    public void setUpMiniPlayer() {
+        if (musicPlayer.getCurrentSong() != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .commit();
+        }
     }
 }

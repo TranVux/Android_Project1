@@ -114,7 +114,7 @@ public class NewMusicFragment extends Fragment {
                     musicPlayer.pauseSong(musicPlayer.getCurrentPositionSong());
                     musicPlayer.clearPlaylist();
                     musicPlayer.setPlayList(musicInPlaylistAdapter.getListMusic());
-                    musicPlayer.start();
+                    musicPlayer.setMusicAtPosition(index);
                     try {
                         musicPlayer.setStateMusicPlayer(MusicPlayer.MUSIC_PLAYER_STATE_PLAYING);
                     } catch (Exception e) {
@@ -216,7 +216,6 @@ public class NewMusicFragment extends Fragment {
         editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
         editor.apply();
     }
-
 
     public void startServiceMusic(Music music, int action, String mode) {
         Intent serviceMusic = new Intent(requireContext(), MusicPlayerService.class);

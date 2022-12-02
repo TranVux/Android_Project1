@@ -10,6 +10,8 @@ import android.widget.ImageView;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.PlaylistViewPagerAdapter;
+import com.example.assignment_pro1121_nhom3.fragments.MiniPlayerFragment;
+import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
@@ -17,6 +19,7 @@ public class MorePlaylistActivity extends AppCompatActivity {
     ViewPager2 viewPager;
     TabLayout tabLayout;
     ImageView btnBack;
+    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +33,9 @@ public class MorePlaylistActivity extends AppCompatActivity {
 
         // ánh xạ view setup view pager và tablayout
         init();
+
+        //setup mini player
+        setUpMiniPlayer();
 
         //xử lý nút back
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -58,5 +64,13 @@ public class MorePlaylistActivity extends AppCompatActivity {
             }
         }).attach();
         tabLayout.setSmoothScrollingEnabled(true);
+    }
+
+    public void setUpMiniPlayer() {
+        if (musicPlayer.getCurrentSong() != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .commit();
+        }
     }
 }

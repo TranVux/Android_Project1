@@ -14,7 +14,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_horizontal"
         android:indeterminateDrawable="@drawable/style_progress_bar"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/btnSetting"

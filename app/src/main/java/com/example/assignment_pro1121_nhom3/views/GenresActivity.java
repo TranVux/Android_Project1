@@ -17,8 +17,10 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.GenresAdapter;
 import com.example.assignment_pro1121_nhom3.dao.GenreDAO;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
+import com.example.assignment_pro1121_nhom3.fragments.MiniPlayerFragment;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Genres;
+import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.utils.GridSpacingItemDecoration;
 import com.example.assignment_pro1121_nhom3.utils.ItemOffsetDecoration;
 import com.google.android.flexbox.FlexDirection;
@@ -36,6 +38,7 @@ public class GenresActivity extends AppCompatActivity {
     GenreDAO genreDAO;
     MusicDAO musicDAO;
     ProgressBar progressBar;
+    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,7 @@ public class GenresActivity extends AppCompatActivity {
         //
 
         init();
+        setUpMiniPlayer();
         getData();
     }
 
@@ -102,4 +106,13 @@ public class GenresActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void setUpMiniPlayer() {
+        if (musicPlayer.getCurrentSong() != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .commit();
+        }
+    }
+
 }

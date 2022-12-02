@@ -104,8 +104,8 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_gravity="center"
-                android:visibility="gone"
-                android:indeterminateDrawable="@drawable/style_progress_bar" />
+                android:indeterminateDrawable="@drawable/style_progress_bar"
+                android:visibility="gone" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

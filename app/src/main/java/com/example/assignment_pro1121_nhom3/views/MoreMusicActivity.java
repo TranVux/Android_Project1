@@ -146,6 +146,12 @@ public class MoreMusicActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        setUpMiniPlayer();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
     }

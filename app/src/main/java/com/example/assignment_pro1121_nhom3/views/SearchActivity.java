@@ -47,6 +47,7 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.MyPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
+import com.example.assignment_pro1121_nhom3.fragments.MiniPlayerFragment;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
