@@ -96,7 +96,7 @@ public class ChartActivity extends AppCompatActivity {
         setContentView(R.layout.activity_charts);
 
         //set up mini player
-//        setUpMiniPlayer();
+        setUpMiniPlayer();
 
         recyclerView = findViewById(R.id.recyclerview);
         NestedScrollView nestedScrollView = findViewById(R.id.scrollView);
@@ -305,8 +305,9 @@ public class ChartActivity extends AppCompatActivity {
 
     public void setUpMiniPlayer() {
         if (musicPlayer.getCurrentSong() != null) {
+            Log.d(TAG, "setUpMiniPlayer: ");
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .add(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
                     .commit();
         }
     }

@@ -70,6 +70,7 @@
         android:id="@+id/viewPager2"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/fragmentMiniPlayer"
         android:layout_below="@id/tabBar"
         android:layout_marginHorizontal="25dp" />
 

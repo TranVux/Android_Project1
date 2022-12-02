@@ -72,13 +72,15 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/tabBar" />
+        android:layout_below="@id/tabBar"
+        android:layout_above="@id/fragmentMiniPlayer"/>
 
     <FrameLayout
         android:id="@+id/fragmentMiniPlayer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
         android:clickable="true"
         android:elevation="10dp" />
 
