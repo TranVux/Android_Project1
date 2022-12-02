@@ -381,8 +381,9 @@ public class DetailPlaylistActivity extends AppCompatActivity {
 
     public void setUpMiniPlayer() {
         if (musicPlayer.getCurrentSong() != null) {
+            Log.d(TAG, "setUpMiniPlayer: ");
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .add(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
                     .commit();
         }
     }
