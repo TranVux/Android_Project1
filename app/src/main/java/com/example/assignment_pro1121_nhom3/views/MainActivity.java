@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     // Receiver
     // MusicPlayerReceiver musicPlayerReceiver;
 
-    String recentIdPlaylist;
+    public static String recentIdPlaylist;
     PlaylistDAO playlistDAO;
 
     @Override

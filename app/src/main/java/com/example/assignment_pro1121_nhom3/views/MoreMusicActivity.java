@@ -4,22 +4,17 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.ViewPager2ForMoreMusicAdapter;
 import com.example.assignment_pro1121_nhom3.dao.GenreDAO;
-import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
-import com.example.assignment_pro1121_nhom3.fragments.MostListenSongFragment;
+import com.example.assignment_pro1121_nhom3.fragments.MiniPlayerFragment;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Genres;
-import com.example.assignment_pro1121_nhom3.models.Music;
+import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.tabs.TabLayout;
@@ -37,6 +32,7 @@ public class MoreMusicActivity extends AppCompatActivity {
     ChipGroup chipGroup;
     public static Genres tempGenres;
     ArrayList<Genres> listGenres = new ArrayList<>();
+    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +44,10 @@ public class MoreMusicActivity extends AppCompatActivity {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(decorView.getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         //
+
+        //setup player mini
+        setUpMiniPlayer();
+
         setDataForChip();
         ViewPager2ForMoreMusicAdapter viewPager2ForMoreMusicAdapter = new ViewPager2ForMoreMusicAdapter(this);
         viewPager2.setAdapter(viewPager2ForMoreMusicAdapter);
@@ -86,6 +86,14 @@ public class MoreMusicActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void setUpMiniPlayer() {
+        if (musicPlayer.getCurrentSong() != null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .commit();
+        }
     }
 
     public void setDataForTempGenres(String nameGenres) {
@@ -135,6 +143,11 @@ public class MoreMusicActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         tempGenres = null;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
     @Override

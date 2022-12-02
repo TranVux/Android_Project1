@@ -99,7 +99,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_user, container, false);
     }
 
@@ -221,7 +221,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                     } else {
                         notifyEmptyList.setVisibility(View.GONE);
                         mRecyclerView.setVisibility(View.VISIBLE);
-                        userPlayListAdapter.setPlaylists(list);
+                        tempPlaylist = list;
+                        userPlayListAdapter.setPlaylists(tempPlaylist);
                     }
                 }
             }, new IOnProgressBarStatusListener() {
@@ -259,8 +260,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         userPlayListAdapter = new UserPlayListAdapter(tempPlaylist, new UserPlayListAdapter.PlaylistEvent() {
             @Override
             public void onItemClick(Playlist playlist) {
-                // Toast.makeText(requireContext(), playlist.getName(),
-                // Toast.LENGTH_SHORT).show();
                 Intent detailPlaylistActivity = new Intent(requireContext(), DetailPlaylistActivity.class);
                 detailPlaylistActivity.putExtra("playlist", playlist);
                 startActivity(detailPlaylistActivity);

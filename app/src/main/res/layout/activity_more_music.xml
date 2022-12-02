@@ -100,4 +100,11 @@
         android:layout_height="match_parent"
         android:layout_below="@id/tabBar"
         android:layout_marginHorizontal="25dp" />
+
+    <FrameLayout
+        android:id="@+id/fragmentMiniPlayer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
 </RelativeLayout>
