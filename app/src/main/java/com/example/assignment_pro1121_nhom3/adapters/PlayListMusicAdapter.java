@@ -1,6 +1,7 @@
 package com.example.assignment_pro1121_nhom3.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
-import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.example.assignment_pro1121_nhom3.utils.PlaylistDiffUtil;
@@ -59,7 +59,6 @@ public class PlayListMusicAdapter extends RecyclerView.Adapter<PlayListMusicAdap
                 .error(R.drawable.fallback_img)
                 .centerCrop()
                 .into(holder.thumbnail);
-
         holder.itemPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

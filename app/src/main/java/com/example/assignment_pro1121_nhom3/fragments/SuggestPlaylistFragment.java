@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
@@ -20,6 +21,7 @@ import com.example.assignment_pro1121_nhom3.dao.PlaylistDAO;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
+import com.example.assignment_pro1121_nhom3.utils.SpacingDecoration;
 import com.example.assignment_pro1121_nhom3.views.DetailPlaylistActivity;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
@@ -65,13 +67,9 @@ public class SuggestPlaylistFragment extends Fragment {
         listPlaylist = new ArrayList<>();
         playlistDAO = new PlaylistDAO();
 
-        FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager(requireContext());
-        flexboxLayoutManager.setFlexWrap(FlexWrap.WRAP);
-        flexboxLayoutManager.setFlexDirection(FlexDirection.ROW);
-        flexboxLayoutManager.setJustifyContent(JustifyContent.FLEX_START);
-
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 3);
         // xét layout manager cho recycler view
-        rclSuggestPlaylist.setLayoutManager(flexboxLayoutManager);
+        rclSuggestPlaylist.setLayoutManager(gridLayoutManager);
 
         playListMusicAdapter = new PlayListMusicAdapter(listPlaylist, requireContext(), new ItemEvent.PlaylistItemEvent() {
             @Override
@@ -82,6 +80,8 @@ public class SuggestPlaylistFragment extends Fragment {
             }
         });
         rclSuggestPlaylist.setAdapter(playListMusicAdapter);
+        SpacingDecoration spacingDecoration = new SpacingDecoration(15, 10, true);
+        rclSuggestPlaylist.addItemDecoration(spacingDecoration);
     }
 
     public void getData() {

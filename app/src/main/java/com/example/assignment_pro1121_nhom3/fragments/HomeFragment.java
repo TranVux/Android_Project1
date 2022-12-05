@@ -69,6 +69,7 @@ import com.example.assignment_pro1121_nhom3.models.Singer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.utils.GridSpacingItemDecoration;
+import com.example.assignment_pro1121_nhom3.utils.SpacingDecoration;
 import com.example.assignment_pro1121_nhom3.views.ChartActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailPlaylistActivity;
 import com.example.assignment_pro1121_nhom3.views.DetailSingerActivity;
@@ -248,25 +249,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         rclPlaylist.setNestedScrollingEnabled(false);
         //
 
-        // FlexboxLayoutManager managerRclRecentPublish = new
-        // FlexboxLayoutManager(requireContext());
-        // managerRclRecentPublish.setFlexDirection(FlexDirection.ROW);
-        // managerRclRecentPublish.setJustifyContent(JustifyContent.FLEX_START);
-        //// managerRclRecentPublish.setFlexWrap(FlexWrap.WRAP);
-        //
-        // FlexboxLayoutManager managerRclPlayList = new
-        // FlexboxLayoutManager(requireContext());
-        // managerRclPlayList.setFlexDirection(FlexDirection.ROW);
-        // managerRclPlayList.setJustifyContent(JustifyContent.FLEX_START);
-        //// managerRclPlayList.setFlexWrap(FlexWrap.WRAP);
-
         LinearLayoutManager rclRecentLayoutManager = new LinearLayoutManager(requireContext(),
                 LinearLayoutManager.HORIZONTAL, false);
         LinearLayoutManager rclPlaylistLayoutManager = new LinearLayoutManager(requireContext(),
                 LinearLayoutManager.HORIZONTAL, false);
+        SpacingDecoration spacingDecoration = new SpacingDecoration(10, 0, false);
 
         rclRecentPublish.setLayoutManager(rclRecentLayoutManager);
         rclPlaylist.setLayoutManager(rclPlaylistLayoutManager);
+        rclPlaylist.addItemDecoration(spacingDecoration);
 
         musicRecentPublishAdapter = new MusicRecentPublishAdapter(listRecentPublish, requireContext(),
                 new ItemEvent.MusicItemEvent() {

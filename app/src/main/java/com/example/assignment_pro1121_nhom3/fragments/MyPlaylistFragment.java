@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,7 +29,10 @@ import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListe
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.models.User;
+import com.example.assignment_pro1121_nhom3.utils.SpacingDecoration;
 import com.example.assignment_pro1121_nhom3.views.DetailPlaylistActivity;
+import com.example.assignment_pro1121_nhom3.views.GenresActivity;
+import com.google.android.flexbox.AlignItems;
 import com.google.android.flexbox.FlexDirection;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -90,13 +94,9 @@ public class MyPlaylistFragment extends Fragment implements View.OnClickListener
         listPlaylist = new ArrayList<>();
         playlistDAO = new PlaylistDAO();
 
-        FlexboxLayoutManager flexboxLayoutManager = new FlexboxLayoutManager(requireContext());
-        flexboxLayoutManager.setFlexWrap(FlexWrap.WRAP);
-        flexboxLayoutManager.setFlexDirection(FlexDirection.ROW);
-        flexboxLayoutManager.setJustifyContent(JustifyContent.FLEX_START);
-
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(requireContext(), 3);
         // xét layout manager cho recycler view
-        rclMyPlaylist.setLayoutManager(flexboxLayoutManager);
+        rclMyPlaylist.setLayoutManager(gridLayoutManager);
 
         playListMusicAdapter = new PlayListMusicAdapter(listPlaylist, requireContext(), new ItemEvent.PlaylistItemEvent() {
             @Override
@@ -107,6 +107,8 @@ public class MyPlaylistFragment extends Fragment implements View.OnClickListener
             }
         });
         rclMyPlaylist.setAdapter(playListMusicAdapter);
+        SpacingDecoration spacingDecoration = new SpacingDecoration(15, 10, true);
+        rclMyPlaylist.addItemDecoration(spacingDecoration);
     }
 
     public void setClick() {
@@ -141,12 +143,12 @@ public class MyPlaylistFragment extends Fragment implements View.OnClickListener
     }
 
     private void checkLogin() {
-            updateUI();
+        updateUI();
     }
 
     private void updateUI() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        if (currentUser != null){
+        if (currentUser != null) {
             layoutNonLogin.setVisibility(View.GONE);
             checkFirstLogin(currentUser);
         }
@@ -156,10 +158,10 @@ public class MyPlaylistFragment extends Fragment implements View.OnClickListener
         userDAO.checkUserAlreadyHaveOnFirebase(currentUser.getUid(), new UserDAO.IsAlreadyLoginOnFirebase() {
             @Override
             public void onAlreadyLoginResult(boolean result) {
-                if(!result){
+                if (!result) {
                     addAccountToFirestore();
                     notifyEmptyList.setVisibility(View.VISIBLE);
-                }else {
+                } else {
                     loadPlaylist(currentUser);
                 }
             }
@@ -168,10 +170,10 @@ public class MyPlaylistFragment extends Fragment implements View.OnClickListener
 
     private void loadPlaylist(FirebaseUser currentUser) {
         if (currentUser != null) {
-            playlistDAO.getAllDataPlaylist(currentUser.getUid(),new PlaylistDAO.ReadAllDataPlaylistListener() {
+            playlistDAO.getAllDataPlaylist(currentUser.getUid(), new PlaylistDAO.ReadAllDataPlaylistListener() {
                 @Override
                 public void onReadAllDataPlaylistCallback(ArrayList<Playlist> list) {
-                    Log.d(TAG,"onReadAllDataPlaylistCallback: " + list.size()+"");
+                    Log.d(TAG, "onReadAllDataPlaylistCallback: " + list.size() + "");
                     if (list.size() == 0) {
                         notifyEmptyList.setVisibility(View.VISIBLE);
                     } else {
