@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_chart"
+    android:elevation="0dp"
     android:orientation="vertical"
     app:layoutDescription="@xml/activity_charts_scene">
 
@@ -114,12 +115,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/chart"
-                android:layout_alignParentBottom="true"
                 android:layout_marginTop="5dp"
                 android:background="@drawable/bg_playlistchart"
                 android:focusableInTouchMode="false"
                 android:paddingHorizontal="15dp" />
-
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 
@@ -128,7 +127,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clickable="true"
-        android:elevation="10dp"
+        android:elevation="15dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.motion.widget.MotionLayout>

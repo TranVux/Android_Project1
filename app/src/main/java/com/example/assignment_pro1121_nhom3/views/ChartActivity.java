@@ -307,7 +307,7 @@ public class ChartActivity extends AppCompatActivity {
         if (musicPlayer.getCurrentSong() != null) {
             Log.d(TAG, "setUpMiniPlayer: ");
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
+                    .add(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()), "MiniPlayer")
                     .commit();
         }
     }
