@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_bottom_sheet"
-    app:layoutDescription="@xml/activity_playlist_scene"
-    tools:context=".views.DetailPlaylistActivity">
+    app:layoutDescription="@xml/activity_playlist_scene">
 
     <TextView
         android:id="@+id/tvNamePlaylistTopBar"
@@ -213,14 +212,11 @@
         app:layout_constraintBottom_toTopOf="@id/fragmentMiniPlayer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/mainContentLayout"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintTop_toBottomOf="@id/mainContentLayout">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal|top"
             android:orientation="vertical">
 
             <androidx.recyclerview.widget.RecyclerView
@@ -274,7 +270,7 @@
         android:layout_height="wrap_content"
         android:clickable="true"
         android:elevation="13dp"
-        android:orientation="vertical"
+        android:translationY="-45dp"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.motion.widget.MotionLayout>
