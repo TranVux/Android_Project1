@@ -146,6 +146,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             mediaPlayer.stop();
         }
         timer.cancel();
+        timer.purge();
         mediaPlayer.release();
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioAttributes(new AudioAttributes

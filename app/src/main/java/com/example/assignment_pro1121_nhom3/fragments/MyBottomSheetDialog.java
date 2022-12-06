@@ -33,6 +33,7 @@ public class MyBottomSheetDialog extends BottomSheetDialogFragment {
     private MusicInPlaylistAdapter musicInPlaylistAdapter;
     RecyclerView musicListBottomSheet;
     TextView btnClose;
+    PlayerFragment playerFragment;
 
     public static MyBottomSheetDialog newInstance(ArrayList<Music> listMusic) {
         MyBottomSheetDialog bottomSheetDialog = new MyBottomSheetDialog();
@@ -82,6 +83,10 @@ public class MyBottomSheetDialog extends BottomSheetDialogFragment {
                 musicIntent.putExtra("action", MusicPlayer.MUSIC_PLAYER_ACTION_GO_TO_SONG);
                 musicIntent.putExtra(Constants.KEY_SONG_INDEX, index);
                 requireContext().startService(musicIntent);
+                playerFragment = (PlayerFragment) requireActivity().getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+                if (playerFragment != null) {
+                    playerFragment.timeLine.setProgress(0);
+                }
                 bottomSheetDialog.dismiss();
             }
 
@@ -93,6 +98,5 @@ public class MyBottomSheetDialog extends BottomSheetDialogFragment {
         });
 
         musicListBottomSheet.setAdapter(musicInPlaylistAdapter);
-
     }
 }
