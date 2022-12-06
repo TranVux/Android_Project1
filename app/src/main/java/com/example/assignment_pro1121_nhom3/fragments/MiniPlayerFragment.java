@@ -9,13 +9,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,7 +50,8 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
     private FlexboxLayout playerLayout;
     private SharedPreferences sharedPreferences;
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
-
+    AnimatedVectorDrawable avd1;
+    AnimatedVectorDrawableCompat avd;
 
     public static MiniPlayerFragment newInstance(Music music) {
         MiniPlayerFragment fragment = new MiniPlayerFragment();
@@ -77,6 +82,7 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
         init(view);
         handlePlayer(currentMusic);
         setClick();
+        initStateButton();
     }
 
     public void setClick() {
@@ -142,16 +148,12 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
         editor.clear();
         switch (musicPlayer.getStateMusicPlayer()) {
             case MUSIC_PLAYER_STATE_IDLE: {
-                stateBtnPlay = 0;
-                btnPlay.setImageResource(R.drawable.ic_small_play);
                 editor.putBoolean(KEY_STATE_IS_IDLE, true);
                 editor.putBoolean(KEY_STATE_IS_PLAYING, false);
                 editor.putBoolean(KEY_STATE_IS_START, true);
                 break;
             }
             case MUSIC_PLAYER_STATE_PLAYING: {
-                stateBtnPlay = 1;
-                btnPlay.setImageResource(R.drawable.ic_small_pause);
                 editor.putBoolean(KEY_STATE_IS_IDLE, false);
                 editor.putBoolean(KEY_STATE_IS_PLAYING, true);
                 editor.putBoolean(KEY_STATE_IS_START, true);
@@ -170,6 +172,40 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
             }
         }
         editor.apply();
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    public void initStateButton() {
+        switch (musicPlayer.getStateMusicPlayer()) {
+            case MUSIC_PLAYER_STATE_IDLE: {
+                stateBtnPlay = 0;
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_pause_to_play));
+                Drawable drawable = btnPlay.getDrawable();
+                if (drawable instanceof AnimatedVectorDrawableCompat) {
+                    avd = (AnimatedVectorDrawableCompat) drawable;
+                    avd.start();
+                } else if (drawable instanceof AnimatedVectorDrawable) {
+                    avd1 = (AnimatedVectorDrawable) drawable;
+                    avd1.start();
+                }
+                break;
+            }
+            case MUSIC_PLAYER_STATE_PLAYING: {
+                stateBtnPlay = 1;
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_play_to_pause));
+                Drawable drawable = btnPlay.getDrawable();
+                if (drawable instanceof AnimatedVectorDrawableCompat) {
+                    avd = (AnimatedVectorDrawableCompat) drawable;
+                    avd.start();
+                } else if (drawable instanceof AnimatedVectorDrawable) {
+                    avd1 = (AnimatedVectorDrawable) drawable;
+                    avd1.start();
+                }
+                break;
+            }
+            default:
+                break;
+        }
     }
 
     private final BroadcastReceiver musicReceiver = new BroadcastReceiver() {
@@ -194,10 +230,21 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(musicReceiver, intentFilter);
     }
 
+    @SuppressLint("UseCompatLoadingForDrawables")
     private void handleIntent(Intent intent) {
         int action = intent.getIntExtra("action", -1);
         switch (action) {
             case MUSIC_PLAYER_ACTION_PAUSE: {
+                stateBtnPlay = 0;
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_pause_to_play));
+                Drawable drawable = btnPlay.getDrawable();
+                if (drawable instanceof AnimatedVectorDrawableCompat) {
+                    avd = (AnimatedVectorDrawableCompat) drawable;
+                    avd.start();
+                } else if (drawable instanceof AnimatedVectorDrawable) {
+                    avd1 = (AnimatedVectorDrawable) drawable;
+                    avd1.start();
+                }
                 try {
                     musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_IDLE);
                 } catch (Exception e) {
@@ -207,11 +254,39 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
             }
             case MUSIC_PLAYER_ACTION_RESUME:
             case MUSIC_PLAYER_ACTION_START: {
+                stateBtnPlay = 1;
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_play_to_pause));
+                Drawable drawable = btnPlay.getDrawable();
+                if (drawable instanceof AnimatedVectorDrawableCompat) {
+                    avd = (AnimatedVectorDrawableCompat) drawable;
+                    avd.start();
+                } else if (drawable instanceof AnimatedVectorDrawable) {
+                    avd1 = (AnimatedVectorDrawable) drawable;
+                    avd1.start();
+                }
                 try {
                     musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                break;
+            }
+            case MUSIC_PLAYER_ACTION_NEXT:
+            case MUSIC_PLAYER_ACTION_COMPLETE: {
+                try {
+                    musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Log.d(TAG, "handleIntent: next");
+                musicPlayer.nextSong(musicPlayer.getCurrentIndexSong());
+                handlePlayer(musicPlayer.getCurrentSong());
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESET_SONG, musicPlayer.getCurrentMode());
+                    }
+                }, 500);
                 break;
             }
             default:
