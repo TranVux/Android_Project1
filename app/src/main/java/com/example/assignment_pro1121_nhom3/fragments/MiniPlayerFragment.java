@@ -33,11 +33,14 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.example.assignment_pro1121_nhom3.views.SplashScreen;
 import com.google.android.flexbox.FlexboxLayout;
+
+import java.util.ArrayList;
 
 
 public class MiniPlayerFragment extends Fragment implements View.OnClickListener {
@@ -48,7 +51,7 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
     private TextView tvMusicName, tvSingerName;
     private int stateBtnPlay = 1; // 1: play | 0: stop
     private FlexboxLayout playerLayout;
-    private SharedPreferences sharedPreferences;
+    private SharedPreferences sharedPreferences, musicSharePreferences;
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
     AnimatedVectorDrawable avd1;
     AnimatedVectorDrawableCompat avd;
@@ -68,6 +71,7 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
             currentMusic = (Music) getArguments().getSerializable(Constants.KEY_MUSIC);
         }
         sharedPreferences = requireContext().getSharedPreferences("music_player_state", Context.MODE_PRIVATE);
+        musicSharePreferences = requireContext().getSharedPreferences("music_player", Context.MODE_PRIVATE);
     }
 
     @Override
@@ -293,5 +297,32 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
                 break;
         }
         handleStateMusicPlayer(musicPlayer);
+        saveCurrentMusic(musicPlayer, musicSharePreferences.getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10));
+    }
+
+    public boolean checkUniqueSong(String songName) {
+        ArrayList<Music> list = (ArrayList<Music>) SongRecentDatabase.getInstance(requireContext().getApplicationContext()).musicRecentDAO().checkSong(songName);
+        return list.size() <= 0;
+    }
+
+    public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist) {
+        if (checkUniqueSong(musicPlayer.getCurrentSong().getName())) {
+            SongRecentDatabase.getInstance(requireContext().getApplicationContext()).musicRecentDAO().insertSong(musicPlayer.getCurrentSong());
+        }
+        SharedPreferences.Editor editor = musicSharePreferences.edit();
+        editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
+        editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
+        editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());
+        editor.putString(KEY_SONG_ID, musicPlayer.getCurrentSong().getId());
+        editor.putLong(KEY_SONG_VIEWS, musicPlayer.getCurrentSong().getViews());
+        editor.putString(KEY_SONG_SINGER_ID, musicPlayer.getCurrentSong().getSingerId());
+        editor.putString(KEY_SONG_SINGER_NAME, musicPlayer.getCurrentSong().getSingerName());
+        editor.putString(KEY_SONG_GENRES_ID, musicPlayer.getCurrentSong().getGenresId());
+        editor.putLong(KEY_SONG_CREATION_DATE, musicPlayer.getCurrentSong().getCreationDate());
+        editor.putLong(KEY_SONG_UPDATE_DATE, musicPlayer.getCurrentSong().getUpdateDate());
+        editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
+        Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
+        editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
+        editor.apply();
     }
 }

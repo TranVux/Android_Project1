@@ -246,6 +246,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         super.onResume();
         Log.d(TAG, "onResume: ");
         ((MainActivity) requireActivity()).toTransparent();
+        setContentInit(musicPlayer.getCurrentSong());
+        setContentForNextMusic(musicPlayer.getNextSong());
     }
 
     @Override
