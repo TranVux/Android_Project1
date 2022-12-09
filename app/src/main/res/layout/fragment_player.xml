@@ -37,7 +37,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingHorizontal="26dp"
-                android:layout_marginVertical="20dp">
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="28dp">
 
                 <TextView
                     android:id="@+id/musicName"
@@ -95,7 +96,6 @@
                     android:layout_width="300dp"
                     android:layout_height="300dp"
                     android:layout_centerInParent="true"
-                    android:layout_marginTop="20dp"
                     android:elevation="8dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/img" />

@@ -334,12 +334,14 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             notificationCompatBuilder
                     .addAction(R.drawable.ic_small_previous, "Previous", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_PREVIOUS))
                     .addAction(R.drawable.ic_small_pause, "Pause", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_PAUSE))
-                    .addAction(R.drawable.ic_small_next, "Next", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_NEXT));
+                    .addAction(R.drawable.ic_small_next, "Next", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_NEXT))
+                    .addAction(R.drawable.ic_close, "close", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_DESTROY));
         } else {
             notificationCompatBuilder
                     .addAction(R.drawable.ic_small_previous, "Previous", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_PREVIOUS))
                     .addAction(R.drawable.ic_small_play, "Resume", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_RESUME))
-                    .addAction(R.drawable.ic_small_next, "Next", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_NEXT));
+                    .addAction(R.drawable.ic_small_next, "Next", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_NEXT))
+                    .addAction(R.drawable.ic_close, "close", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_DESTROY));
         }
 
         Glide.with(MusicPlayerService.this)
