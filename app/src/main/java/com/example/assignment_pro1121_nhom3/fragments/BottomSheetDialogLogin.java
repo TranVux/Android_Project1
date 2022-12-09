@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,6 +77,7 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
     IOnUpdateUiUserFragmentListener iOnUpdateUiUserFragmentListener;
     ProgressBar mProgressBar;
     SharedPreferences userSharePreferences;
+    TextView tv;
 
     public static BottomSheetDialogLogin newInstance(IOnUpdateUiUserFragmentListener iOnUpdateUiUserFragmentListener) {
         return new BottomSheetDialogLogin(iOnUpdateUiUserFragmentListener);
@@ -132,6 +134,7 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         });
         init(view);
+        tv.setText(Html.fromHtml("Bằng cách tiếp tục, bạn đồng ý với <b>Thỏa thuận sử dụng</b> và <b>Chính sách bảo mật</b> của chúng tôi"));
         handleBottomSheet(bottomSheetDialog);
         return bottomSheetDialog;
     }
@@ -151,6 +154,7 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
         signInButtonGG = view.findViewById(R.id.layoutLoginGoogle);
         signInButtonFB = view.findViewById(R.id.layoutLoginFacebook);
         mProgressBar = view.findViewById(R.id.progressBar);
+        tv = view.findViewById(R.id.text);
     }
 
     public void handleBottomSheet(BottomSheetDialog bottomSheetDialog) {
