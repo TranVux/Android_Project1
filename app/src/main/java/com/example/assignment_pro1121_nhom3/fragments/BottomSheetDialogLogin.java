@@ -95,6 +95,8 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
                     if (result.getResultCode() == Activity.RESULT_OK) {
                         Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(result.getData());
                         handleSignInGGResult(task);
+                    } else {
+                        mProgressBar.setVisibility(View.GONE);
                     }
                 }
             });
@@ -200,7 +202,7 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
 
     private void signInFB() {
         callbackManager = CallbackManager.Factory.create();
-        mProgressBar.setVisibility(View.VISIBLE);
+//        mProgressBar.setVisibility(View.VISIBLE);
         if (AccessToken.getCurrentAccessToken() != null) {
             LoginManager.getInstance().logOut();
         }
@@ -317,6 +319,7 @@ public class BottomSheetDialogLogin extends BottomSheetDialogFragment {
             // Please refer to the GoogleSignInStatusCodes class reference for more
             // information.
             Log.w(TAG, "signInResult:failed code=" + e.getStatusCode());
+            mProgressBar.setVisibility(View.GONE);
         }
     }
 
