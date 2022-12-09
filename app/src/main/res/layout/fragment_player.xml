@@ -37,8 +37,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:paddingHorizontal="26dp"
-                android:paddingTop="30dp"
-                android:paddingBottom="26dp">
+                android:layout_marginVertical="20dp">
 
                 <TextView
                     android:id="@+id/musicName"

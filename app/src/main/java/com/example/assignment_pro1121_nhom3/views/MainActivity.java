@@ -179,6 +179,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
             // handle thumbnail của player
             Glide.with(MainActivity.this)
                     .load(musicPlayer.getCurrentSong().getThumbnailUrl())
+                    .error(R.drawable.fallback_img)
                     .apply(new RequestOptions().override(180, 180))
                     .into(imageThumbnailCurrentMusic);
         }
@@ -465,6 +466,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     public void handleChangeMusic() {
         Glide.with(MainActivity.this)
                 .load(musicPlayer.getCurrentSong().getThumbnailUrl())
+                .error(R.drawable.fallback_img)
                 .apply(new RequestOptions().override(45, 45))
                 .into(imageThumbnailCurrentMusic);
     }

@@ -155,7 +155,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
 
     public void setContentInit(Music music) {
         TransitionManager.beginDelayedTransition(parentLayout, new AutoTransition());
-        Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(backgroundImage1.getDrawable()).into(backgroundImage1);
+        Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).placeholder(backgroundImage1.getDrawable()).into(backgroundImage1);
         reLoadImageThumbnail(music, imageMusicThumbnail1, imageMusicThumbnail2);
         musicName.setText(CapitalizeWord.CapitalizeWords(music.getName()));
         singerName.setText(CapitalizeWord.CapitalizeWords(music.getSingerName()));
@@ -164,14 +164,14 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
 
     public void reLoadImageThumbnail(Music music, ImageView imageView1, ImageView imageView2) {
         if (!imageMusicThumbnail1IsVisible) {
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(imageView1.getDrawable()).into(imageView1);
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(imageView2.getDrawable()).into(imageView2);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).placeholder(imageView1.getDrawable()).into(imageView1);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).placeholder(imageView2.getDrawable()).into(imageView2);
             imageView1.animate().alpha(0f).setDuration(350);
             imageView2.animate().alpha(1f).setDuration(350);
             imageMusicThumbnail1IsVisible = true;
         } else {
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(imageView1.getDrawable()).into(imageView1);
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).placeholder(imageView2.getDrawable()).into(imageView2);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).placeholder(imageView1.getDrawable()).into(imageView1);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).placeholder(imageView2.getDrawable()).into(imageView2);
             imageView1.animate().alpha(1f).setDuration(350);
             imageView2.animate().alpha(0f).setDuration(350);
             imageMusicThumbnail1IsVisible = false;
