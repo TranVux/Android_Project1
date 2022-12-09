@@ -22,22 +22,36 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_RECENT_PUBLISH;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_SINGER;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
@@ -59,8 +73,13 @@ public class SplashScreen extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     private final PlaylistDAO playlistDAO = new PlaylistDAO();
     private ArrayList<Music> listMusicRecent = new ArrayList<>();
+    private static final int REQUEST_CODE_PERMISSION = 30;
+    private boolean isGrantedPermission = false;
+
+
     // db
     FirebaseFirestore db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -210,7 +229,7 @@ public class SplashScreen extends AppCompatActivity {
                     if (list.size() != 0) {
                         musicPlayer = MusicPlayer.getInstance(list);
                     } else {
-                        getSongList();
+                        getPermission();
                         musicPlayer = MusicPlayer.getInstance(listMusicRecent);
                     }
                     musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
@@ -248,5 +267,66 @@ public class SplashScreen extends AppCompatActivity {
         }
         Log.d(TAG, "getSongList: " + list);
         listMusicRecent.addAll(list);
+    }
+
+    public boolean checkPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return Environment.isExternalStorageEmulated();
+        } else {
+            int readCheck = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_EXTERNAL_STORAGE);
+            return readCheck == PackageManager.PERMISSION_GRANTED;
+        }
+    }
+
+    private ActivityResultLauncher<Intent> intentActivityResultLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            if (Environment.isExternalStorageEmulated()) {
+                                Toast.makeText(SplashScreen.this, "Permission Granted", Toast.LENGTH_SHORT).show();
+                                getSongList();
+                            } else {
+                                Toast.makeText(SplashScreen.this, "Permission Denied", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+            });
+
+    public void getPermission() {
+        isGrantedPermission = checkPermission();
+        Log.d(TAG, "getPermission: " + isGrantedPermission);
+        if (isGrantedPermission) {
+            getSongList();
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                try {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    intent.addCategory("android.intent.category.DEFAULT");
+                    intent.setData(Uri.parse(String.format("package:%s", getApplicationContext().getPackageName())));
+                    intentActivityResultLauncher.launch(intent);
+                } catch (Exception e) {
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    intentActivityResultLauncher.launch(intent);
+                }
+            } else {
+                ActivityCompat.requestPermissions(SplashScreen.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQUEST_CODE_PERMISSION);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getSongList();
+            } else {
+                Toast.makeText(this, "Chưa được cấp quyền camera", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
