@@ -185,7 +185,7 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
         switch (musicPlayer.getStateMusicPlayer()) {
             case MUSIC_PLAYER_STATE_IDLE: {
                 stateBtnPlay = 0;
-                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_pause_to_play));
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_stop_to_play));
                 Drawable drawable = btnPlay.getDrawable();
                 if (drawable instanceof AnimatedVectorDrawableCompat) {
                     avd = (AnimatedVectorDrawableCompat) drawable;
@@ -198,7 +198,7 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
             }
             case MUSIC_PLAYER_STATE_PLAYING: {
                 stateBtnPlay = 1;
-                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_play_to_pause));
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_play_to_stop));
                 Drawable drawable = btnPlay.getDrawable();
                 if (drawable instanceof AnimatedVectorDrawableCompat) {
                     avd = (AnimatedVectorDrawableCompat) drawable;
@@ -242,7 +242,7 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
         switch (action) {
             case MUSIC_PLAYER_ACTION_PAUSE: {
                 stateBtnPlay = 0;
-                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_pause_to_play));
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_stop_to_play));
                 Drawable drawable = btnPlay.getDrawable();
                 if (drawable instanceof AnimatedVectorDrawableCompat) {
                     avd = (AnimatedVectorDrawableCompat) drawable;
@@ -261,7 +261,7 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
             case MUSIC_PLAYER_ACTION_RESUME:
             case MUSIC_PLAYER_ACTION_START: {
                 stateBtnPlay = 1;
-                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_play_to_pause));
+                btnPlay.setImageDrawable(getResources().getDrawable(R.drawable.avd_play_to_stop));
                 Drawable drawable = btnPlay.getDrawable();
                 if (drawable instanceof AnimatedVectorDrawableCompat) {
                     avd = (AnimatedVectorDrawableCompat) drawable;

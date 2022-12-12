@@ -140,7 +140,11 @@ public class SplashScreen extends AppCompatActivity {
                     public void onGetSuccess(ArrayList<Music> list) {
                         musicPlayer = MusicPlayer.getInstance(list);
                         Log.d(TAG, "onReadSuccess: " + list.size());
-                        musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+                        if (sharedPreferences.getInt(KEY_SONG_INDEX, 0) > list.size() - 1) {
+                            musicPlayer.setMusicAtPosition(0);
+                        } else {
+                            musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+                        }
                         startActivity(new Intent(SplashScreen.this, MainActivity.class));
                         finish();
                     }
