@@ -33,7 +33,7 @@ public class MyPlaylistAdapter extends RecyclerView.Adapter<MyPlaylistAdapter.My
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setData(List<Music> list) {
+    public void setData(ArrayList<Music> list) {
         this.list = list;
         notifyDataSetChanged();
     }
@@ -109,6 +109,10 @@ public class MyPlaylistAdapter extends RecyclerView.Adapter<MyPlaylistAdapter.My
         void onItemClick(Music music, int position);
 
         void onMoreButtonClick(Music music);
+    }
+
+    public interface HandleSetList {
+        ArrayList<Music> onSetList(ArrayList<Music> list);
     }
 }
 

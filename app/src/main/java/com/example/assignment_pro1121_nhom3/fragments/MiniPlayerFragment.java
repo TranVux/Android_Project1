@@ -102,6 +102,8 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
         tvMusicName = view.findViewById(R.id.musicName);
         tvSingerName = view.findViewById(R.id.singerName);
         playerLayout = view.findViewById(R.id.playerLayout);
+
+        tvMusicName.setSelected(true);
     }
 
     public void handleButtonPlay() {

@@ -210,6 +210,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
 
         fadeOut = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out_anim);
         fadeIn = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_in_anim);
+        musicName.setSelected(true);
     }
 
     public void setEventClick() {

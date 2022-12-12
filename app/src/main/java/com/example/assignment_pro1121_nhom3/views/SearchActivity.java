@@ -55,20 +55,23 @@ import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
+import com.google.firebase.firestore.Query;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 
+import org.checkerframework.checker.units.qual.A;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.io.BufferedReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements MusicDAO.GetDataPagination, MusicDAO.SearchMusic, IOnProgressBarStatusListener {
 
     public static final String TAG = SearchActivity.class.getSimpleName();
 
@@ -80,10 +83,13 @@ public class SearchActivity extends AppCompatActivity {
     private TextView keywords;
     private LinearLayout emptyLayout;
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
-    SharedPreferences sharedPreferences;
     private ArrayList<String> searchHistory = new ArrayList<>();
     private ChipGroup chipGroup;
     private ProgressBar progressBar;
+    private Query nextQuery;
+    private ArrayList<Music> musicSearchArr;
+    private boolean isContinuous = false;
+    private boolean isNewQuery = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +109,11 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                if (charSequence.length() <= 0) {
+                    isNewQuery = true;
+                    musicSearchArr.clear();
+                    nextQuery = null;
+                }
             }
 
             @Override
@@ -135,36 +145,7 @@ public class SearchActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "search: " + searchHistory);
             }
-            musicDAO.searchMusic(searchString, new MusicDAO.SearchMusic() {
-                @SuppressLint("SetTextI18n")
-                @Override
-                public void onSearchSuccess(ArrayList<Music> result) {
-                    if (result.size() > 0) {
-                        myPlaylistAdapter.setData(result);
-                        emptyLayout.setVisibility(View.GONE);
-                    } else {
-                        myPlaylistAdapter.setData(new ArrayList<>());
-                        emptyLayout.setVisibility(View.VISIBLE);
-                        keywords.setText("'" + searchString + "'");
-                    }
-                }
-
-                @Override
-                public void onSearchFailure() {
-
-                }
-            }, new IOnProgressBarStatusListener() {
-                @Override
-                public void beforeGetData() {
-                    emptyLayout.setVisibility(View.GONE);
-                    progressBar.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void afterGetData() {
-                    progressBar.setVisibility(View.GONE);
-                }
-            });
+            musicDAO.searchByKeyWord(searchString, nextQuery, this, this, this);
         }
     }
 
@@ -175,6 +156,8 @@ public class SearchActivity extends AppCompatActivity {
         emptyLayout = findViewById(R.id.emptyLayout);
         chipGroup = findViewById(R.id.chipGroupRecentSearchValue);
         progressBar = findViewById(R.id.progressBar);
+
+        musicSearchArr = new ArrayList<>();
 
         timer = new Timer();
         musicDAO = new MusicDAO();
@@ -210,7 +193,7 @@ public class SearchActivity extends AppCompatActivity {
                 bottomSheet.show(getSupportFragmentManager(), "TAG");
             }
         });
-        myPlaylistAdapter.setData(new ArrayList<>());
+        myPlaylistAdapter.setData(musicSearchArr);
         recyclerView.setAdapter(myPlaylistAdapter);
     }
 
@@ -257,6 +240,9 @@ public class SearchActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     Log.d(TAG, "onClick: ");
                     edtSearchBar.setText(chip.getText().toString());
+                    isNewQuery = true;
+                    musicSearchArr.clear();
+                    nextQuery = null;
                     search(chip.getText().toString());
                 }
             });
@@ -294,5 +280,61 @@ public class SearchActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         saveArrayList(searchHistory, KEY_RECENT_KEY_WORDS);
+    }
+
+    @Override
+    public void getNextQuery(Query query) {
+        if (query != null) {
+            nextQuery = query;
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    public void onSearchSuccess(ArrayList<Music> result) {
+        isNewQuery = false;
+        musicSearchArr.addAll(result);
+        Log.d(TAG, "onSearchSuccess: " + musicSearchArr.size());
+        myPlaylistAdapter.setData(musicSearchArr);
+
+        Log.d(TAG, "onSearchSuccess: list size" + myPlaylistAdapter.getList().size());
+        if (myPlaylistAdapter.getList().size() <= 0) {
+            if (emptyLayout.getVisibility() != View.VISIBLE) {
+                myPlaylistAdapter.setData(new ArrayList<>());
+                emptyLayout.setVisibility(View.VISIBLE);
+                keywords.setText("'" + edtSearchBar.getText().toString().trim() + "'");
+            }
+        }
+
+        if (myPlaylistAdapter.getList().size() > 10) {
+            isContinuous = false;
+        } else {
+            isContinuous = true;
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    @Override
+    public void onSearchFailure() {
+        progressBar.setVisibility(View.GONE);
+        emptyLayout.setVisibility(View.VISIBLE);
+        keywords.setText("'" + edtSearchBar.getText().toString().trim() + "'");
+        isContinuous = false;
+    }
+
+    @Override
+    public void beforeGetData() {
+        emptyLayout.setVisibility(View.GONE);
+        if (isNewQuery) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void afterGetData() {
+        progressBar.setVisibility(View.GONE);
+        if (isContinuous) {
+            musicDAO.searchByKeyWord(edtSearchBar.getText().toString().trim(), nextQuery, this, this, this);
+        }
     }
 }

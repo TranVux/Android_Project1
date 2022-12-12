@@ -17,6 +17,7 @@
         android:drawableStart="@drawable/ic_search"
         android:fontFamily="@font/roboto"
         android:hint="Nhập tên bài hát"
+        android:maxLines="1"
         android:paddingStart="15dp"
         android:paddingTop="2dp"
         android:textColor="@color/white"
