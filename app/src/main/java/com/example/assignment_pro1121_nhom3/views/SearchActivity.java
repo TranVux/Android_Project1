@@ -16,10 +16,8 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_THUM
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_UPDATE_DATE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_TOP_10;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_SINGER;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,13 +26,10 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
-import android.util.JsonReader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +42,6 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.MyPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
 import com.example.assignment_pro1121_nhom3.fragments.BottomSheet;
-import com.example.assignment_pro1121_nhom3.fragments.MiniPlayerFragment;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
@@ -57,17 +51,10 @@ import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.firestore.Query;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.reflect.TypeToken;
 
-import org.checkerframework.checker.units.qual.A;
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.BufferedReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -294,22 +281,21 @@ public class SearchActivity extends AppCompatActivity implements MusicDAO.GetDat
     public void onSearchSuccess(ArrayList<Music> result) {
         isNewQuery = false;
         musicSearchArr.addAll(result);
-        Log.d(TAG, "onSearchSuccess: " + musicSearchArr.size());
         myPlaylistAdapter.setData(musicSearchArr);
+        Log.d(TAG, "onSearchSuccess: " + musicSearchArr.size());
 
-        Log.d(TAG, "onSearchSuccess: list size" + myPlaylistAdapter.getList().size());
-        if (myPlaylistAdapter.getList().size() <= 0) {
+        isContinuous = myPlaylistAdapter.getList().size() <= 10;
+
+        if (musicSearchArr.size() == 0) {
+            Log.d(TAG, "onSearchSuccess: vào if");
             if (emptyLayout.getVisibility() != View.VISIBLE) {
+                Log.d(TAG, "onSearchSuccess: vào if 2");
                 myPlaylistAdapter.setData(new ArrayList<>());
                 emptyLayout.setVisibility(View.VISIBLE);
                 keywords.setText("'" + edtSearchBar.getText().toString().trim() + "'");
             }
-        }
-
-        if (myPlaylistAdapter.getList().size() > 10) {
-            isContinuous = false;
         } else {
-            isContinuous = true;
+            emptyLayout.setVisibility(View.GONE);
         }
     }
 
@@ -317,14 +303,10 @@ public class SearchActivity extends AppCompatActivity implements MusicDAO.GetDat
     @Override
     public void onSearchFailure() {
         progressBar.setVisibility(View.GONE);
-        emptyLayout.setVisibility(View.VISIBLE);
-        keywords.setText("'" + edtSearchBar.getText().toString().trim() + "'");
-        isContinuous = false;
     }
 
     @Override
     public void beforeGetData() {
-        emptyLayout.setVisibility(View.GONE);
         if (isNewQuery) {
             progressBar.setVisibility(View.VISIBLE);
         }
