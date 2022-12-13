@@ -9,11 +9,18 @@
 
     <TextView
         android:id="@+id/tvNamePlaylistTopBar"
-        android:layout_width="wrap_content"
+        android:layout_width="160dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
+        android:clickable="true"
         android:elevation="5dp"
+        android:ellipsize="marquee"
+        android:textAlignment="center"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:fontFamily="@font/roboto_bold"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:maxLines="1"
         android:text="Ngủ"
         android:textColor="@color/white"
         android:textSize="20sp"
@@ -82,7 +89,9 @@
 
         <TextView
             android:id="@+id/tvPlaylistName"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_bold"
             android:text="Ngủ"

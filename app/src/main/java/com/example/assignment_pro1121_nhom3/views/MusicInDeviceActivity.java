@@ -293,4 +293,10 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
                     .commit();
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpMiniPlayer();
+    }
 }

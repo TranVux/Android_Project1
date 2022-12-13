@@ -73,4 +73,10 @@ public class MorePlaylistActivity extends AppCompatActivity {
                     .commit();
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpMiniPlayer();
+    }
 }

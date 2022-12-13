@@ -163,4 +163,10 @@ public class RecentMusicActivity extends AppCompatActivity implements View.OnCli
                     .commit();
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpMiniPlayer();
+    }
 }

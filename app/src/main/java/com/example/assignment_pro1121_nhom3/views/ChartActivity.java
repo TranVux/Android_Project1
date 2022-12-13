@@ -311,4 +311,10 @@ public class ChartActivity extends AppCompatActivity {
                     .commit();
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpMiniPlayer();
+    }
 }

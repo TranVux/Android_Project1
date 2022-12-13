@@ -176,6 +176,8 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         btnPlayAll = findViewById(R.id.buttonPlayAll);
         emptyLayout = findViewById(R.id.emptyLayout);
         keyword = findViewById(R.id.keyword);
+
+        topBarPlaylistName.setSelected(true);
     }
 
     public void getDataGenres() {
@@ -226,7 +228,7 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         //gắn ảnh thumbnail cho playlist
         Glide.with(DetailPlaylistActivity.this)
                 .load(tempGenres.getUrlThumbnail())
-                .apply(new RequestOptions().override(200, 200))
+                .apply(new RequestOptions().override(250, 250))
                 .into(thumbnailPlaylist);
 
         //gán tên playlist, người tạo,...
@@ -284,7 +286,7 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         //gắn ảnh thumbnail cho playlist
         Glide.with(DetailPlaylistActivity.this)
                 .load(tempPlaylist.getUrlThumbnail())
-                .apply(new RequestOptions().override(140, 140))
+                .apply(new RequestOptions().override(250, 250))
                 .into(thumbnailPlaylist);
 
         //gán tên playlist, người tạo,...
@@ -386,5 +388,11 @@ public class DetailPlaylistActivity extends AppCompatActivity {
                     .add(R.id.fragmentMiniPlayer, MiniPlayerFragment.newInstance(musicPlayer.getCurrentSong()))
                     .commit();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpMiniPlayer();
     }
 }

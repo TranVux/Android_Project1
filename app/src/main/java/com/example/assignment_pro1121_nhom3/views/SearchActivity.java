@@ -160,7 +160,7 @@ public class SearchActivity extends AppCompatActivity implements MusicDAO.GetDat
                     musicPlayer.pauseSong(musicPlayer.getCurrentPositionSong());
                     musicPlayer.clearPlaylist();
                     musicPlayer.setPlayList(myPlaylistAdapter.getList());
-                    musicPlayer.start();
+                    musicPlayer.setMusicAtPosition(position);
                     try {
                         musicPlayer.setStateMusicPlayer(MusicPlayer.MUSIC_PLAYER_STATE_PLAYING);
                     } catch (Exception e) {

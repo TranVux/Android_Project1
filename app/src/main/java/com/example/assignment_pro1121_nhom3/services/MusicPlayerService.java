@@ -272,6 +272,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     public void setMusicUrl(String url) {
         try {
             isLoadSuccess = false;
+
             if (playMode.equals(MUSIC_PLAYER_MODE_ONLINE)) {
                 mediaPlayer.setDataSource(url);
             } else if (playMode.equals(MUSIC_PLAYER_MODE_LOCAL)) {
@@ -298,6 +299,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                     }, 0, 1000);
                 }
             });
+
             mediaPlayer.prepareAsync();
             isPlaying = true;
         } catch (Exception e) {

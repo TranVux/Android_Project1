@@ -355,4 +355,10 @@ public class DetailSingerActivity extends AppCompatActivity {
                     .commit();
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setUpMiniPlayer();
+    }
 }
