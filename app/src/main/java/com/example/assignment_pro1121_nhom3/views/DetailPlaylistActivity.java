@@ -5,6 +5,7 @@ import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_IS_DECREA
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_LIMIT;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MODE_MUSIC_PLAYER;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MUSIC;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_CREATION_DATE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_GENRES_ID;
@@ -43,7 +44,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -61,12 +61,11 @@ import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.storages.MusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import jp.wasabeef.blurry.Blurry;
@@ -319,7 +318,7 @@ public class DetailPlaylistActivity extends AppCompatActivity {
             saveCurrentMusic(musicPlayer, tempId, playlistType);
             Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
             startActivity(new Intent(DetailPlaylistActivity.this, MainActivity.class));
-            startServiceMusic(musicPlayer.getCurrentSong(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_SONG, musicPlayer.getCurrentMode());
+            startServiceMusic(adapter.getList(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_PLAYLIST, musicPlayer.getCurrentMode());
         }
     }
 
@@ -346,21 +345,8 @@ public class DetailPlaylistActivity extends AppCompatActivity {
     }
 
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlayList) {
-        if (checkUniqueSong(musicPlayer.getCurrentSong().getName())) {
-            SongRecentDatabase.getInstance(getApplicationContext()).musicRecentDAO().insertSong(musicPlayer.getCurrentSong());
-        }
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
-        editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
-        editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());
-        editor.putString(KEY_SONG_ID, musicPlayer.getCurrentSong().getId());
-        editor.putLong(KEY_SONG_VIEWS, musicPlayer.getCurrentSong().getViews());
-        editor.putString(KEY_SONG_SINGER_ID, musicPlayer.getCurrentSong().getSingerId());
-        editor.putString(KEY_SONG_SINGER_NAME, musicPlayer.getCurrentSong().getSingerName());
-        editor.putString(KEY_SONG_GENRES_ID, musicPlayer.getCurrentSong().getGenresId());
-        editor.putLong(KEY_SONG_CREATION_DATE, musicPlayer.getCurrentSong().getCreationDate());
-        editor.putLong(KEY_SONG_UPDATE_DATE, musicPlayer.getCurrentSong().getUpdateDate());
-        editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
+        SharedPreferences.Editor editor = MusicPlayerStorage.getInstance(this).edit();
+        editor.putInt(KEY_SONG_INDEX, musicPlayer.getCurrentIndexSong());
         Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
         Log.d(TAG, "saveCurrentMusic: " + typePlayList);
         if (isGenres) {
@@ -373,11 +359,12 @@ public class DetailPlaylistActivity extends AppCompatActivity {
     }
 
 
-    public void startServiceMusic(Music music, int action, String mode) {
+    public void startServiceMusic(ArrayList<Music> listMusic, int action, String mode) {
         Intent serviceMusic = new Intent(DetailPlaylistActivity.this, MusicPlayerService.class);
         serviceMusic.putExtra("action", action);
-        serviceMusic.putExtra(KEY_MUSIC, music);
+        serviceMusic.putExtra(KEY_PLAYLIST, listMusic);
         serviceMusic.putExtra(KEY_MODE_MUSIC_PLAYER, mode);
+        serviceMusic.putExtra(KEY_SONG_INDEX, MusicPlayerStorage.getInstance(this).getInt(KEY_SONG_INDEX, 0));
         startService(serviceMusic);
     }
 

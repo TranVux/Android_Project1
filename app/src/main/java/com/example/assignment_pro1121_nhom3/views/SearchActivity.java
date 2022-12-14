@@ -3,6 +3,7 @@ package com.example.assignment_pro1121_nhom3.views;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MODE_MUSIC_PLAYER;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MUSIC;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_RECENT_KEY_WORDS;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_CREATION_DATE;
@@ -46,6 +47,7 @@ import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListe
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.storages.MusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -170,7 +172,7 @@ public class SearchActivity extends AppCompatActivity implements MusicDAO.GetDat
                     saveCurrentMusic(musicPlayer, music.getSingerId(), PLAYLIST_TYPE_SINGER);
                     Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
                     startActivity(new Intent(SearchActivity.this, MainActivity.class));
-                    startServiceMusic(musicPlayer.getCurrentSong(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_SONG, musicPlayer.getCurrentMode());
+                    startServiceMusic(musicPlayer.getPlayListMusic(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_PLAYLIST, musicPlayer.getCurrentMode());
                 }
             }
 
@@ -190,22 +192,8 @@ public class SearchActivity extends AppCompatActivity implements MusicDAO.GetDat
     }
 
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlayList) {
-        if (checkUniqueSong(musicPlayer.getCurrentSong().getName())) {
-            SongRecentDatabase.getInstance(getApplicationContext()).musicRecentDAO().insertSong(musicPlayer.getCurrentSong());
-        }
-        SharedPreferences sharedPreferences = getSharedPreferences("music_player", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
-        editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
-        editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());
-        editor.putString(KEY_SONG_ID, musicPlayer.getCurrentSong().getId());
-        editor.putLong(KEY_SONG_VIEWS, musicPlayer.getCurrentSong().getViews());
-        editor.putString(KEY_SONG_SINGER_ID, musicPlayer.getCurrentSong().getSingerId());
-        editor.putString(KEY_SONG_SINGER_NAME, musicPlayer.getCurrentSong().getSingerName());
-        editor.putString(KEY_SONG_GENRES_ID, musicPlayer.getCurrentSong().getGenresId());
-        editor.putLong(KEY_SONG_CREATION_DATE, musicPlayer.getCurrentSong().getCreationDate());
-        editor.putLong(KEY_SONG_UPDATE_DATE, musicPlayer.getCurrentSong().getUpdateDate());
-        editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
+        SharedPreferences.Editor editor = MusicPlayerStorage.getInstance(this).edit();
+        editor.putInt(KEY_SONG_INDEX, musicPlayer.getCurrentIndexSong());
         editor.putString(KEY_PLAYLIST_TYPE, typePlayList);
         Log.d(TAG, "saveCurrentMusic: " + typePlayList);
         Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
@@ -237,11 +225,12 @@ public class SearchActivity extends AppCompatActivity implements MusicDAO.GetDat
 
     }
 
-    public void startServiceMusic(Music music, int action, String mode) {
+    public void startServiceMusic(ArrayList<Music> listMusic, int action, String mode) {
         Intent serviceMusic = new Intent(SearchActivity.this, MusicPlayerService.class);
         serviceMusic.putExtra("action", action);
-        serviceMusic.putExtra(KEY_MUSIC, music);
+        serviceMusic.putExtra(KEY_PLAYLIST, listMusic);
         serviceMusic.putExtra(KEY_MODE_MUSIC_PLAYER, mode);
+        serviceMusic.putExtra(KEY_SONG_INDEX, MusicPlayerStorage.getInstance(this).getInt(KEY_SONG_INDEX, 0));
         startService(serviceMusic);
     }
 

@@ -33,6 +33,7 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.storages.MusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.example.assignment_pro1121_nhom3.utils.Constants;
@@ -287,19 +288,13 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
                 Log.d(TAG, "handleIntent: next");
                 musicPlayer.nextSong(musicPlayer.getCurrentIndexSong());
                 handlePlayer(musicPlayer.getCurrentSong());
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        startServiceMusic(musicPlayer.getCurrentSong(), MUSIC_PLAYER_ACTION_RESET_SONG, musicPlayer.getCurrentMode());
-                    }
-                }, 500);
                 break;
             }
             default:
                 break;
         }
         handleStateMusicPlayer(musicPlayer);
-        saveCurrentMusic(musicPlayer, musicSharePreferences.getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10));
+        saveCurrentMusic(musicPlayer, MusicPlayerStorage.getInstance(requireContext()).getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10));
     }
 
     public boolean checkUniqueSong(String songName) {
@@ -308,21 +303,8 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
     }
 
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist) {
-        if (checkUniqueSong(musicPlayer.getCurrentSong().getName())) {
-            SongRecentDatabase.getInstance(requireContext().getApplicationContext()).musicRecentDAO().insertSong(musicPlayer.getCurrentSong());
-        }
-        SharedPreferences.Editor editor = musicSharePreferences.edit();
-        editor.putString(KEY_SONG_NAME, musicPlayer.getCurrentSong().getName());
-        editor.putString(KEY_SONG_URL, musicPlayer.getCurrentSong().getUrl());
-        editor.putString(KEY_SONG_THUMBNAIL_URL, musicPlayer.getCurrentSong().getThumbnailUrl());
-        editor.putString(KEY_SONG_ID, musicPlayer.getCurrentSong().getId());
-        editor.putLong(KEY_SONG_VIEWS, musicPlayer.getCurrentSong().getViews());
-        editor.putString(KEY_SONG_SINGER_ID, musicPlayer.getCurrentSong().getSingerId());
-        editor.putString(KEY_SONG_SINGER_NAME, musicPlayer.getCurrentSong().getSingerName());
-        editor.putString(KEY_SONG_GENRES_ID, musicPlayer.getCurrentSong().getGenresId());
-        editor.putLong(KEY_SONG_CREATION_DATE, musicPlayer.getCurrentSong().getCreationDate());
-        editor.putLong(KEY_SONG_UPDATE_DATE, musicPlayer.getCurrentSong().getUpdateDate());
-        editor.putInt(KEY_SONG_INDEX, musicPlayer.getPlayListMusic().indexOf(musicPlayer.getCurrentSong()));
+        SharedPreferences.Editor editor = MusicPlayerStorage.getInstance(requireContext()).edit();
+        editor.putInt(KEY_SONG_INDEX, musicPlayer.getCurrentIndexSong());
         Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
         editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
         editor.apply();

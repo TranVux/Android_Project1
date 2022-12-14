@@ -29,7 +29,7 @@ public class MusicPlayer implements Serializable {
     public static final int MUSIC_PLAYER_ACTION_RESUME = 555;
     public static final int MUSIC_PLAYER_ACTION_DESTROY = 666;
     public static final int MUSIC_PLAYER_ACTION_COMPLETE = 777;
-    public static final int MUSIC_PLAYER_ACTION_RESET_SONG = 888;
+    public static final int MUSIC_PLAYER_ACTION_RESET_PLAYLIST = 888;
     public static final int MUSIC_PLAYER_ACTION_GO_TO_SONG = 999;
     public static final int MUSIC_PLAYER_ACTION_SEEK_TO_POSITION = 101010;
 

@@ -199,11 +199,14 @@ public class SplashScreen extends AppCompatActivity {
                 startActivity(new Intent(SplashScreen.this, MainActivity.class));
                 finish();
             } else if (playlistType.equals(PLAYLIST_TYPE_RECENT_PLAYLIST)) {
-                musicPlayer = MusicPlayer.getInstance(
-                        (ArrayList<Music>) SongRecentDatabase.getInstance(SplashScreen.this).musicRecentDAO().getListSongRecent()
-                );
+                ArrayList<Music> tempPlayList = (ArrayList<Music>) SongRecentDatabase.getInstance(SplashScreen.this).musicRecentDAO().getListSongRecent();
+                musicPlayer = MusicPlayer.getInstance(tempPlayList);
                 Log.d(TAG, "onCreate: " + listMusicRecent);
-                musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+                int index = sharedPreferences.getInt(KEY_SONG_INDEX, 0);
+                if (index > tempPlayList.size() - 1) {
+                    musicPlayer.setMusicAtPosition(0);
+                }
+                musicPlayer.setMusicAtPosition(index);
                 startActivity(new Intent(SplashScreen.this, MainActivity.class));
                 finish();
             } else {
