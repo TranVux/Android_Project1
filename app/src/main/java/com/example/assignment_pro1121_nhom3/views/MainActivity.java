@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         Log.d(TAG, "playMusicPlayer: " + musicPlayer.getStateMusicPlayer());
         //
         getSupportFragmentManager().beginTransaction()
-                .add(R.id.fragmentLayout, PlayerFragment.newInstance(musicPlayer.getPlayListMusic()), "PlayerFragment")
+                .add(R.id.fragmentLayout, PlayerFragment.newInstance(musicPlayer.getPlayListMusic()), PlayerFragment.TAG)
                 .commit();
         if (musicPlayer.getCurrentSong() != null) {
             // handle thumbnail của player
@@ -202,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
                         getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragmentLayout, homeFragment, "FragmentHome").commit();
+                                .replace(R.id.fragmentLayout, homeFragment, HomeFragment.TAG).commit();
                         break;
                     }
                     case R.id.player: {
@@ -213,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                         customRadio.setVisibility(View.VISIBLE);
                         customButtonPlay.setVisibility(View.GONE);
                         getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.fragmentLayout, userFragment, "FragmentUser").commit();
+                                .replace(R.id.fragmentLayout, userFragment, UserFragment.TAG).commit();
                         break;
                     }
                 }
@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 customButtonPlay.setVisibility(View.VISIBLE);
                 bottomNavigation.getMenu().getItem(1).setChecked(true);
                 getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragmentLayout, PlayerFragment.newInstance(listMusicRecent), "PlayerFragment")
+                        .replace(R.id.fragmentLayout, PlayerFragment.newInstance(listMusicRecent), PlayerFragment.TAG)
                         .commit();
             }
         });
@@ -320,7 +320,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 Log.d(TAG, "handleIntent: next");
                 musicPlayer.nextSong(musicPlayer.getCurrentIndexSong());
                 Log.d(TAG, "currentSong: " + musicPlayer.getCurrentSong().getName());
-                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag(PlayerFragment.TAG);
                 if (playerFragment == null)
                     return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
@@ -339,7 +339,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 Log.d(TAG, "handleIntent: previous");
                 musicPlayer.previousSong(musicPlayer.getCurrentIndexSong());
                 Log.d(TAG, "currentSong: " + musicPlayer.getCurrentSong().getName());
-                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag(PlayerFragment.TAG);
                 if (playerFragment == null)
                     return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
@@ -357,7 +357,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 }
                 int indexSong = intent.getIntExtra(KEY_SONG_INDEX, 0);
                 musicPlayer.setMusicAtPosition(indexSong);
-                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag(PlayerFragment.TAG);
                 if (playerFragment == null)
                     return;
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag("PlayerFragment");
+                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag(PlayerFragment.TAG);
                 if (playerFragment == null)
                     return;
                 playerFragment.handleRotateImageThumbnail();
@@ -453,7 +453,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         Glide.with(MainActivity.this)
                 .load(musicPlayer.getCurrentSong().getThumbnailUrl())
                 .error(R.drawable.fallback_img)
-                .apply(new RequestOptions().override(45, 45))
+                .apply(new RequestOptions().override(60, 60))
                 .into(imageThumbnailCurrentMusic);
     }
 

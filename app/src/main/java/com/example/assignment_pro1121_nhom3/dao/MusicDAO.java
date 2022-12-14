@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.example.assignment_pro1121_nhom3.models.Singer;
+import com.example.assignment_pro1121_nhom3.utils.ListFilterUtil;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldPath;
@@ -24,6 +25,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
@@ -370,6 +374,21 @@ public class MusicDAO {
         } else {
             Log.d(TAG, "getListMusic: playlist rỗng");
             getListMusic.onGetListMusicFailure();
+        }
+    }
+
+    public void getPlaylistItem(ArrayList<String> listID, GetListMusic listMusic) {
+        ArrayList<Music> finalListMusic = new ArrayList<>();
+        if (ListFilterUtil.checkMaxSizeListFilter(listID)) {
+            int chunk = 10; // chunk size to divide
+            for (int i = 0; i < listID.size(); i += chunk) {
+                Log.d(TAG, "getPlaylistItem: " + Arrays.toString(Arrays.copyOfRange(new ArrayList[]{listID}, i, Math.min(listID.size(), i + chunk))));
+//                ArrayList<String> tempArrId = new ArrayList<>();
+//                Collections.addAll(tempArrId, )
+//                getListMusic(temp);
+            }
+        } else {
+            getListMusic(listID, listMusic);
         }
     }
 

@@ -169,7 +169,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void goToSong(int index) {
-
+        if (exoPlayer.isPlaying()) {
+            exoPlayer.pause();
+        }
+        exoPlayer.seekTo(index, 0);
+        exoPlayer.play();
     }
 
     private void resumeSong(Intent intent) {

@@ -223,7 +223,7 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
                             Toast.makeText(requireContext(), "Thêm thành công", Toast.LENGTH_SHORT).show();
 //                            listItemPlaylist.get(listItemPlaylist.indexOf(playlist)).getMusics().add(currentMusic.getId());
 
-                            if (listItemPlaylist.get(listItemPlaylist.indexOf(playlist)).getMusics().size() == 1) {
+                            if (playlist.getMusics().size() >= 1) {
                                 musicDAO.getMusic(new IOnProgressBarStatusListener() {
                                     @Override
                                     public void beforeGetData() {
@@ -234,7 +234,7 @@ public class BottomSheetAddPlaylist extends BottomSheetDialogFragment {
                                     public void afterGetData() {
 
                                     }
-                                }, listItemPlaylist.get(listItemPlaylist.indexOf(playlist)).getMusics().get(0), new MusicDAO.ReadItemMusic() {
+                                }, playlist.getMusics().get(0), new MusicDAO.ReadItemMusic() {
                                     @Override
                                     public void onReadItemMusicCallback(Music music) {
                                         playlistDAO.setThumbnailPlaylist(playlist.getId(), music.getThumbnailUrl());

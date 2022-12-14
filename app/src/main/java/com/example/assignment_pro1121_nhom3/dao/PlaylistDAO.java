@@ -1,5 +1,6 @@
 package com.example.assignment_pro1121_nhom3.dao;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 
@@ -9,10 +10,12 @@ import androidx.annotation.Nullable;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
+import com.example.assignment_pro1121_nhom3.utils.ListFilterUtil;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.common.collect.Lists;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -25,6 +28,7 @@ import com.google.firebase.firestore.Source;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PlaylistDAO {
@@ -132,7 +136,7 @@ public class PlaylistDAO {
                 });
     }
 
-    public void getAllDataPlaylist(String userId,ReadAllDataPlaylistListener readAllDataPlaylistListener, IOnProgressBarStatusListener iOnProgressBarStatusListener ) {
+    public void getAllDataPlaylist(String userId, ReadAllDataPlaylistListener readAllDataPlaylistListener, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
         iOnProgressBarStatusListener.beforeGetData();
         ArrayList<Playlist> playlistArrayList = new ArrayList<>();
         db.collection("users").document(userId).get(Source.DEFAULT).addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -338,10 +342,13 @@ public class PlaylistDAO {
     }
 
     public void getMusicInPlaylist(String idPlaylist, IOnProgressBarStatusListener iOnProgressBarStatusListener, ReadMusicInPlaylist readMusicInPlaylist) {
+        final ArrayList<Music>[] finalMusicList = new ArrayList[]{new ArrayList<>()};
+
         iOnProgressBarStatusListener.beforeGetData();
         MusicDAO musicDAO = new MusicDAO();
         DocumentReference docRef = db.collection("playlists").document(idPlaylist);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @SuppressLint("CheckResult")
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -352,18 +359,48 @@ public class PlaylistDAO {
                         if (map != null) {
                             ArrayList<String> musicsID = (ArrayList<String>) map.getOrDefault("musics", null);
                             if (musicsID != null) {
-                                musicDAO.getListMusic(musicsID, new MusicDAO.GetListMusic() {
-                                    @Override
-                                    public void onGetListMusicSuccess(ArrayList<Music> list) {
-                                        readMusicInPlaylist.onReadSuccess(list);
-                                        iOnProgressBarStatusListener.afterGetData();
-                                    }
 
-                                    @Override
-                                    public void onGetListMusicFailure() {
-                                        iOnProgressBarStatusListener.afterGetData();
+                                if (ListFilterUtil.checkMaxSizeListFilter(musicsID)) {
+
+                                    int chunk = 10; // chunk size to divide
+                                    List<List<String>> lists = Lists.partition(musicsID, chunk);
+                                    int[] amountOfFetch = {lists.size()};
+
+                                    for (List<String> list : lists) {
+                                        Log.d(TAG, "onComplete: " + list);
+                                        musicDAO.getListMusic(new ArrayList<>(list), new MusicDAO.GetListMusic() {
+                                            @Override
+                                            public void onGetListMusicSuccess(ArrayList<Music> list) {
+                                                --amountOfFetch[0];
+                                                finalMusicList[0].addAll(list);
+                                                if (amountOfFetch[0] == 0) {
+                                                    readMusicInPlaylist.onReadSuccess(finalMusicList[0]);
+                                                    iOnProgressBarStatusListener.afterGetData();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onGetListMusicFailure() {
+
+                                            }
+                                        });
                                     }
-                                });
+                                    iOnProgressBarStatusListener.afterGetData();
+                                } else {
+                                    musicDAO.getListMusic(musicsID, new MusicDAO.GetListMusic() {
+                                        @Override
+                                        public void onGetListMusicSuccess(ArrayList<Music> list) {
+                                            finalMusicList[0] = list;
+                                            readMusicInPlaylist.onReadSuccess(finalMusicList[0]);
+                                            iOnProgressBarStatusListener.afterGetData();
+                                        }
+
+                                        @Override
+                                        public void onGetListMusicFailure() {
+                                            iOnProgressBarStatusListener.afterGetData();
+                                        }
+                                    });
+                                }
                             }
                         }
                     } else {

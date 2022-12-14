@@ -1,23 +1,6 @@
 package com.example.assignment_pro1121_nhom3.views;
 
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MODE_MUSIC_PLAYER;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_MUSIC;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_PLAYLIST_TYPE;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_RECENT_KEY_WORDS;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_CREATION_DATE;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_GENRES_ID;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_ID;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_INDEX;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_NAME;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_SINGER_ID;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_SINGER_NAME;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_THUMBNAIL_URL;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_UPDATE_DATE;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_URL;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_SONG_VIEWS;
-import static com.example.assignment_pro1121_nhom3.utils.Constants.PLAYLIST_TYPE_SINGER;
+import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -48,6 +31,7 @@ import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.storages.MusicPlayerStorage;
+import com.example.assignment_pro1121_nhom3.storages.SearchRecentDatabase;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
@@ -169,7 +153,7 @@ public class SearchActivity extends AppCompatActivity implements MusicDAO.GetDat
                         e.printStackTrace();
                     }
                     musicPlayer.setCurrentMode(MusicPlayer.MUSIC_PLAYER_MODE_ONLINE);
-                    saveCurrentMusic(musicPlayer, music.getSingerId(), PLAYLIST_TYPE_SINGER);
+                    saveCurrentMusic(musicPlayer, music.getSingerId(), PLAYLIST_TYPE_SEARCH_RECENT_PLAYLIST);
                     Log.d(TAG, "onClick: " + musicPlayer.getStateMusicPlayer());
                     startActivity(new Intent(SearchActivity.this, MainActivity.class));
                     startServiceMusic(musicPlayer.getPlayListMusic(), MusicPlayer.MUSIC_PLAYER_ACTION_RESET_PLAYLIST, musicPlayer.getCurrentMode());
@@ -184,11 +168,6 @@ public class SearchActivity extends AppCompatActivity implements MusicDAO.GetDat
         });
         myPlaylistAdapter.setData(musicSearchArr);
         recyclerView.setAdapter(myPlaylistAdapter);
-    }
-
-    public boolean checkUniqueSong(String songName) {
-        ArrayList<Music> list = (ArrayList<Music>) SongRecentDatabase.getInstance(getApplicationContext()).musicRecentDAO().checkSong(songName);
-        return list.size() <= 0;
     }
 
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist, String typePlayList) {
@@ -232,6 +211,10 @@ public class SearchActivity extends AppCompatActivity implements MusicDAO.GetDat
         serviceMusic.putExtra(KEY_MODE_MUSIC_PLAYER, mode);
         serviceMusic.putExtra(KEY_SONG_INDEX, MusicPlayerStorage.getInstance(this).getInt(KEY_SONG_INDEX, 0));
         startService(serviceMusic);
+        SearchRecentDatabase.getInstance(this).searchRecentDAO().deleteAll();
+        for (Music music : musicPlayer.getPlayListMusic()) {
+            SearchRecentDatabase.getInstance(this).searchRecentDAO().insertSong(music);
+        }
     }
 
     public void saveArrayList(ArrayList<String> list, String key) {

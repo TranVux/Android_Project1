@@ -129,6 +129,10 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     // player
     MusicPlayer musicPlayer = SplashScreen.musicPlayer;
 
+    public HomeFragment() {
+
+    }
+
     public HomeFragment(HandleChangeColorBottomNavigation handleChangeColorBottomNavigation) {
         this.handleChangeColorBottomNavigation = handleChangeColorBottomNavigation;
     }
