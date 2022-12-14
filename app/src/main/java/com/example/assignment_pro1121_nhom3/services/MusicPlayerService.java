@@ -17,6 +17,7 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.support.v4.media.MediaMetadataCompat;
@@ -90,6 +91,12 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     private ExoPlayer exoPlayer;
     private PlayerMode playerMode = PlayerMode.EXO;
     ArrayList<Music> playlistSong = new ArrayList<>();
+
+    //Tracker Progress
+    private Handler handler;
+    private Runnable runnable;
+    //intent update position music
+    Intent updatePositionCurrentMusic;
 
 
     @Nullable
@@ -173,7 +180,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     public void seekToPosition(int position) {
-
+        exoPlayer.play();
+        exoPlayer.seekTo(position * 1000L);
     }
 
     private void destroyPlayer() {
@@ -251,6 +259,22 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         }
     }
 
+    public void setUpTrackerProgress() {
+        handler = new Handler();
+        runnable = new Runnable() {
+            @Override
+            public void run() {
+//                Log.d(TAG, "run: " + exoPlayer.getCurrentPosition() / 1000);
+                updatePositionCurrentMusic = new Intent(MUSIC_PLAYER_EVENT);
+                updatePositionCurrentMusic.putExtra(KEY_CURRENT_MUSIC_POSITION, (int) exoPlayer.getCurrentPosition() / 1000);
+                updatePositionCurrentMusic.putExtra(KEY_MUSIC_DURATION, (int) exoPlayer.getDuration() / 1000);
+                LocalBroadcastManager.getInstance(MusicPlayerService.this).sendBroadcast(updatePositionCurrentMusic);
+                handler.postDelayed(runnable, 1000);
+            }
+        };
+        handler.postDelayed(runnable, 0);
+    }
+
     public void installMediaPlayer() {
         //new vs player
         exoPlayer = new ExoPlayer.Builder(this).setLooper(Looper.getMainLooper()).build();
@@ -292,6 +316,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 isPlaying = true;
                 sendNotification();
                 saveCurrentMusic(currentSong);
+                setUpTrackerProgress();
                 Log.d(TAG, "onMediaItemTransition: trước if: " + currentMediaID);
 
                 if (!Objects.equals(currentMediaID, getCurrentMediaId()) && isLoadPlaylistSuccessfully) {
