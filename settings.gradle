@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }
-rootProject.name = "Assignment_PRO1121_Nhom3"
+rootProject.name = "FM3"
 include ':app'
