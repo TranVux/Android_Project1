@@ -35,6 +35,7 @@ import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
 import com.example.assignment_pro1121_nhom3.storages.MusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
+import com.example.assignment_pro1121_nhom3.storages.StateMusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
@@ -71,8 +72,8 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
         if (getArguments() != null) {
             currentMusic = (Music) getArguments().getSerializable(Constants.KEY_MUSIC);
         }
-        sharedPreferences = requireContext().getSharedPreferences("music_player_state", Context.MODE_PRIVATE);
-        musicSharePreferences = requireContext().getSharedPreferences("music_player", Context.MODE_PRIVATE);
+        sharedPreferences = StateMusicPlayerStorage.getInstance(requireContext());
+        musicSharePreferences = MusicPlayerStorage.getInstance(requireContext());
     }
 
     @Override
@@ -109,17 +110,18 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
 
     public void handleButtonPlay() {
         if (stateBtnPlay == 0) {
-            startServiceMusic(currentMusic, MUSIC_PLAYER_ACTION_RESUME, musicPlayer.getCurrentMode());
+            startServiceMusic(musicPlayer.getPlayListMusic(), MUSIC_PLAYER_ACTION_RESUME, musicPlayer.getCurrentMode());
         } else {
-            startServiceMusic(currentMusic, MUSIC_PLAYER_ACTION_PAUSE, musicPlayer.getCurrentMode());
+            startServiceMusic(musicPlayer.getPlayListMusic(), MUSIC_PLAYER_ACTION_PAUSE, musicPlayer.getCurrentMode());
         }
     }
 
-    public void startServiceMusic(Music music, int action, String mode) {
+    public void startServiceMusic(ArrayList<Music> listMusic, int action, String mode) {
         Intent serviceMusic = new Intent(requireContext(), MusicPlayerService.class);
         serviceMusic.putExtra("action", action);
-        serviceMusic.putExtra(KEY_MUSIC, music);
+        serviceMusic.putExtra(KEY_PLAYLIST, listMusic);
         serviceMusic.putExtra(KEY_MODE_MUSIC_PLAYER, mode);
+        serviceMusic.putExtra(KEY_SONG_INDEX, MusicPlayerStorage.getInstance(requireContext()).getInt(KEY_SONG_INDEX, 0));
         requireContext().startService(serviceMusic);
     }
 
@@ -286,7 +288,7 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
                     e.printStackTrace();
                 }
                 Log.d(TAG, "handleIntent: next");
-                musicPlayer.nextSong(musicPlayer.getCurrentIndexSong());
+                musicPlayer.setMusicAtPosition(musicSharePreferences.getInt(KEY_SONG_INDEX, 0));
                 handlePlayer(musicPlayer.getCurrentSong());
                 break;
             }
@@ -297,13 +299,8 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
         saveCurrentMusic(musicPlayer, MusicPlayerStorage.getInstance(requireContext()).getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10));
     }
 
-    public boolean checkUniqueSong(String songName) {
-        ArrayList<Music> list = (ArrayList<Music>) SongRecentDatabase.getInstance(requireContext().getApplicationContext()).musicRecentDAO().checkSong(songName);
-        return list.size() <= 0;
-    }
-
     public void saveCurrentMusic(MusicPlayer musicPlayer, String idPlaylist) {
-        SharedPreferences.Editor editor = MusicPlayerStorage.getInstance(requireContext()).edit();
+        SharedPreferences.Editor editor = musicSharePreferences.edit();
         editor.putInt(KEY_SONG_INDEX, musicPlayer.getCurrentIndexSong());
         Log.d(TAG, "saveCurrentMusic: " + idPlaylist);
         editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
