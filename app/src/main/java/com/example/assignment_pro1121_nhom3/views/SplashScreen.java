@@ -61,6 +61,7 @@ import com.example.assignment_pro1121_nhom3.fragments.PlayerFragment;
 import com.example.assignment_pro1121_nhom3.interfaces.IOnProgressBarStatusListener;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
+import com.example.assignment_pro1121_nhom3.storages.MusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.utils.Constants;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -86,7 +87,7 @@ public class SplashScreen extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
-        sharedPreferences = getSharedPreferences("music_player", MODE_PRIVATE);
+        sharedPreferences = MusicPlayerStorage.getInstance(this);
         String recentIdPlaylist = sharedPreferences.getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10);
         String playlistType = sharedPreferences.getString(KEY_PLAYLIST_TYPE, KEY_TOP_10);
         Log.d(TAG, "onCreate: recentKey: " + recentIdPlaylist);
@@ -247,6 +248,7 @@ public class SplashScreen extends AppCompatActivity {
                         musicPlayer = MusicPlayer.getInstance(listMusicRecent);
                     }
                     musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+                    Log.d(TAG, "onGetTopMusicCallback: " + sharedPreferences.getInt(KEY_SONG_INDEX, 0));
                     startActivity(new Intent(SplashScreen.this, MainActivity.class));
                     finish();
                 }

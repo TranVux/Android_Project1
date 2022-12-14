@@ -5,7 +5,6 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,18 +14,19 @@ import android.graphics.drawable.Drawable;
 import android.media.AudioAttributes;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
-import android.media.session.MediaSessionManager;
-import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
+import android.os.Looper;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.util.Log;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -38,11 +38,27 @@ import com.bumptech.glide.request.transition.Transition;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
+import com.example.assignment_pro1121_nhom3.storages.MusicPlayerStorage;
+import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
+import com.example.assignment_pro1121_nhom3.storages.StateMusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.metadata.Metadata;
+import com.google.android.exoplayer2.source.TrackGroupArray;
+import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
+import com.google.android.gms.common.api.internal.LifecycleFragment;
+import com.google.common.eventbus.Subscribe;
 
 import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
+import static com.google.android.exoplayer2.Player.MEDIA_ITEM_TRANSITION_REASON_AUTO;
+
+import org.checkerframework.checker.units.qual.A;
 
 import java.io.IOException;
 import java.sql.Time;
@@ -55,7 +71,14 @@ import kotlin.jvm.internal.LocalVariableReference;
 
 public class MusicPlayerService extends Service implements MediaPlayer.OnCompletionListener {
 
+    public enum PlayerMode {
+        EXO, MEDIAPLAYER
+    }
+
     public static final String TAG = MusicPlayerService.class.getSimpleName();
+
+    private String currentMediaID = "";
+    private boolean isLoadPlaylistSuccessfully = false;
 
     private Music currentSong;
     private MediaPlayer mediaPlayer = new MediaPlayer();
@@ -63,9 +86,10 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     private boolean isPlaying = false;
     MediaSessionCompat mediaSessionCompat;
     MediaControllerCompat mediaControllerCompat;
-    private String stateServiceMusicPlayer = CHANGE_TO_SERVICE;
-    private boolean isLoadSuccess = false;
     private String playMode;
+    private ExoPlayer exoPlayer;
+    private PlayerMode playerMode = PlayerMode.EXO;
+    ArrayList<Music> playlistSong = new ArrayList<>();
 
 
     @Nullable
@@ -78,6 +102,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     public void onCreate() {
         super.onCreate();
         installMediaPlayer();
+        createNotificationChannel();
     }
 
     @Override
@@ -116,7 +141,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 break;
             }
             case MUSIC_PLAYER_ACTION_RESUME: {
-                resumeSong();
+                resumeSong(intent);
+                Log.d(TAG, "handleActionMusicPlayer: " + exoPlayer.getPlaybackState());
                 break;
             }
             case MUSIC_PLAYER_ACTION_DESTROY: {
@@ -130,7 +156,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             }
             case MUSIC_PLAYER_ACTION_SEEK_TO_POSITION: {
                 int musicDurationPosition = intent.getIntExtra(KEY_SEEK_TO_POSITION, 0);
-                Log.d(TAG, "handleActionMusicPlayer: " + musicDurationPosition);
                 seekToPosition(musicDurationPosition);
                 break;
             }
@@ -142,36 +167,13 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
 
     private void resetSong(Music music) {
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
-        }
         timer.cancel();
         timer.purge();
-        mediaPlayer.release();
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioAttributes(new AudioAttributes
-                .Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build());
-        mediaPlayer.setOnCompletionListener(this);
-        currentSong = music;
         timer = new Timer();
-        setMusicUrl(currentSong.getUrl());
     }
 
     public void seekToPosition(int position) {
-        if (!isLoadSuccess) return;
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            isPlaying = false;
-            sendNotification();
-        }
-        mediaPlayer.seekTo(position * 1000);
-        Log.d(TAG, "seekToPosition: ");
-        mediaPlayer.start();
-        isPlaying = true;
-        sendNotification();
-        sendIntentToActivity(MUSIC_PLAYER_ACTION_SEEK_TO_POSITION, 0);
+
     }
 
     private void destroyPlayer() {
@@ -180,63 +182,47 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void goToSong(int index) {
-        if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-            }
-            if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
-                sendIntentToActivity(MUSIC_PLAYER_ACTION_GO_TO_SONG, index);
-            }
-        }
+
     }
 
-    private void resumeSong() {
-        if (!isPlaying && mediaPlayer != null && currentSong != null && isLoadSuccess) {
-            mediaPlayer.start();
-            isPlaying = true;
-            if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
-                sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
+    private void resumeSong(Intent intent) {
+        if (!exoPlayer.isPlaying()) {
+            if (currentSong != null) {
+                exoPlayer.play();
+                currentMediaID = getCurrentMediaId();
+            } else {
+                initService(intent);
             }
+            isPlaying = true;
             sendNotification();
-        } else if (currentSong == null) {
-            sendIntentToActivity(MUSIC_PLAYER_ACTION_GO_TO_SONG, getSharedPreferences("music_player", MODE_PRIVATE).getInt(KEY_SONG_INDEX, 0));
+            sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
         }
     }
 
     private void pauseSong() {
-        if (isPlaying && mediaPlayer != null && isLoadSuccess) {
-            mediaPlayer.pause();
+        if (exoPlayer.isPlaying()) {
+            exoPlayer.pause();
             isPlaying = false;
-            if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
-                sendIntentToActivity(MUSIC_PLAYER_ACTION_PAUSE, 0);
-            }
             sendNotification();
+            sendIntentToActivity(MUSIC_PLAYER_ACTION_PAUSE, 0);
         }
     }
 
     private void previousSong() {
-        if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-            }
-            if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
-                Log.d(TAG, "previousSong: ");
-                sendIntentToActivity(MUSIC_PLAYER_ACTION_PREVIOUS, 0);
-//                timer.cancel();
-            }
+        if (exoPlayer.hasPreviousMediaItem()) {
+            currentMediaID = getPrevMediaId();
+            exoPlayer.seekToPrevious();
+            sendIntentToActivity(MUSIC_PLAYER_ACTION_PREVIOUS, 0);
+            isPlaying = true;
         }
     }
 
     private void nextSong() {
-        if (mediaPlayer != null) {
-            if (mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
-            }
-            if (Objects.equals(stateServiceMusicPlayer, CHANGE_TO_SERVICE)) {
-                Log.d(TAG, "nextSong: ");
-                sendIntentToActivity(MUSIC_PLAYER_ACTION_NEXT, 0);
-//                timer.cancel();
-            }
+        if (exoPlayer.hasNextMediaItem()) {
+            currentMediaID = getNextMediaId();
+            exoPlayer.seekToNext();
+            sendIntentToActivity(MUSIC_PLAYER_ACTION_NEXT, 0);
+            isPlaying = true;
         }
     }
 
@@ -248,67 +234,89 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     private void initService(Intent intent) {
-        Music songReceiver = (Music) intent.getSerializableExtra(KEY_MUSIC);
-        if (songReceiver == null) {
-            Log.d(TAG, "initService: chưa có bài hát chuyển qua service");
-            return;
+        playlistSong = (ArrayList<Music>) intent.getSerializableExtra(KEY_PLAYLIST);
+        int index = intent.getIntExtra(KEY_SONG_INDEX, 0);
+        if (playlistSong != null) {
+            setUpPlaylistForExoPlayer(getListMediaItem(playlistSong));
+            currentMediaID = getCurrentMediaId();
+            exoPlayer.prepare();
+            exoPlayer.seekTo(index, 0);
+            Log.d(TAG, "initService: " + currentMediaID);
+            exoPlayer.play();
+            Log.d(TAG, "initService: " + currentSong.getName());
+            sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
+            isPlaying = true;
+            isLoadPlaylistSuccessfully = true;
+            changeStateResume(true);
         }
-        currentSong = songReceiver;
-        setMusicUrl(currentSong.getUrl());
-        sendNotification();
     }
 
     public void installMediaPlayer() {
-        mediaPlayer = new MediaPlayer();
-        mediaSessionCompat = new MediaSessionCompat(this, MusicPlayerService.class.getName());
-        mediaPlayer.setAudioAttributes(new AudioAttributes
-                .Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build());
-        mediaPlayer.setOnCompletionListener(this);
+        //new vs player
+        exoPlayer = new ExoPlayer.Builder(this).setLooper(Looper.getMainLooper()).build();
+        exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+        exoPlayerListener();
         timer = new Timer();
+        mediaSessionCompat = new MediaSessionCompat(this, MusicPlayerService.class.getName());
+    }
+
+    public String getCurrentMediaId() {
+        if (exoPlayer != null && exoPlayer.getCurrentMediaItem() != null) {
+            return exoPlayer.getCurrentMediaItem().mediaId;
+        }
+        return "";
+    }
+
+    public String getNextMediaId() {
+        if (exoPlayer.getCurrentMediaItemIndex() + 1 >= playlistSong.size()) {
+            return playlistSong.get(0).getId();
+        }
+        return playlistSong.get(exoPlayer.getCurrentMediaItemIndex() + 1).getId();
+    }
+
+    public String getPrevMediaId() {
+        if (exoPlayer.getCurrentMediaItemIndex() - 1 < 0) {
+            return playlistSong.get(playlistSong.size() - 1).getId();
+        }
+        return playlistSong.get(exoPlayer.getCurrentMediaItemIndex() - 1).getId();
+    }
+
+    private void exoPlayerListener() {
+        exoPlayer.addListener(new Player.Listener() {
+
+            @Override
+            public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
+                Player.Listener.super.onMediaItemTransition(mediaItem, reason);
+                currentSong = getCurrentSong();
+                Log.d(TAG, "onMediaItemTransition: nextSong" + currentSong.getName());
+                isPlaying = true;
+                sendNotification();
+                saveCurrentMusic(currentSong);
+                Log.d(TAG, "onMediaItemTransition: trước if: " + currentMediaID);
+
+                if (!Objects.equals(currentMediaID, getCurrentMediaId()) && isLoadPlaylistSuccessfully) {
+                    sendIntentToActivity(MUSIC_PLAYER_ACTION_NEXT, 0);
+                    Log.d(TAG, "onMediaItemTransition: " + getCurrentMediaId());
+                    currentMediaID = getCurrentMediaId();
+                    Log.d(TAG, "onMediaItemTransition: sau if" + currentMediaID);
+                }
+            }
+
+        });
     }
 
     public void setMusicUrl(String url) {
-        try {
-            isLoadSuccess = false;
 
-            if (playMode.equals(MUSIC_PLAYER_MODE_ONLINE)) {
-                mediaPlayer.setDataSource(url);
-            } else if (playMode.equals(MUSIC_PLAYER_MODE_LOCAL)) {
-                mediaPlayer.setDataSource(MusicPlayerService.this, Uri.parse(url));
-            }
+    }
 
-            Log.d(TAG, "onPrepared: Setup");
-            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
-                    sendNotification();
-                    Log.d(TAG, "onPrepared: Complete");
-                    mediaPlayer.start();
-                    sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
-                    timer.scheduleAtFixedRate(new TimerTask() {
-                        @Override
-                        public void run() {
-                            isLoadSuccess = true;
-                            Intent durationIntent = new Intent(MUSIC_PLAYER_EVENT);
-                            durationIntent.putExtra(KEY_CURRENT_MUSIC_POSITION, mediaPlayer.getCurrentPosition() / 1000);
-                            durationIntent.putExtra(KEY_MUSIC_DURATION, mediaPlayer.getDuration() / 1000);
-                            LocalBroadcastManager.getInstance(MusicPlayerService.this).sendBroadcast(durationIntent);
-                        }
-                    }, 0, 1000);
-                }
-            });
-
-            mediaPlayer.prepareAsync();
-            isPlaying = true;
-        } catch (Exception e) {
-            e.printStackTrace();
+    public Music getCurrentSong() {
+        if (exoPlayer.getMediaItemCount() > 0) {
+            return playlistSong.get(exoPlayer.getCurrentMediaItemIndex());
         }
+        return null;
     }
 
     public void sendNotification() {
-        createNotificationChannel();
         Intent homeIntent = new Intent(this, MainActivity.class);
         PendingIntent homePendingIntent = PendingIntent.getActivity(this, 0, homeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         final Bitmap[] musicThumbnail = new Bitmap[1];
@@ -390,15 +398,18 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (mediaPlayer != null) {
-            if (!mediaPlayer.isPlaying()) {
-                mediaPlayer.stop();
+        timer.cancel();
+
+        if (exoPlayer != null) {
+            if (exoPlayer.isPlaying()) {
+                exoPlayer.stop();
             }
-            mediaPlayer.release();
-            timer.cancel();
-            mediaPlayer = null;
+            exoPlayer.release();
+            exoPlayer = null;
         }
+
         destroyMusicPlayer();
+        changeStateResume(false);
     }
 
     public void destroyMusicPlayer() {
@@ -415,5 +426,64 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     public void onCompletion(MediaPlayer mediaPlayer) {
         sendIntentToActivity(MUSIC_PLAYER_ACTION_COMPLETE, 0);
         Log.d(TAG, "onCompletion: hát xong");
+    }
+
+    public ArrayList<MediaItem> getListMediaItem(ArrayList<Music> list) {
+        ArrayList<MediaItem> listMediaItem = new ArrayList<>();
+        for (Music music : list) {
+            listMediaItem.add(new MediaItem.Builder()
+                    .setUri(music.getUrl())
+                    .setMediaId(music.getId())
+                    .setMediaMetadata(getMetaDataSong(music))
+                    .build());
+        }
+        return listMediaItem;
+    }
+
+    public void setUpPlaylistForExoPlayer(ArrayList<MediaItem> listMediaItem) {
+        for (MediaItem mediaItem : listMediaItem) {
+            exoPlayer.addMediaItem(mediaItem);
+        }
+        exoPlayer.prepare();
+    }
+
+    public com.google.android.exoplayer2.MediaMetadata getMetaDataSong(Music music) {
+        return new com.google.android.exoplayer2.MediaMetadata.Builder()
+                .setTitle(music.getName())
+                .setArtworkUri(Uri.parse(music.getThumbnailUrl()))
+                .setArtist(music.getSingerName())
+                .build();
+    }
+
+    public boolean checkUniqueSong(String songName) {
+        ArrayList<Music> list = (ArrayList<Music>) SongRecentDatabase.getInstance(getApplicationContext()).musicRecentDAO().checkSong(songName);
+        return list.size() <= 0;
+    }
+
+    public void saveCurrentMusic(Music currentSong) {
+        if (checkUniqueSong(currentSong.getName())) {
+            SongRecentDatabase.getInstance(getApplicationContext()).musicRecentDAO().insertSong(currentSong);
+        }
+        SharedPreferences.Editor editor = MusicPlayerStorage.getInstance(this).edit();
+        editor.putString(KEY_SONG_NAME, currentSong.getName());
+        editor.putString(KEY_SONG_URL, currentSong.getUrl());
+        editor.putString(KEY_SONG_THUMBNAIL_URL, currentSong.getThumbnailUrl());
+        editor.putString(KEY_SONG_ID, currentSong.getId());
+        editor.putLong(KEY_SONG_VIEWS, currentSong.getViews());
+        editor.putString(KEY_SONG_SINGER_ID, currentSong.getSingerId());
+        editor.putString(KEY_SONG_SINGER_NAME, currentSong.getSingerName());
+        editor.putString(KEY_SONG_GENRES_ID, currentSong.getGenresId());
+        editor.putLong(KEY_SONG_CREATION_DATE, currentSong.getCreationDate());
+        editor.putLong(KEY_SONG_UPDATE_DATE, currentSong.getUpdateDate());
+        editor.putInt(KEY_SONG_INDEX, playlistSong.indexOf(currentSong));
+        Log.d(TAG, "currentIndexSong: " + playlistSong.indexOf(currentSong));
+        Log.d(TAG, "currentIdPlaylist: " + MusicPlayerStorage.getInstance(this).getString(KEY_ID_OF_PLAYLIST, KEY_TOP_10));
+        editor.apply();
+    }
+
+    public void changeStateResume(boolean isResume) {
+        SharedPreferences.Editor editor = StateMusicPlayerStorage.getInstance(this).edit();
+        editor.putBoolean(KEY_IS_RESUME, isResume);
+        editor.apply();
     }
 }

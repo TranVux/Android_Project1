@@ -41,6 +41,7 @@ import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
 import com.example.assignment_pro1121_nhom3.services.MusicPlayerService;
+import com.example.assignment_pro1121_nhom3.storages.MusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.example.assignment_pro1121_nhom3.views.SearchActivity;
@@ -112,10 +113,11 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         super.onViewCreated(view, savedInstanceState);
 
         // thiết lập thuộc tính ban đầu, ánh xạ view
-        SharedPreferences sharedPreferences = requireActivity().getSharedPreferences("music_player", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = MusicPlayerStorage.getInstance(requireContext());
         init(view);
         //
         musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+        Log.d(TAG, "onViewCreated: " + sharedPreferences.getInt(KEY_SONG_INDEX, 0));
         handleRotateImageThumbnail();
         //Player hiện tại
 
@@ -362,7 +364,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
                 }
 
                 if (updateSeekBar) {
-                    Log.d(TAG, "onReceive: " + currentPositionDuration);
+//                    Log.d(TAG, "onReceive: " + currentPositionDuration);
                     if (currentPositionDuration > 0) {
                         timeLine.setProgress(currentPositionDuration, true);
                     }

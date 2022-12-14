@@ -2,6 +2,7 @@ package com.example.assignment_pro1121_nhom3.utils;
 
 public class Constants {
     public static final String KEY_MUSIC = "KEY_MUSIC";
+    public static final String KEY_PLAYLIST = "KEY_PLAYLIST";
 
     public static final String KEY_MUSIC_DURATION = "KEY_MUSIC_DURATION";
     public static final String KEY_CURRENT_MUSIC_POSITION = "KEY_CURRENT_MUSIC_POSITION";
@@ -48,5 +49,7 @@ public class Constants {
     public static final String kEY_IS_LOGIN = "kEY_IS_LOGIN";
     public static final String KEY_CURRENT_USER_NAME = "KEY_CURRENT_USER_NAME";
     public static final String KEY_CURRENT_USER_ID = "KEY_CURRENT_USER_ID";
+
+    public static final String KEY_IS_RESUME = "KEY_IS_RESUME";
 
 }
