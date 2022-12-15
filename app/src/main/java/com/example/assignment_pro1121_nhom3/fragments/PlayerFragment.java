@@ -9,20 +9,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.app.ActivityOptionsCompat;
-import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.transition.AutoTransition;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +34,13 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.GlideBuilder;
+import com.bumptech.glide.Registry;
+import com.bumptech.glide.load.engine.bitmap_recycle.LruBitmapPool;
+import com.bumptech.glide.load.engine.cache.LruResourceCache;
+import com.bumptech.glide.module.AppGlideModule;
+import com.bumptech.glide.module.GlideModule;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.MusicPlayer;
@@ -166,14 +170,14 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
 
     public void reLoadImageThumbnail(Music music, ImageView imageView1, ImageView imageView2) {
         if (!imageMusicThumbnail1IsVisible) {
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).placeholder(imageView1.getDrawable()).into(imageView1);
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).placeholder(imageView2.getDrawable()).into(imageView2);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView1.getDrawable()).into(imageView1);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView2.getDrawable()).into(imageView2);
             imageView1.animate().alpha(0f).setDuration(350);
             imageView2.animate().alpha(1f).setDuration(350);
             imageMusicThumbnail1IsVisible = true;
         } else {
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).placeholder(imageView1.getDrawable()).into(imageView1);
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).placeholder(imageView2.getDrawable()).into(imageView2);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView1.getDrawable()).into(imageView1);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView2.getDrawable()).into(imageView2);
             imageView1.animate().alpha(1f).setDuration(350);
             imageView2.animate().alpha(0f).setDuration(350);
             imageMusicThumbnail1IsVisible = false;
