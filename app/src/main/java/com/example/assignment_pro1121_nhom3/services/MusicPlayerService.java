@@ -338,7 +338,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     public void sendNotification() {
         Intent homeIntent = new Intent(this, MainActivity.class);
-        PendingIntent homePendingIntent = PendingIntent.getActivity(this, 0, homeIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent homePendingIntent = PendingIntent.getActivity(this, 0, homeIntent, PendingIntent.FLAG_IMMUTABLE);
         final Bitmap[] musicThumbnail = new Bitmap[1];
         mediaSessionCompat.setMetadata(new MediaMetadataCompat.Builder()
                 .putString(MediaMetadata.METADATA_KEY_TITLE, CapitalizeWord.CapitalizeWords(currentSong.getName()))
@@ -399,7 +399,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     public PendingIntent getPendingIntentAction(Context context, int action) {
         Intent intent = new Intent(MusicPlayerService.this, EventMusicPlayerService.class);
         intent.putExtra("action", action);
-        return PendingIntent.getBroadcast(context, action, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getBroadcast(context, action, intent, PendingIntent.FLAG_IMMUTABLE);
     }
 
     @SuppressLint("ObsoleteSdkInt")
