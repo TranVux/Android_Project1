@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
@@ -54,6 +55,7 @@ public class AdapterAddMusicToPlaylist extends RecyclerView.Adapter<AdapterAddMu
         holder.amountOfSong.setText(tempPlaylist.getMusics().size() + " bài");
         Glide.with(context)
                 .load(tempPlaylist.getUrlThumbnail())
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .apply(new RequestOptions().override(100, 100))
                 .into(holder.playlistThumbnail);
 

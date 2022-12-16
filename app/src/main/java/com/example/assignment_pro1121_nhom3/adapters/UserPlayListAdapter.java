@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
 
@@ -44,6 +45,7 @@ public class UserPlayListAdapter extends RecyclerView.Adapter<UserPlayListAdapte
         Playlist playlist = playlists.get(position);
         holder.playListTitle.setText(playlist.getName());
         Glide.with(holder.playListImage.getContext()).load(playlist.getUrlThumbnail())
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .error(R.drawable.fallback_img)
                 .centerCrop()
                 .into(holder.playListImage);

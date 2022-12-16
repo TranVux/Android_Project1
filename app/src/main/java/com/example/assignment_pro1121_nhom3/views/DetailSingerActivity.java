@@ -37,6 +37,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.MusicInPlaylistAdapter;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
@@ -198,9 +199,11 @@ public class DetailSingerActivity extends AppCompatActivity {
                 contentDesc = dialogLayout.findViewById(R.id.contentDesc);
 
                 blurBackgroundFragment(blurView);
-                Glide.with(DetailSingerActivity.this).load(receiverSinger.getAvtUrl()).placeholder(R.drawable.placeholder_img).error(R.drawable.fallback_img)
+                Glide.with(DetailSingerActivity.this).load(receiverSinger.getAvtUrl()).diskCacheStrategy(DiskCacheStrategy.DATA)
+                        .placeholder(R.drawable.placeholder_img).error(R.drawable.fallback_img)
                         .into(imageBlur);
-                Glide.with(DetailSingerActivity.this).load(receiverSinger.getAvtUrl()).placeholder(R.drawable.placeholder_img).error(R.drawable.fallback_img)
+                Glide.with(DetailSingerActivity.this).load(receiverSinger.getAvtUrl()).diskCacheStrategy(DiskCacheStrategy.DATA)
+                        .placeholder(R.drawable.placeholder_img).error(R.drawable.fallback_img)
                         .into(imageAvtSinger);
                 singerName.setText(receiverSinger.getName());
                 contentDesc.setText(finalTempDesc);

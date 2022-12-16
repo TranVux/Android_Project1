@@ -36,6 +36,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
 import com.bumptech.glide.Registry;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.bitmap_recycle.LruBitmapPool;
 import com.bumptech.glide.load.engine.cache.LruResourceCache;
 import com.bumptech.glide.module.AppGlideModule;
@@ -161,7 +162,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
 
     public void setContentInit(Music music) {
         TransitionManager.beginDelayedTransition(parentLayout, new AutoTransition());
-        Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).placeholder(backgroundImage1.getDrawable()).into(backgroundImage1);
+        Glide.with(requireContext()).load(music.getThumbnailUrl()).diskCacheStrategy(DiskCacheStrategy.DATA)
+                .error(R.drawable.fallback_img).placeholder(backgroundImage1.getDrawable()).into(backgroundImage1);
         reLoadImageThumbnail(music, imageMusicThumbnail1, imageMusicThumbnail2);
         musicName.setText(CapitalizeWord.CapitalizeWords(music.getName()));
         singerName.setText(CapitalizeWord.CapitalizeWords(music.getSingerName()));
@@ -170,14 +172,18 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
 
     public void reLoadImageThumbnail(Music music, ImageView imageView1, ImageView imageView2) {
         if (!imageMusicThumbnail1IsVisible) {
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView1.getDrawable()).into(imageView1);
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView2.getDrawable()).into(imageView2);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).diskCacheStrategy(DiskCacheStrategy.DATA)
+                    .error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView1.getDrawable()).into(imageView1);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).diskCacheStrategy(DiskCacheStrategy.DATA)
+                    .error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView2.getDrawable()).into(imageView2);
             imageView1.animate().alpha(0f).setDuration(350);
             imageView2.animate().alpha(1f).setDuration(350);
             imageMusicThumbnail1IsVisible = true;
         } else {
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView1.getDrawable()).into(imageView1);
-            Glide.with(requireContext()).load(music.getThumbnailUrl()).error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView2.getDrawable()).into(imageView2);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).diskCacheStrategy(DiskCacheStrategy.DATA)
+                    .error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView1.getDrawable()).into(imageView1);
+            Glide.with(requireContext()).load(music.getThumbnailUrl()).diskCacheStrategy(DiskCacheStrategy.DATA)
+                    .error(R.drawable.fallback_img).apply(new RequestOptions()).placeholder(imageView2.getDrawable()).into(imageView2);
             imageView1.animate().alpha(1f).setDuration(350);
             imageView2.animate().alpha(0f).setDuration(350);
             imageMusicThumbnail1IsVisible = false;
@@ -186,7 +192,8 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
 
     public void setContentForNextMusic(Music nextMusic) {
         TransitionManager.beginDelayedTransition(parentLayout, new AutoTransition());
-        Glide.with(requireContext()).load(nextMusic.getThumbnailUrl()).placeholder(imageThumbnailNextMusic.getDrawable()).into(imageThumbnailNextMusic);
+        Glide.with(requireContext()).load(nextMusic.getThumbnailUrl()).diskCacheStrategy(DiskCacheStrategy.DATA)
+                .placeholder(imageThumbnailNextMusic.getDrawable()).into(imageThumbnailNextMusic);
         musicNameNext.setText(CapitalizeWord.CapitalizeWords(nextMusic.getName()));
         singerNameNext.setText(CapitalizeWord.CapitalizeWords(nextMusic.getSingerName()));
         labelViewNextMusic.setText(String.valueOf(nextMusic.getViews()));

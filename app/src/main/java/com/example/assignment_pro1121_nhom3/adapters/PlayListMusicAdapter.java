@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
@@ -55,6 +56,7 @@ public class PlayListMusicAdapter extends RecyclerView.Adapter<PlayListMusicAdap
         holder.creatorName.setText(CapitalizeWord.CapitalizeWords(playlistTemp.getCreatorName()));
         holder.playlistName.setText(CapitalizeWord.CapitalizeWords(playlistTemp.getName()));
         Glide.with(context).load(playlistTemp.getUrlThumbnail())
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .apply(new RequestOptions().override(180, 180))
                 .error(R.drawable.fallback_img)
                 .centerCrop()

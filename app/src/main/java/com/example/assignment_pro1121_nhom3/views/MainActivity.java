@@ -33,6 +33,7 @@ import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.dao.MusicDAO;
@@ -182,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
             // handle thumbnail của player
             Glide.with(MainActivity.this)
                     .load(musicPlayer.getCurrentSong().getThumbnailUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.DATA)
                     .error(R.drawable.fallback_img)
                     .apply(new RequestOptions().override(180, 180))
                     .into(imageThumbnailCurrentMusic);
@@ -384,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         }
         handleStateMusicPlayer(musicPlayer);
         saveCurrentMusic(recentIdPlaylist);
-        Log.d(TAG, "playMusicPlayer: " + musicPlayer.getStateMusicPlayer());
+//        Log.d(TAG, "playMusicPlayer: " + musicPlayer.getStateMusicPlayer());
     }
 
     public void playMusicPlayer() {
@@ -451,7 +453,8 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
 
     public void handleChangeMusic() {
         Glide.with(MainActivity.this)
-                .load(musicPlayer.getCurrentSong().getThumbnailUrl())
+                .load(MusicPlayerStorage.getInstance(this).getString(KEY_SONG_THUMBNAIL_URL, ""))
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .error(R.drawable.fallback_img)
                 .apply(new RequestOptions().override(60, 60))
                 .into(imageThumbnailCurrentMusic);

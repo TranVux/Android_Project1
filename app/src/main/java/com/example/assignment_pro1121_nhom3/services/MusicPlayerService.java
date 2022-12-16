@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
+import android.net.ProxyInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -29,6 +30,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.example.assignment_pro1121_nhom3.R;
@@ -37,37 +39,40 @@ import com.example.assignment_pro1121_nhom3.storages.MusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.storages.StateMusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
+import com.example.assignment_pro1121_nhom3.utils.MyApp;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
+import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
+import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 
 import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
 
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.Timer;
 
 public class MusicPlayerService extends Service implements MediaPlayer.OnCompletionListener {
-
-    public enum PlayerMode {
-        EXO, MEDIAPLAYER
-    }
 
     public static final String TAG = MusicPlayerService.class.getSimpleName();
 
     private String currentMediaID = "";
     private boolean isLoadPlaylistSuccessfully = false;
 
-    private Music currentSong;
-    private MediaPlayer mediaPlayer = new MediaPlayer();
+    //    private Music currentSong;
     private boolean isPlaying = false;
     MediaSessionCompat mediaSessionCompat;
     MediaControllerCompat mediaControllerCompat;
     private String playMode;
     private ExoPlayer exoPlayer;
-    private PlayerMode playerMode = PlayerMode.EXO;
     ArrayList<Music> playlistSong = new ArrayList<>();
 
     //Tracker Progress
@@ -76,6 +81,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     //intent update position music
     Intent updatePositionCurrentMusic;
 
+    //caching handle
+    HttpDataSource.Factory httpFactory;
+    DefaultDataSourceFactory defaultDataSourceFactory;
+    DataSource.Factory cacheDataSourceFactory;
+    SimpleCache simpleCache = MyApp.simpleCache;
 
     @Nullable
     @Override
@@ -178,7 +188,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     private void resumeSong(Intent intent) {
         if (!exoPlayer.isPlaying()) {
-            if (currentSong != null) {
+            if (exoPlayer.getCurrentMediaItem() != null) {
                 exoPlayer.play();
                 currentMediaID = getCurrentMediaId();
             } else {
@@ -227,31 +237,20 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     private void initService(Intent intent) {
         playlistSong = (ArrayList<Music>) intent.getSerializableExtra(KEY_PLAYLIST);
         int index = intent.getIntExtra(KEY_SONG_INDEX, 0);
-//        switch (playMode) {
-//            case MUSIC_PLAYER_MODE_ONLINE: {
         if (playlistSong != null) {
             Log.d(TAG, "initService itemCount: " + exoPlayer.getMediaItemCount());
-            setUpPlaylistForExoPlayer(getListMediaItem(playlistSong));
+//            setUpPlaylistForExoPlayer(getListMediaItem(playlistSong));
+            setUpListMediaSource(getListMediaSource(playlistSong));
             currentMediaID = getCurrentMediaId();
             exoPlayer.prepare();
             exoPlayer.seekTo(index, 0);
             Log.d(TAG, "initService: " + currentMediaID);
             exoPlayer.play();
-            Log.d(TAG, "initService: " + currentSong.getName());
+//            Log.d(TAG, "initService: " + currentSong.getName());
             sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, 0);
             isPlaying = true;
             isLoadPlaylistSuccessfully = true;
             changeStateResume(true);
-//                }
-//                break;
-//            }
-//            case MUSIC_PLAYER_MODE_LOCAL: {
-//
-//                break;
-//            }
-//            default:
-//                Log.d(TAG, "initService: invalid play mode");
-//                break;
         }
     }
 
@@ -272,9 +271,23 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     public void installMediaPlayer() {
+        httpFactory = new DefaultHttpDataSource.Factory().setAllowCrossProtocolRedirects(true);
+        defaultDataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), httpFactory);
+
+        //A DataSource that reads and writes a Cache.
+        cacheDataSourceFactory = new CacheDataSource.Factory()
+                .setCache(simpleCache)
+                .setUpstreamDataSourceFactory(httpFactory)
+                .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR);
+
         //new vs player
-        exoPlayer = new ExoPlayer.Builder(this).setLooper(Looper.getMainLooper()).build();
+        exoPlayer = new ExoPlayer.Builder(this)
+                .setLooper(Looper.getMainLooper())
+                .setMediaSourceFactory(new DefaultMediaSourceFactory(cacheDataSourceFactory))
+                .build();
+
         exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
+        exoPlayer.setPlayWhenReady(true);
         exoPlayerListener();
         mediaSessionCompat = new MediaSessionCompat(this, MusicPlayerService.class.getName());
     }
@@ -306,11 +319,11 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             @Override
             public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
                 Player.Listener.super.onMediaItemTransition(mediaItem, reason);
-                currentSong = getCurrentSong();
-                Log.d(TAG, "onMediaItemTransition: nextSong" + currentSong.getName());
+//                currentSong = getCurrentSong();
+//                Log.d(TAG, "onMediaItemTransition: nextSong" + currentSong.getName());
                 isPlaying = true;
                 sendNotification();
-                saveCurrentMusic(currentSong);
+                saveCurrentMusic(getCurrentSong());
                 setUpTrackerProgress();
                 Log.d(TAG, "onMediaItemTransition: trước if: " + currentMediaID);
 
@@ -325,9 +338,6 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         });
     }
 
-    public void setMusicUrl(String url) {
-
-    }
 
     public Music getCurrentSong() {
         if (exoPlayer.getMediaItemCount() > 0) {
@@ -341,10 +351,10 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         PendingIntent homePendingIntent = PendingIntent.getActivity(this, 0, homeIntent, PendingIntent.FLAG_IMMUTABLE);
         final Bitmap[] musicThumbnail = new Bitmap[1];
         mediaSessionCompat.setMetadata(new MediaMetadataCompat.Builder()
-                .putString(MediaMetadata.METADATA_KEY_TITLE, CapitalizeWord.CapitalizeWords(currentSong.getName()))
-                .putString(MediaMetadata.METADATA_KEY_ARTIST, CapitalizeWord.CapitalizeWords(currentSong.getSingerName()))
-                .putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, currentSong.getThumbnailUrl())
-                .putLong(MediaMetadata.METADATA_KEY_DURATION, mediaPlayer.getDuration() / 1000)
+                .putString(MediaMetadata.METADATA_KEY_TITLE, CapitalizeWord.CapitalizeWords(getCurrentSong().getName()))
+                .putString(MediaMetadata.METADATA_KEY_ARTIST, CapitalizeWord.CapitalizeWords(getCurrentSong().getSingerName()))
+                .putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, getCurrentSong().getThumbnailUrl())
+                .putLong(MediaMetadata.METADATA_KEY_DURATION, exoPlayer.getDuration() / 1000)
                 .build()
         );
 
@@ -352,8 +362,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
         NotificationCompat.Builder notificationCompatBuilder = new NotificationCompat.Builder(this, "AUDIO_SERVICE")
                 .setSmallIcon(R.drawable.ic_notiffication_new)
-                .setContentText(CapitalizeWord.CapitalizeWords(currentSong.getSingerName()))
-                .setContentTitle(CapitalizeWord.CapitalizeWords(currentSong.getName()))
+                .setContentText(CapitalizeWord.CapitalizeWords(getCurrentSong().getSingerName()))
+                .setContentTitle(CapitalizeWord.CapitalizeWords(getCurrentSong().getName()))
                 .setStyle(new androidx.media.app.NotificationCompat.MediaStyle()
                         .setMediaSession(mediaSessionCompat.getSessionToken())
                         .setShowActionsInCompactView(0, 1, 2))
@@ -376,7 +386,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
         Glide.with(MusicPlayerService.this)
                 .asBitmap()
-                .load(currentSong.getThumbnailUrl())
+                .load(getCurrentSong().getThumbnailUrl())
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
@@ -460,6 +471,29 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             listMediaItem.add(mediaItem.build());
         }
         return listMediaItem;
+    }
+
+    public void setUpListMediaSource(ArrayList<ProgressiveMediaSource> list) {
+        for (ProgressiveMediaSource progressiveMediaSource : list) {
+            exoPlayer.addMediaSource(progressiveMediaSource);
+        }
+//        exoPlayer.prepare();
+    }
+
+    public ArrayList<ProgressiveMediaSource> getListMediaSource(ArrayList<Music> list) {
+        ArrayList<ProgressiveMediaSource> result = new ArrayList<>();
+        for (Music music : list) {
+            MediaItem.Builder mediaItem = new MediaItem.Builder();
+            if (Objects.equals(playMode, MUSIC_PLAYER_MODE_ONLINE)) {
+                mediaItem.setUri(music.getUrl());
+            } else {
+                mediaItem.setUri(Uri.parse(music.getUrl()));
+            }
+            mediaItem.setMediaId(music.getId()).setMediaMetadata(getMetaDataSong(music));
+            ProgressiveMediaSource progressiveMediaSource = new ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(mediaItem.build());
+            result.add(progressiveMediaSource);
+        }
+        return result;
     }
 
     public void setUpPlaylistForExoPlayer(ArrayList<MediaItem> listMediaItem) {
