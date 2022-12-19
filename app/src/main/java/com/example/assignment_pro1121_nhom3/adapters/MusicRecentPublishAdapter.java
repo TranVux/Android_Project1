@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
@@ -77,6 +78,7 @@ public class MusicRecentPublishAdapter extends RecyclerView.Adapter<RecyclerView
             Music musicTemp = list.get(position);
             if (musicTemp == null) return;
             Glide.with(context).load(musicTemp.getThumbnailUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.DATA)
                     .apply(new RequestOptions().override(200, 200))
                     .centerCrop()
                     .error(R.drawable.fallback_img).into(publishViewHolder.thumbnail);

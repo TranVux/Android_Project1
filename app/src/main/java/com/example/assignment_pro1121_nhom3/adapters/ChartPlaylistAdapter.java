@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Music;
 import com.example.assignment_pro1121_nhom3.models.Playlist;
@@ -55,7 +56,8 @@ public class ChartPlaylistAdapter extends RecyclerView.Adapter<ChartPlaylistAdap
         if (music == null) {
             return;
         }
-        Glide.with(context).load(list.get(position).getThumbnailUrl()).into(holder.imgSong);
+        Glide.with(context).load(list.get(position).getThumbnailUrl()).diskCacheStrategy(DiskCacheStrategy.DATA)
+                .into(holder.imgSong);
         holder.tvNumber.setText(String.valueOf(position + 1));
         if (position == 0 || position == 1 || position == 2) {
             holder.tvNumber.setTextColor(context.getResources().getColor(R.color.text_color_item_charts));

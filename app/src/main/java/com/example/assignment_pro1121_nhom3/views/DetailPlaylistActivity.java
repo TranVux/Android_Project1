@@ -46,6 +46,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
@@ -285,6 +286,7 @@ public class DetailPlaylistActivity extends AppCompatActivity {
         //gắn ảnh thumbnail cho playlist
         Glide.with(DetailPlaylistActivity.this)
                 .load(tempPlaylist.getUrlThumbnail())
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
                 .apply(new RequestOptions().override(250, 250))
                 .into(thumbnailPlaylist);
 

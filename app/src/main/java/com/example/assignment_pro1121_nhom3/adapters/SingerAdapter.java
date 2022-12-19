@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.interfaces.ItemEvent;
@@ -73,6 +74,7 @@ public class SingerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             viewHolder.singerName.setText(CapitalizeWord.CapitalizeWords(tempSinger.getName()));
             Glide.with(context)
                     .load(tempSinger.getAvtUrl()).apply(new RequestOptions().override(100, 100))
+                    .diskCacheStrategy(DiskCacheStrategy.DATA)
                     .centerCrop()
                     .error(R.drawable.fallback_img)
                     .into(viewHolder.singerImage);

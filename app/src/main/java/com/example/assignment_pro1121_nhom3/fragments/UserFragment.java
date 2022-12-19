@@ -46,6 +46,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.adapters.UserPlayListAdapter;
 import com.example.assignment_pro1121_nhom3.dao.PlaylistDAO;
@@ -187,6 +188,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                     Log.d(TAG, "checkLogin: " + currentUser.getPhotoUrl());
                     Glide.with(getContext())
                             .load(currentUser.getPhotoUrl())
+                            .diskCacheStrategy(DiskCacheStrategy.DATA)
                             .centerCrop()
                             .error(R.drawable.default_avt)
                             .into(layoutLoginUserAvt);

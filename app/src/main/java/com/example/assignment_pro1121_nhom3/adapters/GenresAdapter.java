@@ -13,6 +13,7 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.assignment_pro1121_nhom3.R;
 import com.example.assignment_pro1121_nhom3.models.Genres;
 
@@ -51,7 +52,8 @@ public class GenresAdapter extends RecyclerView.Adapter<GenresAdapter.GenresView
         Genres tempGenres = listGenres.get(position);
         if (tempGenres == null) return;
 
-        Glide.with(context).load(tempGenres.getUrlThumbnail()).into(holder.thumbnail);
+        Glide.with(context).load(tempGenres.getUrlThumbnail()).diskCacheStrategy(DiskCacheStrategy.DATA)
+                .into(holder.thumbnail);
 
         int bottom = dbToPx(10);
         int left = dbToPx(5);
