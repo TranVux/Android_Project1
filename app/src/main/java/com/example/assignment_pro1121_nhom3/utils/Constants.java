@@ -53,5 +53,6 @@ public class Constants {
     public static final String KEY_CURRENT_USER_ID = "KEY_CURRENT_USER_ID";
 
     public static final String KEY_IS_RESUME = "KEY_IS_RESUME";
+    public static final String KEY_IS_PLAYING = "KEY_IS_PLAYING";
 
 }

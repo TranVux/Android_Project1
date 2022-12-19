@@ -170,6 +170,15 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
 
         // xử lý player state
         Log.d(TAG, "onCreateCurrentSongName: " + musicPlayer.getCurrentSong().getName());
+        boolean isServicePlaying = MusicPlayerStorage.getInstance(this).getBoolean(KEY_IS_PLAYING, false);
+        if (isServicePlaying) {
+            try {
+                musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
         handleStateMusicPlayer(musicPlayer);
         playMusicPlayer();
         Log.d(TAG, "onCreate: " + musicPlayer.getCurrentMode());
@@ -313,45 +322,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 stateButtonPlay = 0;
                 break;
             }
-            case MUSIC_PLAYER_ACTION_NEXT:
-            case MUSIC_PLAYER_ACTION_COMPLETE: {
-                try {
-                    musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Log.d(TAG, "handleIntent: next");
-                musicPlayer.nextSong(musicPlayer.getCurrentIndexSong());
-                Log.d(TAG, "currentSong: " + musicPlayer.getCurrentSong().getName());
-                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag(PlayerFragment.TAG);
-                if (playerFragment == null)
-                    return;
-                playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
-                playerFragment.setContentInit(musicPlayer.getCurrentSong());
-                playerFragment.timeLine.setProgress(0);
-                circularSeekBar.setProgress(0);
-                handleChangeMusic();
-                break;
-            }
-            case MUSIC_PLAYER_ACTION_PREVIOUS: {
-                try {
-                    musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                Log.d(TAG, "handleIntent: previous");
-                musicPlayer.previousSong(musicPlayer.getCurrentIndexSong());
-                Log.d(TAG, "currentSong: " + musicPlayer.getCurrentSong().getName());
-                playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag(PlayerFragment.TAG);
-                if (playerFragment == null)
-                    return;
-                playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
-                playerFragment.setContentInit(musicPlayer.getCurrentSong());
-                playerFragment.timeLine.setProgress(0);
-                circularSeekBar.setProgress(0);
-                handleChangeMusic();
-                break;
-            }
+            case MUSIC_PLAYER_ACTION_UPDATE_PLAYER:
             case MUSIC_PLAYER_ACTION_GO_TO_SONG: {
                 try {
                     musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
@@ -363,6 +334,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
                 playerFragment = (PlayerFragment) getSupportFragmentManager().findFragmentByTag(PlayerFragment.TAG);
                 if (playerFragment == null)
                     return;
+                playerFragment.handleRotateImageThumbnail();
                 playerFragment.setContentForNextMusic(musicPlayer.getNextSong());
                 playerFragment.setContentInit(musicPlayer.getCurrentSong());
                 playerFragment.timeLine.setProgress(0);
@@ -482,12 +454,20 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         super.onStart();
         IntentFilter musicServiceIntentFilter = new IntentFilter(MUSIC_PLAYER_EVENT);
         LocalBroadcastManager.getInstance(this).registerReceiver(musicReceiver, musicServiceIntentFilter);
+        Log.d(TAG, "onStart: ");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: ");
     }
 
     @Override
     protected void onStop() {
         super.onStop();
         LocalBroadcastManager.getInstance(this).unregisterReceiver(musicReceiver);
+        Log.d(TAG, "onStop: ");
     }
 
     @RequiresApi(api = Build.VERSION_CODES.P)

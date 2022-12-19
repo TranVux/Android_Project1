@@ -32,6 +32,7 @@ public class MusicPlayer implements Serializable {
     public static final int MUSIC_PLAYER_ACTION_RESET_PLAYLIST = 888;
     public static final int MUSIC_PLAYER_ACTION_GO_TO_SONG = 999;
     public static final int MUSIC_PLAYER_ACTION_SEEK_TO_POSITION = 101010;
+    public static final int MUSIC_PLAYER_ACTION_UPDATE_PLAYER = 464;
 
     public static final String MUSIC_PLAYER_MODE_ONLINE = "MUSIC_PLAYER_MODE_ONLINE";
     public static final String MUSIC_PLAYER_MODE_LOCAL = "MUSIC_PLAYER_MODE_LOCAL";
