@@ -1,5 +1,6 @@
 package com.example.assignment_pro1121_nhom3.views;
 
+import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.MUSIC_PLAYER_MODE_LOCAL;
 import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.TAG;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_ID_OF_PLAYLIST;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.KEY_IS_DECREASE;
@@ -202,6 +203,7 @@ public class SplashScreen extends AppCompatActivity {
                     musicPlayer = MusicPlayer.getInstance(listMusicRecent);
                     Log.d(TAG, "onCreate: " + listMusicRecent);
                     musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+                    musicPlayer.setCurrentMode(MUSIC_PLAYER_MODE_LOCAL);
                     startActivity(new Intent(SplashScreen.this, MainActivity.class));
                     finish();
                     break;
@@ -267,14 +269,13 @@ public class SplashScreen extends AppCompatActivity {
                 public void onGetTopMusicCallback(ArrayList<Music> list) {
                     if (list.size() != 0) {
                         musicPlayer = MusicPlayer.getInstance(list);
+                        musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+                        Log.d(TAG, "onGetTopMusicCallback: " + sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+                        startActivity(new Intent(SplashScreen.this, MainActivity.class));
+                        finish();
                     } else {
                         getPermission();
-                        musicPlayer = MusicPlayer.getInstance(listMusicRecent);
                     }
-                    musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
-                    Log.d(TAG, "onGetTopMusicCallback: " + sharedPreferences.getInt(KEY_SONG_INDEX, 0));
-                    startActivity(new Intent(SplashScreen.this, MainActivity.class));
-                    finish();
                 }
             });
         }
@@ -307,6 +308,11 @@ public class SplashScreen extends AppCompatActivity {
         }
         Log.d(TAG, "getSongList: " + list);
         listMusicRecent.addAll(list);
+        musicPlayer = MusicPlayer.getInstance(listMusicRecent);
+        musicPlayer.setMusicAtPosition(sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+        Log.d(TAG, "onGetTopMusicCallback: " + sharedPreferences.getInt(KEY_SONG_INDEX, 0));
+        startActivity(new Intent(SplashScreen.this, MainActivity.class));
+        finish();
     }
 
     public boolean checkPermission() {

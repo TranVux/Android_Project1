@@ -260,6 +260,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
         super.onResume();
         Log.d(TAG, "onResume: ");
         ((MainActivity) requireActivity()).toTransparent();
+        musicPlayer.setMusicAtPosition(MusicPlayerStorage.getInstance(requireContext()).getInt(KEY_SONG_INDEX, 0));
         setContentInit(musicPlayer.getCurrentSong());
         setContentForNextMusic(musicPlayer.getNextSong());
     }

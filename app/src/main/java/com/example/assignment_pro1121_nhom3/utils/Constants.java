@@ -33,6 +33,7 @@ public class Constants {
     public static final String CHANGE_TO_SERVICE = "CHANGE_TO_SERVICE";
     public static final String KEY_IS_DECREASE = "KEY_IS_DECREASE";
     public static final String KEY_LIMIT = "KEY_LIMIT";
+    public static final String KEY_MODE = "KEY_MODE";
 
     public static final String PLAYLIST_TYPE_SINGER = "PLAYLIST_TYPE_SINGER";
     public static final String PLAYLIST_TYPE_DEFAULT = "PLAYLIST_TYPE_DEFAULT";

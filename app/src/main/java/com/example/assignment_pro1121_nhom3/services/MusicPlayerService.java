@@ -13,7 +13,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
-import android.net.ProxyInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -39,25 +38,33 @@ import com.example.assignment_pro1121_nhom3.storages.MusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.storages.SongRecentDatabase;
 import com.example.assignment_pro1121_nhom3.storages.StateMusicPlayerStorage;
 import com.example.assignment_pro1121_nhom3.utils.CapitalizeWord;
-import com.example.assignment_pro1121_nhom3.utils.MyApp;
 import com.example.assignment_pro1121_nhom3.views.MainActivity;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
+import com.google.android.exoplayer2.database.DatabaseProvider;
+import com.google.android.exoplayer2.database.StandaloneDatabaseProvider;
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaExtractor;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DataSpec;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
+import com.google.android.exoplayer2.upstream.FileDataSource;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
+import com.google.android.exoplayer2.upstream.cache.Cache;
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource;
+import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor;
 import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 
 import static com.example.assignment_pro1121_nhom3.models.MusicPlayer.*;
 import static com.example.assignment_pro1121_nhom3.utils.Constants.*;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 public class MusicPlayerService extends Service implements MediaPlayer.OnCompletionListener {
@@ -82,10 +89,10 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     Intent updatePositionCurrentMusic;
 
     //caching handle
-    HttpDataSource.Factory httpFactory;
-    DefaultDataSourceFactory defaultDataSourceFactory;
-    DataSource.Factory cacheDataSourceFactory;
-    SimpleCache simpleCache = MyApp.simpleCache;
+    Cache cache;
+    HttpDataSource.Factory httpDataSourceFactory;
+    DatabaseProvider databaseProvider;
+    DataSource.Factory dataSourceFactory;
 
     @Nullable
     @Override
@@ -96,6 +103,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public void onCreate() {
         super.onCreate();
+        playMode = MusicPlayerStorage.getInstance(this).getString(KEY_MODE, MUSIC_PLAYER_MODE_ONLINE);
         installMediaPlayer();
         createNotificationChannel();
     }
@@ -182,8 +190,10 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         if (exoPlayer.isPlaying()) {
             exoPlayer.pause();
         }
+        currentMediaID = getMediaIdAtPosition(index);
         exoPlayer.seekTo(index, 0);
         exoPlayer.play();
+        sendIntentToActivity(MUSIC_PLAYER_ACTION_GO_TO_SONG, index);
     }
 
     private void resumeSong(Intent intent) {
@@ -213,6 +223,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         if (exoPlayer.hasPreviousMediaItem()) {
             currentMediaID = getPrevMediaId();
             exoPlayer.seekToPrevious();
+            exoPlayer.play();
             sendIntentToActivity(MUSIC_PLAYER_ACTION_PREVIOUS, 0);
             isPlaying = true;
         }
@@ -222,6 +233,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         if (exoPlayer.hasNextMediaItem()) {
             currentMediaID = getNextMediaId();
             exoPlayer.seekToNext();
+            exoPlayer.play();
             sendIntentToActivity(MUSIC_PLAYER_ACTION_NEXT, 0);
             isPlaying = true;
         }
@@ -238,10 +250,9 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         playlistSong = (ArrayList<Music>) intent.getSerializableExtra(KEY_PLAYLIST);
         int index = intent.getIntExtra(KEY_SONG_INDEX, 0);
         if (playlistSong != null) {
-            Log.d(TAG, "initService itemCount: " + exoPlayer.getMediaItemCount());
-//            setUpPlaylistForExoPlayer(getListMediaItem(playlistSong));
             setUpListMediaSource(getListMediaSource(playlistSong));
             currentMediaID = getCurrentMediaId();
+            exoPlayer.setPlayWhenReady(true);
             exoPlayer.prepare();
             exoPlayer.seekTo(index, 0);
             Log.d(TAG, "initService: " + currentMediaID);
@@ -271,23 +282,28 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     public void installMediaPlayer() {
-        httpFactory = new DefaultHttpDataSource.Factory().setAllowCrossProtocolRedirects(true);
-        defaultDataSourceFactory = new DefaultDataSourceFactory(getApplicationContext(), httpFactory);
+        if (databaseProvider == null) {
+            databaseProvider = new StandaloneDatabaseProvider(this);
+        }
 
+        if (httpDataSourceFactory == null) {
+            httpDataSourceFactory = new DefaultHttpDataSource.Factory();
+        }
+        if (cache == null) {
+            cache = new SimpleCache(new File(MusicPlayerService.this.getCacheDir(), "cacheaudios"), new LeastRecentlyUsedCacheEvictor(1024 * 1024 * 90), databaseProvider);
+        }
         //A DataSource that reads and writes a Cache.
-        cacheDataSourceFactory = new CacheDataSource.Factory()
-                .setCache(simpleCache)
-                .setUpstreamDataSourceFactory(httpFactory)
-                .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR);
+        if (Objects.equals(playMode, MUSIC_PLAYER_MODE_ONLINE)) {
+            dataSourceFactory = new CacheDataSource.Factory().setCache(cache).setUpstreamDataSourceFactory(httpDataSourceFactory);
+        } else if (Objects.equals(playMode, MUSIC_PLAYER_MODE_LOCAL)) {
+            dataSourceFactory = new FileDataSource.Factory();
+        }
 
         //new vs player
         exoPlayer = new ExoPlayer.Builder(this)
                 .setLooper(Looper.getMainLooper())
-                .setMediaSourceFactory(new DefaultMediaSourceFactory(cacheDataSourceFactory))
                 .build();
-
         exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
-        exoPlayer.setPlayWhenReady(true);
         exoPlayerListener();
         mediaSessionCompat = new MediaSessionCompat(this, MusicPlayerService.class.getName());
     }
@@ -311,6 +327,13 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             return playlistSong.get(playlistSong.size() - 1).getId();
         }
         return playlistSong.get(exoPlayer.getCurrentMediaItemIndex() - 1).getId();
+    }
+
+    public String getMediaIdAtPosition(int position) {
+        if (exoPlayer.getMediaItemCount() != 0) {
+            return playlistSong.get(position).getId();
+        }
+        return "";
     }
 
     private void exoPlayerListener() {
@@ -429,7 +452,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        handler.removeCallbacks(runnable);
+        runnable = null;
         if (exoPlayer != null) {
             if (exoPlayer.isPlaying()) {
                 exoPlayer.stop();
@@ -474,23 +498,31 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     public void setUpListMediaSource(ArrayList<ProgressiveMediaSource> list) {
-        for (ProgressiveMediaSource progressiveMediaSource : list) {
-            exoPlayer.addMediaSource(progressiveMediaSource);
+        for (ProgressiveMediaSource mediaSource : list) {
+            exoPlayer.addMediaSource(mediaSource);
         }
-//        exoPlayer.prepare();
     }
 
     public ArrayList<ProgressiveMediaSource> getListMediaSource(ArrayList<Music> list) {
         ArrayList<ProgressiveMediaSource> result = new ArrayList<>();
         for (Music music : list) {
             MediaItem.Builder mediaItem = new MediaItem.Builder();
+            mediaItem.setMediaId(music.getId()).setMediaMetadata(getMetaDataSong(music));
+            ProgressiveMediaSource progressiveMediaSource = null;
             if (Objects.equals(playMode, MUSIC_PLAYER_MODE_ONLINE)) {
                 mediaItem.setUri(music.getUrl());
+//                progressiveMediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem.build());
             } else {
-                mediaItem.setUri(Uri.parse(music.getUrl()));
+                DataSpec dataSpec = new DataSpec(Uri.parse(music.getUrl()));
+                final FileDataSource fileDataSource = new FileDataSource();
+                try {
+                    fileDataSource.open(dataSpec);
+                } catch (FileDataSource.FileDataSourceException e) {
+                    e.printStackTrace();
+                }
+                mediaItem.setUri(fileDataSource.getUri());
             }
-            mediaItem.setMediaId(music.getId()).setMediaMetadata(getMetaDataSong(music));
-            ProgressiveMediaSource progressiveMediaSource = new ProgressiveMediaSource.Factory(cacheDataSourceFactory).createMediaSource(mediaItem.build());
+            progressiveMediaSource = new ProgressiveMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem.build());
             result.add(progressiveMediaSource);
         }
         return result;

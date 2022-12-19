@@ -172,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
         Log.d(TAG, "onCreateCurrentSongName: " + musicPlayer.getCurrentSong().getName());
         handleStateMusicPlayer(musicPlayer);
         playMusicPlayer();
+        Log.d(TAG, "onCreate: " + musicPlayer.getCurrentMode());
 //
         Log.d(TAG, "onCreate: save state: " + isCreated + " " + isPlaying + " " + isStart + " " + isDestroy);
         Log.d(TAG, "playMusicPlayer: " + musicPlayer.getStateMusicPlayer());
@@ -472,6 +473,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     public void saveCurrentMusic(String idPlaylist) {
         SharedPreferences.Editor editor = sharedPreferencesMusicList.edit();
         editor.putString(KEY_ID_OF_PLAYLIST, idPlaylist);
+        editor.putString(KEY_MODE, musicPlayer.getCurrentMode());
         editor.apply();
     }
 
