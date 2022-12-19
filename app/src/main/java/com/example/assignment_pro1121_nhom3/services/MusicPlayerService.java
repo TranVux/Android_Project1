@@ -221,7 +221,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     private void previousSong() {
         if (exoPlayer.hasPreviousMediaItem()) {
-            currentMediaID = getPrevMediaId();
+//            currentMediaID = getPrevMediaId();
+            currentMediaID = playlistSong.get(exoPlayer.getPreviousMediaItemIndex()).getId();
             exoPlayer.seekToPrevious();
             exoPlayer.play();
             sendIntentToActivity(MUSIC_PLAYER_ACTION_PREVIOUS, 0);
@@ -231,7 +232,8 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
 
     private void nextSong() {
         if (exoPlayer.hasNextMediaItem()) {
-            currentMediaID = getNextMediaId();
+//            currentMediaID = getNextMediaId();
+            currentMediaID = playlistSong.get(exoPlayer.getNextMediaItemIndex()).getId();
             exoPlayer.seekToNext();
             exoPlayer.play();
             sendIntentToActivity(MUSIC_PLAYER_ACTION_NEXT, 0);
@@ -343,7 +345,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
             public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
                 Player.Listener.super.onMediaItemTransition(mediaItem, reason);
 //                currentSong = getCurrentSong();
-//                Log.d(TAG, "onMediaItemTransition: nextSong" + currentSong.getName());
+                Log.d(TAG, "onMediaItemTransition: currentSong" + getCurrentSong().getName());
                 isPlaying = true;
                 sendNotification();
                 saveCurrentMusic(getCurrentSong());
