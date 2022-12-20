@@ -103,7 +103,7 @@ public class SearchActivity extends AppCompatActivity implements MusicDAO.GetDat
                             }
                         });
                     }
-                }, 1800);
+                }, 600);
             }
         });
     }

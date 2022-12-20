@@ -38,7 +38,10 @@
                 android:id="@+id/txtSong"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:ellipsize="marquee"
                 android:fontFamily="@font/roboto_medium"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:maxLines="1"
                 android:text="ten bai hat"
                 android:textColor="@color/white"
                 android:textSize="11sp" />

@@ -18,6 +18,7 @@
         android:fontFamily="@font/roboto"
         android:hint="Nhập tên bài hát"
         android:maxLines="1"
+        android:singleLine="true"
         android:paddingStart="15dp"
         android:paddingTop="2dp"
         android:textColor="@color/white"

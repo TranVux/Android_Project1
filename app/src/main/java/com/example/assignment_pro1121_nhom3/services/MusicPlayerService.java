@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.MediaMetadata;
 import android.media.MediaPlayer;
+import android.media.session.PlaybackState;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -21,6 +22,7 @@ import android.os.Looper;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -316,6 +318,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         exoPlayer.setRepeatMode(Player.REPEAT_MODE_ALL);
         exoPlayerListener();
         mediaSessionCompat = new MediaSessionCompat(this, MusicPlayerService.class.getName());
+        mediaSessionCompat.setCallback(new MyMediaSessionCallback());
     }
 
     public String getCurrentMediaId() {
@@ -336,14 +339,38 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         exoPlayer.addListener(new Player.Listener() {
 
             @Override
+            public void onPlaybackStateChanged(int playbackState) {
+                Player.Listener.super.onPlaybackStateChanged(playbackState);
+                switch (playbackState) {
+                    case Player.STATE_READY: {
+                        sendNotification();
+                        break;
+                    }
+                    case Player.STATE_BUFFERING:
+                        Log.d(TAG, "onPlaybackStateChanged: STATE_BUFFERING");
+                        break;
+                    case Player.STATE_ENDED:
+                        Log.d(TAG, "onPlaybackStateChanged: STATE_ENDED");
+                        break;
+                    case Player.STATE_IDLE:
+                        Log.d(TAG, "onPlaybackStateChanged: STATE_IDLE");
+                        break;
+                }
+            }
+
+            @Override
             public void onMediaItemTransition(@Nullable MediaItem mediaItem, int reason) {
                 Player.Listener.super.onMediaItemTransition(mediaItem, reason);
+//                if (reason == Player.COMMAND_SEEK_TO_MEDIA_ITEM ||
+//                        reason == Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM ||
+//                        reason == Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM) {
                 Log.d(TAG, "onMediaItemTransition: currentSong" + getCurrentSong().getName());
                 isPlaying = true;
                 sendNotification();
                 sendIntentToActivity(MUSIC_PLAYER_ACTION_UPDATE_PLAYER, exoPlayer.getCurrentMediaItemIndex());
                 saveCurrentMusic(getCurrentSong());
                 setUpTrackerProgress();
+//                }
             }
 
         });
@@ -358,6 +385,7 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
     }
 
     public void sendNotification() {
+        Log.d(TAG, "sendNotification: current track " + exoPlayer.getCurrentMediaItem().mediaMetadata.title + " duration:" + exoPlayer.getDuration());
         Intent homeIntent = new Intent(this, MainActivity.class);
         PendingIntent homePendingIntent = PendingIntent.getActivity(this, 0, homeIntent, PendingIntent.FLAG_IMMUTABLE);
         final Bitmap[] musicThumbnail = new Bitmap[1];
@@ -365,9 +393,10 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                 .putString(MediaMetadata.METADATA_KEY_TITLE, CapitalizeWord.CapitalizeWords(getCurrentSong().getName()))
                 .putString(MediaMetadata.METADATA_KEY_ARTIST, CapitalizeWord.CapitalizeWords(getCurrentSong().getSingerName()))
                 .putString(MediaMetadata.METADATA_KEY_ALBUM_ART_URI, getCurrentSong().getThumbnailUrl())
-                .putLong(MediaMetadata.METADATA_KEY_DURATION, exoPlayer.getDuration() / 1000)
+                .putLong(MediaMetadata.METADATA_KEY_DURATION, exoPlayer.getDuration())
                 .build()
         );
+
 
         mediaControllerCompat = new MediaControllerCompat(getApplicationContext(), mediaSessionCompat.getSessionToken());
 
@@ -387,12 +416,26 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
                     .addAction(R.drawable.ic_small_pause, "Pause", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_PAUSE))
                     .addAction(R.drawable.ic_small_next, "Next", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_NEXT))
                     .addAction(R.drawable.ic_close, "close", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_DESTROY));
+            mediaSessionCompat.setPlaybackState(
+                    PlaybackStateCompat.fromPlaybackState(new PlaybackState.Builder()
+                            .setState(PlaybackState.STATE_PLAYING, exoPlayer.getCurrentPosition(), 1.0F)
+                            .setActions(PlaybackState.ACTION_SEEK_TO)
+                            .build()
+                    )
+            );
         } else {
             notificationCompatBuilder
                     .addAction(R.drawable.ic_small_previous, "Previous", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_PREVIOUS))
                     .addAction(R.drawable.ic_small_play, "Resume", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_RESUME))
                     .addAction(R.drawable.ic_small_next, "Next", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_NEXT))
                     .addAction(R.drawable.ic_close, "close", getPendingIntentAction(this, MUSIC_PLAYER_ACTION_DESTROY));
+            mediaSessionCompat.setPlaybackState(
+                    PlaybackStateCompat.fromPlaybackState(new PlaybackState.Builder()
+                            .setState(PlaybackState.STATE_PAUSED, exoPlayer.getCurrentPosition(), 1.0F)
+                            .setActions(PlaybackState.ACTION_SEEK_TO)
+                            .build()
+                    )
+            );
         }
 
         Glide.with(MusicPlayerService.this)
@@ -567,5 +610,20 @@ public class MusicPlayerService extends Service implements MediaPlayer.OnComplet
         SharedPreferences.Editor editor = StateMusicPlayerStorage.getInstance(this).edit();
         editor.putBoolean(KEY_IS_RESUME, isResume);
         editor.apply();
+    }
+
+    class MyMediaSessionCallback extends MediaSessionCompat.Callback {
+        @Override
+        public void onSeekTo(long pos) {
+            if (exoPlayer != null) {
+                exoPlayer.seekTo(pos);
+                if (!exoPlayer.isPlaying()) {
+                    exoPlayer.play();
+                }
+            }
+            isPlaying = true;
+            sendNotification();
+            sendIntentToActivity(MUSIC_PLAYER_ACTION_RESUME, exoPlayer.getCurrentMediaItemIndex());
+        }
     }
 }
