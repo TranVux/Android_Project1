@@ -444,70 +444,56 @@ public class MusicDAO {
                 });
     }
 
-    public void searchByKeyWord(String keyWord, Query nextQuery, GetDataPagination getDataPagination, SearchMusic searchMusic, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
+    public void searchByKeyWord(String keyWord, SearchMusic searchMusic, IOnProgressBarStatusListener iOnProgressBarStatusListener) {
         ArrayList<Music> listResult = new ArrayList<>();
-        iOnProgressBarStatusListener.beforeGetData();
-
         String finalKeyWord = keyWord.trim().toLowerCase();
-        Query query;
-
-        if (nextQuery == null) {
-            query = db.collection("musics").limit(50);
-        } else {
-            query = nextQuery;
-        }
-
-        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful() && task.getResult().getDocuments().size() > 0) {
-                    //get next query
-                    DocumentSnapshot lastVisible = task.getResult().getDocuments().get(task.getResult().getDocuments().size() - 1);
-                    Query next = db.collection("musics")
-                            .startAfter(lastVisible)
-                            .limit(50);
-                    getDataPagination.getNextQuery(next);
-
-                    for (QueryDocumentSnapshot document : task.getResult()) {
-                        if (document.exists()) {
-                            Log.d(TAG, document.getId() + " => " + document.getData());
-                            Map<String, Object> map = document.getData();
-                            String id = document.getId();
-                            String name = (String) map.get("name");
-                            String url = (String) map.get("url");
-                            String thumbnailUrl = (String) map.get("thumbnailUrl");
-                            Long creationDate = (Long) map.get("creationDate");
-                            if (creationDate == null) {
-                                creationDate = 0L;
-                            }
-                            Long updateDate = (Long) map.get("modifyDate");
-                            if (updateDate == null) {
-                                updateDate = 0L;
-                            }
-                            String singerName = (String) map.get("singerName");
-                            String singerId = (String) map.get("singerID");
-                            Long views = (Long) map.get("views");
-                            if (views == null) {
-                                views = 0L;
-                            }
-                            String genresId = (String) map.get("genresID");
-                            Music music = new Music(id, name, url, thumbnailUrl, creationDate, updateDate,
-                                    singerName, singerId, views, genresId);
-                            if (checkKeyWord(finalKeyWord, music)) {
-                                listResult.add(music);
+        Log.d(TAG, "searchByKeyWord: " + finalKeyWord);
+        iOnProgressBarStatusListener.beforeGetData();
+        db.collection("musics").whereArrayContains("keywords", finalKeyWord)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "onComplete: " + task.getResult().size());
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                if (document.exists()) {
+                                    Log.d(TAG, document.getId() + " => " + document.getData());
+                                    Map<String, Object> map = document.getData();
+                                    String id = document.getId();
+                                    String name = (String) map.get("name");
+                                    String url = (String) map.get("url");
+                                    String thumbnailUrl = (String) map.get("thumbnailUrl");
+                                    Long creationDate = (Long) map.get("creationDate");
+                                    if (creationDate == null) {
+                                        creationDate = 0L;
+                                    }
+                                    Long updateDate = (Long) map.get("modifyDate");
+                                    if (updateDate == null) {
+                                        updateDate = 0L;
+                                    }
+                                    String singerName = (String) map.get("singerName");
+                                    String singerId = (String) map.get("singerID");
+                                    Long views = (Long) map.get("views");
+                                    if (views == null) {
+                                        views = 0L;
+                                    }
+                                    String genresId = (String) map.get("genresID");
+                                    Music music = new Music(id, name, url, thumbnailUrl, creationDate, updateDate,
+                                            singerName, singerId, views, genresId);
+                                    listResult.add(music);
+                                }
                             }
                         }
+                        searchMusic.onSearchSuccess(listResult);
+                        iOnProgressBarStatusListener.afterGetData();
                     }
-                    searchMusic.onSearchSuccess(listResult);
-                    iOnProgressBarStatusListener.afterGetData();
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                iOnProgressBarStatusListener.afterGetData();
-            }
-        });
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        iOnProgressBarStatusListener.afterGetData();
+                    }
+                });
     }
 
     public boolean checkKeyWord(String keyWord, Music music) {

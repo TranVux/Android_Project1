@@ -280,7 +280,7 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
                 }
                 break;
             }
-            case MUSIC_PLAYER_ACTION_NEXT:
+            case MUSIC_PLAYER_ACTION_UPDATE_PLAYER:
             case MUSIC_PLAYER_ACTION_COMPLETE: {
                 try {
                     musicPlayer.setStateMusicPlayer(MUSIC_PLAYER_STATE_PLAYING);
