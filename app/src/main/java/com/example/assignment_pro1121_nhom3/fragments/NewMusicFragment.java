@@ -65,7 +65,7 @@ public class NewMusicFragment extends Fragment {
     ProgressBar progressBar;
     LinearLayout emptyLayout;
     TextView keyword;
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
 
 
     public NewMusicFragment() {

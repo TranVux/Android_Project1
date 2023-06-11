@@ -31,7 +31,7 @@ import com.google.android.material.transition.MaterialElevationScale;
 public class SingerActivity extends AppCompatActivity {
     public static final String TAG = SingerActivity.class.getSimpleName();
     ImageView btnBack;
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

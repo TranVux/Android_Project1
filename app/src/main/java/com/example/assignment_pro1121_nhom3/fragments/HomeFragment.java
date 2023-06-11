@@ -127,7 +127,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     ProgressBar progressBar;
 
     // player
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
 
     public HomeFragment() {
 

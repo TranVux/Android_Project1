@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements HandleChangeColor
     ImageView btnPlay;
 
     // Music player
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
     //
     // cache
     SharedPreferences sharedPreferences;

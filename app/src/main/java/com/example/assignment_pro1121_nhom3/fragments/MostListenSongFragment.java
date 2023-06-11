@@ -63,7 +63,7 @@ public class MostListenSongFragment extends Fragment {
     ProgressBar progressBar;
     LinearLayout emptyLayout;
     TextView keyWords;
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
 
     public MostListenSongFragment() {
 

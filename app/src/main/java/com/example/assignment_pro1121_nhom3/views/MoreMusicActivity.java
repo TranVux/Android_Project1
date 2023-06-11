@@ -32,7 +32,7 @@ public class MoreMusicActivity extends AppCompatActivity {
     ChipGroup chipGroup;
     public static Genres tempGenres;
     ArrayList<Genres> listGenres = new ArrayList<>();
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

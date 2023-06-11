@@ -91,7 +91,7 @@ public class DetailPlaylistActivity extends AppCompatActivity {
     CircleImageView avtCreator;
     LinearLayout btnPlayAll, emptyLayout;
 
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
     SharedPreferences sharedPreferences;
 
     @Override

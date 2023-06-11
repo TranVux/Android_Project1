@@ -54,7 +54,7 @@ public class MiniPlayerFragment extends Fragment implements View.OnClickListener
     private int stateBtnPlay = 1; // 1: play | 0: stop
     private FlexboxLayout playerLayout;
     private SharedPreferences sharedPreferences, musicSharePreferences;
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
     AnimatedVectorDrawable avd1;
     AnimatedVectorDrawableCompat avd;
 

@@ -44,20 +44,20 @@ public class MusicPlayer implements Serializable {
     private String playerState;
     private MusicPlayerCallback musicPlayerCallback;
     private String currentMode;
-
-    public static MusicPlayer getInstance(MusicPlayerCallback musicPlayerCallback) {
-        if (musicPlayer == null)
-            return new MusicPlayer(musicPlayerCallback);
-        return musicPlayer;
-    }
+//
+//    public static MusicPlayer getInstance(MusicPlayerCallback musicPlayerCallback) {
+//        if (musicPlayer == null)
+//            musicPlayer = new MusicPlayer(musicPlayerCallback);
+//        return musicPlayer;
+//    }
 
     public static MusicPlayer getInstance() {
-        if (musicPlayer == null) return new MusicPlayer();
+        if (musicPlayer == null) musicPlayer = new MusicPlayer();
         return musicPlayer;
     }
 
     public static MusicPlayer getInstance(ArrayList<Music> playListMusic) {
-        if (musicPlayer == null) return new MusicPlayer(playListMusic);
+        if (musicPlayer == null) musicPlayer = new MusicPlayer(playListMusic);
         return musicPlayer;
     }
 
