@@ -49,7 +49,7 @@ public class RecentMusicActivity extends AppCompatActivity implements View.OnCli
     RecyclerView rclRecentSong;
     LinearLayout buttonPlayAll;
     PlaylistInDeviceAdapter myPlaylistAdapter;
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
     ImageView btnBack;
     TextView amountOfSong;
 

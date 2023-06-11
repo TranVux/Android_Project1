@@ -75,13 +75,12 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class SplashScreen extends AppCompatActivity {
-    public static MusicPlayer musicPlayer;
+    private MusicPlayer musicPlayer;
     SharedPreferences sharedPreferences;
     private final PlaylistDAO playlistDAO = new PlaylistDAO();
     private ArrayList<Music> listMusicRecent = new ArrayList<>();
     private static final int REQUEST_CODE_PERMISSION = 30;
     private boolean isGrantedPermission = false;
-
 
     // db
     FirebaseFirestore db;

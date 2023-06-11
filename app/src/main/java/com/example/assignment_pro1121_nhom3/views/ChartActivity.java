@@ -66,7 +66,7 @@ public class ChartActivity extends AppCompatActivity {
     private RoundedBarChart barChart;
     ArrayList<Music> listMusic;
     ArrayList<TopMusics> listTopMusic;
-    public MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    public MusicPlayer musicPlayer = MusicPlayer.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

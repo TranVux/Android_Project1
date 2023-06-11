@@ -80,7 +80,7 @@ public class PlayerFragment extends Fragment implements View.OnClickListener, Se
     boolean imageMusicThumbnail1IsVisible = true;
 
     // music player hiện tại
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
     boolean updateSeekBar = true;
     private BroadcastReceiver musicPlayerReceiver;
 

@@ -38,7 +38,7 @@ public class GenresActivity extends AppCompatActivity {
     GenreDAO genreDAO;
     MusicDAO musicDAO;
     ProgressBar progressBar;
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

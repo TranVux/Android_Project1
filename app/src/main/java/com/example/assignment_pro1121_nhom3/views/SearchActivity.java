@@ -55,7 +55,7 @@ public class SearchActivity extends AppCompatActivity {
     private Timer timer;
     private TextView keywords;
     private LinearLayout emptyLayout;
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
     private ArrayList<String> searchHistory = new ArrayList<>();
     private ChipGroup chipGroup;
     private ProgressBar progressBar;

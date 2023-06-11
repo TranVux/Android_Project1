@@ -82,7 +82,7 @@ public class DetailSingerActivity extends AppCompatActivity {
     private int limitOfQuery = 20;
     private boolean isLoading = false;
     Singer receiverSinger;
-    public MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    public MusicPlayer musicPlayer = MusicPlayer.getInstance();
 
 
     @Override

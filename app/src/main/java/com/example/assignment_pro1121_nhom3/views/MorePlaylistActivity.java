@@ -19,7 +19,7 @@ public class MorePlaylistActivity extends AppCompatActivity {
     ViewPager2 viewPager;
     TabLayout tabLayout;
     ImageView btnBack;
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

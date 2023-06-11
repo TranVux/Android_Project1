@@ -69,7 +69,7 @@ public class MusicInDeviceActivity extends AppCompatActivity implements View.OnC
     RecyclerView rclMusicInDevice;
     LinearLayout buttonPlayAll;
     PlaylistInDeviceAdapter myPlaylistAdapter;
-    MusicPlayer musicPlayer = SplashScreen.musicPlayer;
+    MusicPlayer musicPlayer = MusicPlayer.getInstance();
     ImageView btnBack;
     TextView amountOfSong;
 
